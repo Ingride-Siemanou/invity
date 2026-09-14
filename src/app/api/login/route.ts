@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { cookies } from "next/headers";
 import { db } from "@/prisma/db";
+import { createSessionToken } from "@/lib/session";
 
 export async function POST(request: Request) {
   try {
@@ -38,6 +40,23 @@ export async function POST(request: Request) {
         { status: 401 }
       );
     }
+
+    const token = await createSessionToken({
+      userId: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    });
+
+    const cookieStore = await cookies();
+
+    cookieStore.set("invity_session", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    });
 
     return NextResponse.json(
       {
