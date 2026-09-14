@@ -217,7 +217,7 @@ export default function GuestsPage() {
               {guests.map((guest) => (
                 <div
                   key={guest.id}
-                  className="flex flex-col gap-3 rounded-2xl border border-gray-100 p-5 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-4 rounded-2xl border border-gray-100 p-5 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
                     <p className="font-semibold text-gray-900">
@@ -231,9 +231,19 @@ export default function GuestsPage() {
                     )}
                   </div>
 
-                  <span className="w-fit rounded-full bg-yellow-50 px-3 py-1 text-xs font-semibold text-yellow-700">
-                    En attente de réponse
-                  </span>
+                  <div className="flex flex-col gap-2 sm:items-end">
+                    <span className="w-fit rounded-full bg-yellow-50 px-3 py-1 text-xs font-semibold text-yellow-700">
+                      En attente de réponse
+                    </span>
+
+                    <Link
+                      href={`/i/${guest.token}`}
+                      target="_blank"
+                      className="text-sm font-semibold text-pink-600 hover:text-pink-700"
+                    >
+                      Ouvrir l’invitation →
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
