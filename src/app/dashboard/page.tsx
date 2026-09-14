@@ -80,9 +80,10 @@ export default async function DashboardPage() {
           ) : (
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {events.map((event) => (
-                <div
+                <Link
                   key={event.id}
-                  className="rounded-3xl bg-white p-6 shadow-sm"
+                  href={`/dashboard/events/${event.id}`}
+                  className="block rounded-3xl bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
                 >
                   <div className="text-sm font-medium text-pink-600">
                     {event.eventDate}
@@ -109,7 +110,7 @@ export default async function DashboardPage() {
                       {event.description}
                     </p>
                   )}
-                </div>
+                </Link>
               ))}
             </div>
           )}
