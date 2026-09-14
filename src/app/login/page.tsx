@@ -2,8 +2,11 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,6 +45,9 @@ export default function LoginPage() {
 
       setSuccess("Connexion réussie !");
       form.reset();
+
+      router.push("/dashboard");
+      router.refresh();
     } catch {
       setError("Impossible de se connecter pour le moment.");
     } finally {
