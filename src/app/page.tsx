@@ -1,3 +1,4 @@
+import Link from "next/link";
 export default function Home() {
   return (
     <main className="min-h-screen bg-white text-gray-900">
@@ -8,13 +9,19 @@ export default function Home() {
         </div>
 
         <div className="flex items-center gap-4">
-          <button className="rounded-full px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
-            Se connecter
-          </button>
+          <Link
+  href="/login"
+  className="rounded-full px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+>
+  Se connecter
+</Link>
 
-          <button className="rounded-full bg-pink-600 px-5 py-2 text-sm font-medium text-white hover:bg-pink-700">
-            Créer mon invitation
-          </button>
+          <Link
+  href="/register"
+  className="rounded-full bg-pink-600 px-5 py-2 text-sm font-medium text-white hover:bg-pink-700"
+>
+  Créer mon invitation
+</Link>
         </div>
       </nav>
 
@@ -38,9 +45,12 @@ export default function Home() {
           </p>
 
           <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
-            <button className="rounded-full bg-pink-600 px-8 py-4 font-semibold text-white shadow-lg hover:bg-pink-700">
-              Créer mon invitation
-            </button>
+            <Link
+  href="/register"
+  className="rounded-full bg-pink-600 px-8 py-4 font-semibold text-white shadow-lg hover:bg-pink-700"
+>
+  Créer mon invitation
+</Link>
 
             <button className="rounded-full border border-gray-300 px-8 py-4 font-semibold text-gray-700 hover:bg-gray-50">
               Découvrir Invity
