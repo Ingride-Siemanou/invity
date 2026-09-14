@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifySessionToken } from "@/lib/session";
+import LogoutButton from "./logout-button";
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
@@ -19,13 +20,19 @@ export default async function DashboardPage() {
   return (
     <main className="min-h-screen bg-gray-50 px-6 py-12">
       <div className="mx-auto max-w-6xl">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Tableau de bord
-        </h1>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Tableau de bord
+            </h1>
 
-        <p className="mt-2 text-gray-600">
-          Bienvenue {session.firstName} sur votre espace Invity.
-        </p>
+            <p className="mt-2 text-gray-600">
+              Bienvenue {session.firstName} sur votre espace Invity.
+            </p>
+          </div>
+
+          <LogoutButton />
+        </div>
       </div>
     </main>
   );
