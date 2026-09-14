@@ -79,6 +79,15 @@ export default async function EventPage({ params }: EventPageProps) {
               {event.description}
             </p>
           )}
+
+          <div className="mt-8">
+            <Link
+              href={`/dashboard/events/${event.id}/guests`}
+              className="inline-block rounded-xl bg-pink-600 px-5 py-3 font-semibold text-white transition hover:bg-pink-700"
+            >
+              Gérer les invités
+            </Link>
+          </div>
         </div>
       </div>
     </main>
