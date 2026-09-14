@@ -1,4 +1,3 @@
-
 export default function RegisterPage() {
   return (
     <main className="min-h-screen bg-gray-50 px-6 py-12">
@@ -33,6 +32,7 @@ export default function RegisterPage() {
 
               <input
                 id="firstName"
+                name="firstName"
                 type="text"
                 placeholder="Jean"
                 className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
@@ -50,6 +50,7 @@ export default function RegisterPage() {
 
               <input
                 id="lastName"
+                name="lastName"
                 type="text"
                 placeholder="Dupont"
                 className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
@@ -67,6 +68,7 @@ export default function RegisterPage() {
 
               <input
                 id="email"
+                name="email"
                 type="email"
                 placeholder="jean@exemple.fr"
                 className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
@@ -84,6 +86,7 @@ export default function RegisterPage() {
 
               <input
                 id="password"
+                name="password"
                 type="password"
                 placeholder="••••••••"
                 className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
