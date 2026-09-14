@@ -24,4 +24,20 @@ model Event {
 
   userId      Int
   user        User     @relation(fields: [userId], references: [id])
+
+  guests      Guest[]
+}
+
+model Guest {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String?
+  token     String   @unique
+  status    String   @default("pending")
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+
+  eventId   Int
+  event     Event    @relation(fields: [eventId], references: [id])
 }
