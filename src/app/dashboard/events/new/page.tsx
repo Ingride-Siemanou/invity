@@ -1,6 +1,60 @@
+"use client";
+
+import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function NewEventPage() {
+  const router = useRouter();
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+
+    setError("");
+    setLoading(true);
+
+    const formData = new FormData(form);
+
+    const data = {
+      title: formData.get("title"),
+      eventDate: formData.get("date"),
+      eventTime: formData.get("time"),
+      location: formData.get("location"),
+      description: formData.get("description"),
+    };
+
+    try {
+      const response = await fetch("/api/events", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setError(result.error || "Une erreur est survenue.");
+        return;
+      }
+
+      form.reset();
+
+      router.push("/dashboard");
+      router.refresh();
+    } catch {
+      setError("Impossible de créer l’événement pour le moment.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-gray-50 px-6 py-12">
       <div className="mx-auto max-w-3xl">
@@ -22,7 +76,7 @@ export default function NewEventPage() {
             Commencez par renseigner les informations principales de votre événement.
           </p>
 
-          <form className="mt-8 space-y-5">
+          <form onSubmit={handleSubmit} className="mt-8 space-y-5">
             <div>
               <label
                 htmlFor="title"
@@ -35,6 +89,7 @@ export default function NewEventPage() {
                 id="title"
                 name="title"
                 type="text"
+                required
                 placeholder="Mariage de Jean et Marie"
                 className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
               />
@@ -52,6 +107,7 @@ export default function NewEventPage() {
                 id="date"
                 name="date"
                 type="date"
+                required
                 className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
               />
             </div>
@@ -106,11 +162,18 @@ export default function NewEventPage() {
               />
             </div>
 
+            {error && (
+              <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+                {error}
+              </div>
+            )}
+
             <button
               type="submit"
-              className="w-full rounded-xl bg-pink-600 py-3.5 font-semibold text-white transition hover:bg-pink-700"
+              disabled={loading}
+              className="w-full rounded-xl bg-pink-600 py-3.5 font-semibold text-white transition hover:bg-pink-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Créer l’événement
+              {loading ? "Création..." : "Créer l’événement"}
             </button>
           </form>
         </div>
