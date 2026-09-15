@@ -23,6 +23,10 @@ function getQuestionTypeLabel(type: string) {
     return "Oui / Non";
   }
 
+  if (type === "number") {
+    return "Nombre";
+  }
+
   return "Réponse courte";
 }
 
@@ -33,9 +37,11 @@ export default function QuestionsPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loadingQuestions, setLoadingQuestions] = useState(true);
   const [loading, setLoading] = useState(false);
+
   const [deletingQuestionId, setDeletingQuestionId] = useState<
     number | null
   >(null);
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -194,9 +200,7 @@ export default function QuestionsPage() {
           )
       );
 
-      if (
-        conditionQuestionId === String(question.id)
-      ) {
+      if (conditionQuestionId === String(question.id)) {
         setConditionQuestionId("");
         setConditionValue("");
       }
@@ -298,6 +302,10 @@ export default function QuestionsPage() {
                 <option value="yes_no">
                   Oui / Non
                 </option>
+
+                <option value="number">
+                  Nombre
+                </option>
               </select>
             </div>
 
@@ -314,8 +322,8 @@ export default function QuestionsPage() {
                 </span>
 
                 <span className="mt-1 block text-sm text-gray-500">
-                  L’invité devra répondre à cette question
-                  avant de pouvoir envoyer sa réponse.
+                  L’invité devra répondre à cette question avant
+                  de pouvoir envoyer sa réponse.
                 </span>
               </span>
             </label>
@@ -391,6 +399,7 @@ export default function QuestionsPage() {
                         <option value="">
                           Choisir une réponse
                         </option>
+
                         <option value="Oui">Oui</option>
                         <option value="Non">Non</option>
                       </select>

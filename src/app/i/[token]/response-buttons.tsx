@@ -17,6 +17,10 @@ type ResponseButtonsProps = {
   initialStatus: string;
   maxCompanions: number;
   initialCompanionCount: number;
+  childrenPolicy: string;
+  minimumChildAge: number | null;
+  initialChildrenCount: number;
+  initialChildrenAges: string | null;
   questions: Question[];
 };
 
@@ -27,6 +31,10 @@ export default function ResponseButtons({
   initialStatus,
   maxCompanions,
   initialCompanionCount,
+  childrenPolicy,
+  minimumChildAge,
+  initialChildrenCount,
+  initialChildrenAges,
   questions,
 }: ResponseButtonsProps) {
   const [status, setStatus] = useState(initialStatus);
@@ -34,6 +42,21 @@ export default function ResponseButtons({
   const [companionCount, setCompanionCount] = useState(
     initialCompanionCount
   );
+
+  const [childrenCount, setChildrenCount] = useState(
+    initialChildrenCount
+  );
+
+  const [childrenAges, setChildrenAges] = useState(
+    initialChildrenAges ?? ""
+  );
+
+  const [hasChildren, setHasChildren] = useState<boolean | null>(
+    initialChildrenCount > 0 ? true : null
+  );
+
+  const [showChildrenQuestion, setShowChildrenQuestion] =
+    useState(false);
 
   const [showCompanionQuestion, setShowCompanionQuestion] =
     useState(false);
@@ -44,6 +67,10 @@ export default function ResponseButtons({
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const childrenAreAllowed =
+    childrenPolicy === "allowed" ||
+    childrenPolicy === "minimum_age";
 
   function isQuestionVisible(question: Question) {
     if (
@@ -116,11 +143,53 @@ export default function ResponseButtons({
     return true;
   }
 
+  function validateChildren() {
+    if (!childrenAreAllowed) {
+      return true;
+    }
+
+    if (hasChildren === null) {
+      setError(
+        "Merci d’indiquer si vous serez accompagné(e) d’un ou plusieurs enfants."
+      );
+      return false;
+    }
+
+    if (hasChildren === false) {
+      return true;
+    }
+
+    if (
+      !Number.isInteger(childrenCount) ||
+      childrenCount < 1
+    ) {
+      setError(
+        "Merci d’indiquer le nombre d’enfants présents."
+      );
+      return false;
+    }
+
+    if (!childrenAges.trim()) {
+      setError("Merci d’indiquer l’âge des enfants.");
+      return false;
+    }
+
+    return true;
+  }
+
   async function sendResponse(
     newStatus: GuestStatus,
     companions = 0
   ) {
     if (!validateRequiredQuestions()) {
+      return;
+    }
+
+    if (
+      newStatus === "accepted" &&
+      childrenAreAllowed &&
+      !validateChildren()
+    ) {
       return;
     }
 
@@ -146,6 +215,27 @@ export default function ResponseButtons({
             status: newStatus,
             companionCount:
               newStatus === "accepted" ? companions : 0,
+
+            hasChildren:
+              newStatus === "accepted" &&
+              childrenAreAllowed
+                ? hasChildren
+                : false,
+
+            childrenCount:
+              newStatus === "accepted" &&
+              childrenAreAllowed &&
+              hasChildren === true
+                ? childrenCount
+                : 0,
+
+            childrenAges:
+              newStatus === "accepted" &&
+              childrenAreAllowed &&
+              hasChildren === true
+                ? childrenAges.trim()
+                : "",
+
             answers: formattedAnswers,
           }),
         }
@@ -164,6 +254,18 @@ export default function ResponseButtons({
 
       setStatus(newStatus);
       setCompanionCount(result.companionCount ?? 0);
+      setChildrenCount(result.childrenCount ?? 0);
+      setChildrenAges(result.childrenAges ?? "");
+
+      if ((result.childrenCount ?? 0) > 0) {
+        setHasChildren(true);
+      } else if (newStatus === "accepted" && childrenAreAllowed) {
+        setHasChildren(false);
+      } else {
+        setHasChildren(null);
+      }
+
+      setShowChildrenQuestion(false);
       setShowCompanionQuestion(false);
     } catch {
       setError("Impossible d’enregistrer votre réponse.");
@@ -177,8 +279,31 @@ export default function ResponseButtons({
       return;
     }
 
+    if (childrenAreAllowed) {
+      setError("");
+      setShowCompanionQuestion(false);
+      setShowChildrenQuestion(true);
+      return;
+    }
+
     if (maxCompanions > 0) {
       setError("");
+      setShowChildrenQuestion(false);
+      setShowCompanionQuestion(true);
+      return;
+    }
+
+    sendResponse("accepted", 0);
+  }
+
+  function continueAfterChildren() {
+    if (!validateChildren()) {
+      return;
+    }
+
+    if (maxCompanions > 0) {
+      setError("");
+      setShowChildrenQuestion(false);
       setShowCompanionQuestion(true);
       return;
     }
@@ -188,7 +313,15 @@ export default function ResponseButtons({
 
   function modifyResponse() {
     setStatus("pending");
+    setShowChildrenQuestion(false);
     setShowCompanionQuestion(false);
+
+    if (childrenAreAllowed) {
+      setHasChildren(
+        childrenCount > 0 ? true : false
+      );
+    }
+
     setError("");
   }
 
@@ -276,6 +409,25 @@ export default function ResponseButtons({
                 />
               )}
 
+              {question.type === "number" && (
+                <input
+                  id={`question-${question.id}`}
+                  type="number"
+                  min="0"
+                  step="1"
+                  inputMode="numeric"
+                  value={answers[question.id] || ""}
+                  onChange={(event) =>
+                    updateAnswer(
+                      question.id,
+                      event.target.value
+                    )
+                  }
+                  placeholder="0"
+                  className="mt-4 w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none focus:border-pink-400"
+                />
+              )}
+
               {question.type === "yes_no" && (
                 <div className="mt-4 flex flex-col gap-3 sm:flex-row">
                   <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 px-4 py-3">
@@ -332,8 +484,25 @@ export default function ResponseButtons({
             ✓ Vous avez confirmé votre présence.
           </p>
 
+          {childrenCount > 0 && (
+            <div className="mt-3 text-sm text-green-700">
+              <p>
+                {childrenCount === 1
+                  ? "Vous viendrez avec 1 enfant."
+                  : `Vous viendrez avec ${childrenCount} enfants.`}
+              </p>
+
+              {childrenAges && (
+                <p className="mt-1">
+                  Âge{childrenCount > 1 ? "s" : ""} :{" "}
+                  {childrenAges}
+                </p>
+              )}
+            </div>
+          )}
+
           {companionCount > 0 && (
-            <p className="mt-2 text-sm text-green-700">
+            <p className="mt-3 text-sm text-green-700">
               {companionCount === 1
                 ? "Vous viendrez avec 1 accompagnant."
                 : `Vous viendrez avec ${companionCount} accompagnants.`}
@@ -394,6 +563,152 @@ export default function ResponseButtons({
           >
             Modifier ma réponse
           </button>
+        </div>
+      </>
+    );
+  }
+
+  if (showChildrenQuestion) {
+    return (
+      <>
+        {renderQuestions()}
+
+        <div className="mt-10 rounded-2xl border border-pink-100 bg-pink-50 p-6">
+          <h2 className="text-xl font-bold text-gray-900">
+            Serez-vous accompagné(e) d’un ou plusieurs enfants ?
+          </h2>
+
+          {childrenPolicy === "minimum_age" &&
+            minimumChildAge !== null && (
+              <p className="mt-2 text-sm font-medium text-gray-600">
+                Les enfants sont invités à partir de{" "}
+                {minimumChildAge} ans.
+              </p>
+            )}
+
+          <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+            <button
+              type="button"
+              onClick={() => {
+                setHasChildren(true);
+
+                if (childrenCount < 1) {
+                  setChildrenCount(1);
+                }
+
+                setError("");
+              }}
+              disabled={loading}
+              className={`rounded-xl border px-6 py-3 font-semibold transition ${
+                hasChildren === true
+                  ? "border-pink-600 bg-pink-600 text-white"
+                  : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              Oui
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setHasChildren(false);
+                setChildrenCount(0);
+                setChildrenAges("");
+                setError("");
+              }}
+              disabled={loading}
+              className={`rounded-xl border px-6 py-3 font-semibold transition ${
+                hasChildren === false
+                  ? "border-pink-600 bg-pink-600 text-white"
+                  : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              Non
+            </button>
+          </div>
+
+          {hasChildren === true && (
+            <div className="mx-auto mt-6 max-w-md space-y-5 text-left">
+              <div>
+                <label
+                  htmlFor="childrenCount"
+                  className="block text-sm font-semibold text-gray-700"
+                >
+                  Combien d’enfants seront présents ?
+                </label>
+
+                <input
+                  id="childrenCount"
+                  type="number"
+                  min="1"
+                  step="1"
+                  inputMode="numeric"
+                  value={childrenCount}
+                  onChange={(event) => {
+                    setChildrenCount(
+                      Number(event.target.value)
+                    );
+                    setError("");
+                  }}
+                  className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 outline-none focus:border-pink-400"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="childrenAges"
+                  className="block text-sm font-semibold text-gray-700"
+                >
+                  Quel âge ont-ils ?
+                </label>
+
+                <input
+                  id="childrenAges"
+                  type="text"
+                  value={childrenAges}
+                  onChange={(event) => {
+                    setChildrenAges(event.target.value);
+                    setError("");
+                  }}
+                  placeholder="Ex. : 3 ans, 7 ans"
+                  className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 outline-none focus:border-pink-400"
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+            <button
+              type="button"
+              onClick={continueAfterChildren}
+              disabled={loading}
+              className="rounded-xl bg-pink-600 px-6 py-3 font-semibold text-white transition hover:bg-pink-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {maxCompanions > 0
+                ? "Continuer"
+                : loading
+                  ? "Enregistrement..."
+                  : "Confirmer ma présence"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowChildrenQuestion(false);
+                setError("");
+              }}
+              disabled={loading}
+              className="rounded-xl border border-gray-200 bg-white px-6 py-3 font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-50"
+            >
+              Retour
+            </button>
+          </div>
+
+          {error && (
+            <p className="mt-4 text-sm text-red-600">
+              {error}
+            </p>
+          )}
         </div>
       </>
     );
@@ -464,9 +779,15 @@ export default function ResponseButtons({
 
             <button
               type="button"
-              onClick={() =>
-                setShowCompanionQuestion(false)
-              }
+              onClick={() => {
+                setShowCompanionQuestion(false);
+
+                if (childrenAreAllowed) {
+                  setShowChildrenQuestion(true);
+                }
+
+                setError("");
+              }}
               disabled={loading}
               className="rounded-xl border border-gray-200 bg-white px-6 py-3 font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-50"
             >

@@ -74,12 +74,10 @@ export async function GET(
       return authorization.error;
     }
 
-    // Récupération des invités
     const guests = await db.orm.public.Guest
       .where({ eventId })
       .all();
 
-    // Récupération des questions de l'événement
     const questions = await db.orm.public.Question
       .where({ eventId })
       .all();
@@ -88,7 +86,6 @@ export async function GET(
       (a, b) => a.position - b.position
     );
 
-    // Récupération des réponses de chaque invité
     const guestsWithAnswers = await Promise.all(
       guests.map(async (guest) => {
         const answers = await db.orm.public.Answer
@@ -119,8 +116,13 @@ export async function GET(
           email: guest.email,
           status: guest.status,
           token: guest.token,
+
           maxCompanions: guest.maxCompanions,
           companionCount: guest.companionCount,
+
+          childrenCount: guest.childrenCount,
+          childrenAges: guest.childrenAges,
+
           answers: formattedAnswers,
         };
       })
@@ -200,8 +202,13 @@ export async function POST(
       email,
       token: randomUUID(),
       status: "pending",
+
       maxCompanions,
       companionCount: 0,
+
+      childrenCount: 0,
+      childrenAges: null,
+
       eventId,
     });
 
@@ -215,8 +222,13 @@ export async function POST(
           email: guest.email,
           status: guest.status,
           token: guest.token,
+
           maxCompanions: guest.maxCompanions,
           companionCount: guest.companionCount,
+
+          childrenCount: guest.childrenCount,
+          childrenAges: guest.childrenAges,
+
           answers: [],
         },
       },

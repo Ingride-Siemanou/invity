@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'8befcebc5a1e1a1b3c2f2f8f9795d153bb406af75568dc461b91608e70616de1'>;
+  StorageHashBase<'75cac1f861065c708a7584a4df35ca51483a641d8ce9f96a6805ccc97080ce09'>;
 export type ExecutionHash =
   ExecutionHashBase<'f04daf4d452569437cdd698110f4fedcbb7d53cc3def8da518d99f5150400902'>;
 export type ProfileHash =
@@ -274,8 +274,6 @@ export type FieldOutputTypes = {
       readonly status: CodecTypes['pg/text@1']['output'];
       readonly maxCompanions: CodecTypes['pg/int4@1']['output'];
       readonly companionCount: CodecTypes['pg/int4@1']['output'];
-      readonly childrenCount: CodecTypes['pg/int4@1']['output'];
-      readonly childrenAges: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly eventId: CodecTypes['pg/int4@1']['output'];
@@ -337,8 +335,6 @@ export type FieldInputTypes = {
       readonly status: CodecTypes['pg/text@1']['input'];
       readonly maxCompanions: CodecTypes['pg/int4@1']['input'];
       readonly companionCount: CodecTypes['pg/int4@1']['input'];
-      readonly childrenCount: CodecTypes['pg/int4@1']['input'];
-      readonly childrenAges: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly eventId: CodecTypes['pg/int4@1']['input'];
@@ -392,8 +388,6 @@ export type StorageColumnTypes = {
       readonly userId: CodecTypes['pg/int4@1']['output'];
     };
     readonly guest: {
-      readonly childrenAges: CodecTypes['pg/text@1']['output'] | null;
-      readonly childrenCount: CodecTypes['pg/int4@1']['output'];
       readonly companionCount: CodecTypes['pg/int4@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly email: CodecTypes['pg/text@1']['output'] | null;
@@ -455,8 +449,6 @@ export type StorageColumnInputTypes = {
       readonly userId: CodecTypes['pg/int4@1']['input'];
     };
     readonly guest: {
-      readonly childrenAges: CodecTypes['pg/text@1']['input'] | null;
-      readonly childrenCount: CodecTypes['pg/int4@1']['input'];
       readonly companionCount: CodecTypes['pg/int4@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly email: CodecTypes['pg/text@1']['input'] | null;
@@ -533,8 +525,6 @@ export namespace Models {
     status: CodecTypes['pg/text@1']['output'];
     maxCompanions: CodecTypes['pg/int4@1']['output'];
     companionCount: CodecTypes['pg/int4@1']['output'];
-    childrenCount: CodecTypes['pg/int4@1']['output'];
-    childrenAges: CodecTypes['pg/text@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     eventId: CodecTypes['pg/int4@1']['output'];
@@ -838,20 +828,6 @@ type ContractBase = Omit<
                     readonly kind: 'literal';
                     readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
                   };
-                };
-                readonly childrenCount: {
-                  readonly nativeType: 'int4';
-                  readonly codecId: 'pg/int4@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
-                  };
-                };
-                readonly childrenAges: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
                 };
                 readonly createdAt: {
                   readonly nativeType: 'timestamptz';
@@ -1279,14 +1255,6 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
               };
-              readonly childrenCount: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
-              };
-              readonly childrenAges: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
               readonly createdAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -1343,8 +1311,6 @@ type ContractBase = Omit<
                 readonly status: { readonly column: 'status' };
                 readonly maxCompanions: { readonly column: 'maxCompanions' };
                 readonly companionCount: { readonly column: 'companionCount' };
-                readonly childrenCount: { readonly column: 'childrenCount' };
-                readonly childrenAges: { readonly column: 'childrenAges' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
                 readonly eventId: { readonly column: 'eventId' };

@@ -323,6 +323,20 @@
           },
           "Guest": {
             "fields": {
+              "childrenAges": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "childrenCount": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "companionCount": {
                 "nullable": false,
                 "type": {
@@ -436,6 +450,12 @@
             },
             "storage": {
               "fields": {
+                "childrenAges": {
+                  "column": "childrenAges"
+                },
+                "childrenCount": {
+                  "column": "childrenCount"
+                },
                 "companionCount": {
                   "column": "companionCount"
                 },
@@ -947,6 +967,20 @@
             },
             "guest": {
               "columns": {
+                "childrenAges": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "childrenCount": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
                 "companionCount": {
                   "codecId": "pg/int4@1",
                   "default": {
@@ -1239,7 +1273,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "75cac1f861065c708a7584a4df35ca51483a641d8ce9f96a6805ccc97080ce09"
+    "storageHash": "8befcebc5a1e1a1b3c2f2f8f9795d153bb406af75568dc461b91608e70616de1"
   },
   "execution": {
     "executionHash": "f04daf4d452569437cdd698110f4fedcbb7d53cc3def8da518d99f5150400902",

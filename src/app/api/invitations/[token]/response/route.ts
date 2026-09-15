@@ -31,10 +31,22 @@ export async function POST(
       );
     }
 
+    // 2. Charger l'événement pour connaître ses règles
+    const event = await db.orm.public.Event
+      .where({ id: guest.eventId })
+      .first();
+
+    if (!event) {
+      return NextResponse.json(
+        { error: "Événement introuvable." },
+        { status: 404 }
+      );
+    }
+
     const body = await request.json();
     const status = body.status;
 
-    // 2. Vérifier la réponse de présence
+    // 3. Vérifier la réponse de présence
     if (
       status !== "accepted" &&
       status !== "declined" &&
@@ -46,7 +58,7 @@ export async function POST(
       );
     }
 
-    // 3. Vérifier le nombre d'accompagnants
+    // 4. Vérifier le nombre d'accompagnants
     let companionCount = 0;
 
     if (status === "accepted") {
@@ -66,7 +78,76 @@ export async function POST(
       }
     }
 
-    // 4. Charger les questions de l'événement
+    // 5. Vérifier les informations concernant les enfants
+    let childrenCount = 0;
+    let childrenAges: string | null = null;
+
+    const childrenAreAllowed =
+      event.childrenPolicy === "allowed" ||
+      event.childrenPolicy === "minimum_age";
+
+    if (status === "accepted" && childrenAreAllowed) {
+      const hasChildren = body.hasChildren;
+
+      if (
+        hasChildren !== true &&
+        hasChildren !== false
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              "Merci d’indiquer si vous serez accompagné(e) d’un ou plusieurs enfants.",
+          },
+          { status: 400 }
+        );
+      }
+
+      if (hasChildren === true) {
+        childrenCount = Number(body.childrenCount);
+        childrenAges =
+          typeof body.childrenAges === "string"
+            ? body.childrenAges.trim()
+            : "";
+
+        if (
+          !Number.isInteger(childrenCount) ||
+          childrenCount < 1
+        ) {
+          return NextResponse.json(
+            {
+              error:
+                "Merci d’indiquer un nombre d’enfants valide.",
+            },
+            { status: 400 }
+          );
+        }
+
+        if (!childrenAges) {
+          return NextResponse.json(
+            {
+              error:
+                "Merci d’indiquer l’âge des enfants.",
+            },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
+    // Si les enfants sont interdits, si l'invité est absent,
+    // s'il ne sait pas encore ou s'il répond "Non",
+    // les anciennes informations concernant les enfants
+    // sont automatiquement effacées.
+    if (
+      status !== "accepted" ||
+      !childrenAreAllowed ||
+      body.hasChildren !== true
+    ) {
+      childrenCount = 0;
+      childrenAges = null;
+    }
+
+    // 6. Charger les questions personnalisées de l'événement
     const questions = await db.orm.public.Question
       .where({ eventId: guest.eventId })
       .all();
@@ -102,7 +183,7 @@ export async function POST(
           }))
       : [];
 
-    // 5. Vérifier que les réponses appartiennent bien
+    // 7. Vérifier que les réponses appartiennent bien
     // à cet événement
     for (const submittedAnswer of submittedAnswers) {
       const questionExists = questions.some(
@@ -159,8 +240,8 @@ export async function POST(
       return parentValue === question.conditionValue;
     }
 
-    // 6. Vérifier uniquement les questions obligatoires
-    // qui sont réellement visibles
+    // 8. Vérifier uniquement les questions personnalisées
+    // obligatoires qui sont réellement visibles
     for (const question of questions) {
       if (!isQuestionVisible(question)) {
         continue;
@@ -182,18 +263,20 @@ export async function POST(
       }
     }
 
-    // 7. Enregistrer la présence et les accompagnants
+    // 9. Enregistrer la présence, les accompagnants
+    // et les informations concernant les enfants
     await db.orm.public.Guest
       .where({ id: guest.id })
       .update({
         status,
         companionCount,
+        childrenCount,
+        childrenAges,
       });
 
-    // 8. Enregistrer les réponses visibles.
+    // 10. Enregistrer les réponses personnalisées visibles.
     // Si une question devient cachée, son ancienne réponse
-    // est vidée afin de ne pas conserver une information
-    // qui n'est plus applicable.
+    // est vidée.
     for (const question of questions) {
       const visible = isQuestionVisible(question);
 
@@ -234,6 +317,8 @@ export async function POST(
         message: "Réponse enregistrée avec succès.",
         status,
         companionCount,
+        childrenCount,
+        childrenAges,
       },
       { status: 200 }
     );

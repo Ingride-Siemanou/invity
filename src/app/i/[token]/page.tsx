@@ -125,6 +125,18 @@ export default async function InvitationPage({
                 </div>
               )}
 
+            {event.childrenPolicy === "allowed" && (
+              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+                <p className="font-semibold text-gray-900">
+                  👶 Enfants
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-gray-600">
+                  Les enfants sont les bienvenus à cet événement.
+                </p>
+              </div>
+            )}
+
             {event.dressCode && (
               <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
                 <p className="font-semibold text-gray-900">
@@ -155,6 +167,10 @@ export default async function InvitationPage({
             initialStatus={guest.status}
             maxCompanions={guest.maxCompanions}
             initialCompanionCount={guest.companionCount}
+            childrenPolicy={event.childrenPolicy}
+            minimumChildAge={event.minimumChildAge}
+            initialChildrenCount={guest.childrenCount}
+            initialChildrenAges={guest.childrenAges}
             questions={sortedQuestions.map((question) => ({
               id: question.id,
               label: question.label,

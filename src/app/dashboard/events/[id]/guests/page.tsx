@@ -21,6 +21,8 @@ type Guest = {
   token: string;
   maxCompanions: number;
   companionCount: number;
+  childrenCount: number;
+  childrenAges: string | null;
   answers: GuestAnswer[];
 };
 
@@ -169,7 +171,10 @@ export default function GuestsPage() {
     .filter((guest) => guest.status === "accepted")
     .reduce(
       (total, guest) =>
-        total + 1 + guest.companionCount,
+        total +
+        1 +
+        guest.companionCount +
+        guest.childrenCount,
       0
     );
 
@@ -193,8 +198,7 @@ export default function GuestsPage() {
           </h1>
 
           <p className="mt-2 text-gray-500">
-            Ajoutez vos invités et suivez leurs
-            réponses.
+            Ajoutez vos invités et suivez leurs réponses.
           </p>
         </div>
 
@@ -386,104 +390,125 @@ export default function GuestsPage() {
             </p>
           ) : (
             <div className="mt-6 space-y-4">
-              {guests.map((guest) => (
-                <div
-                  key={guest.id}
-                  className="rounded-2xl border border-gray-100 p-5"
-                >
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <p className="font-semibold text-gray-900">
-                        {guest.firstName}{" "}
-                        {guest.lastName}
-                      </p>
+              {guests.map((guest) => {
+                const totalForInvitation =
+                  1 +
+                  guest.companionCount +
+                  guest.childrenCount;
 
-                      {guest.email && (
-                        <p className="mt-1 text-sm text-gray-500">
-                          {guest.email}
-                        </p>
-                      )}
-
-                      <p className="mt-2 text-sm text-gray-500">
-                        Accompagnants autorisés :{" "}
-                        {guest.maxCompanions}
-                      </p>
-
-                      {guest.status === "accepted" && (
-                        <p className="mt-1 text-sm font-medium text-green-700">
-                          {guest.companionCount === 0
-                            ? "Vient seul(e)"
-                            : guest.companionCount === 1
-                              ? "Vient avec 1 accompagnant"
-                              : `Vient avec ${guest.companionCount} accompagnants`}
-                        </p>
-                      )}
-
-                      {guest.status === "accepted" && (
-                        <p className="mt-1 text-xs text-gray-500">
-                          Total pour cette invitation :{" "}
-                          {1 + guest.companionCount}{" "}
-                          personne
-                          {1 + guest.companionCount > 1
-                            ? "s"
-                            : ""}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-2 sm:items-end">
-                      <span
-                        className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${getStatusClass(
-                          guest.status
-                        )}`}
-                      >
-                        {getStatusLabel(guest.status)}
-                      </span>
-
-                      <Link
-                        href={`/i/${guest.token}`}
-                        target="_blank"
-                        className="text-sm font-semibold text-pink-600 hover:text-pink-700"
-                      >
-                        Ouvrir l’invitation →
-                      </Link>
-                    </div>
-                  </div>
-
-                  {guest.answers &&
-                    guest.answers.length > 0 && (
-                      <div className="mt-5 border-t border-gray-100 pt-5">
-                        <p className="text-sm font-semibold text-gray-900">
-                          Réponses personnalisées
+                return (
+                  <div
+                    key={guest.id}
+                    className="rounded-2xl border border-gray-100 p-5"
+                  >
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <p className="font-semibold text-gray-900">
+                          {guest.firstName}{" "}
+                          {guest.lastName}
                         </p>
 
-                        <div className="mt-3 space-y-3">
-                          {guest.answers.map(
-                            (answer) => (
-                              <div
-                                key={
-                                  answer.questionId
-                                }
-                                className="rounded-xl bg-gray-50 px-4 py-3"
-                              >
-                                <p className="text-sm font-medium text-gray-600">
-                                  {
-                                    answer.questionLabel
-                                  }
+                        {guest.email && (
+                          <p className="mt-1 text-sm text-gray-500">
+                            {guest.email}
+                          </p>
+                        )}
+
+                        <p className="mt-2 text-sm text-gray-500">
+                          Accompagnants autorisés :{" "}
+                          {guest.maxCompanions}
+                        </p>
+
+                        {guest.status === "accepted" && (
+                          <>
+                            <p className="mt-1 text-sm font-medium text-green-700">
+                              {guest.companionCount === 0
+                                ? "Vient seul(e)"
+                                : guest.companionCount === 1
+                                  ? "Vient avec 1 accompagnant"
+                                  : `Vient avec ${guest.companionCount} accompagnants`}
+                            </p>
+
+                            {guest.childrenCount > 0 && (
+                              <div className="mt-3 rounded-xl bg-pink-50 px-4 py-3">
+                                <p className="text-sm font-semibold text-pink-700">
+                                  {guest.childrenCount === 1
+                                    ? "👶 1 enfant"
+                                    : `👶 ${guest.childrenCount} enfants`}
                                 </p>
 
-                                <p className="mt-1 font-semibold text-gray-900">
-                                  {answer.value ||
-                                    "Pas de réponse"}
-                                </p>
+                                {guest.childrenAges && (
+                                  <p className="mt-1 text-sm text-gray-600">
+                                    {guest.childrenCount === 1
+                                      ? "Âge"
+                                      : "Âges"}{" "}
+                                    : {guest.childrenAges}
+                                  </p>
+                                )}
                               </div>
-                            )
-                          )}
-                        </div>
+                            )}
+
+                            <p className="mt-2 text-xs text-gray-500">
+                              Total pour cette invitation :{" "}
+                              {totalForInvitation} personne
+                              {totalForInvitation > 1
+                                ? "s"
+                                : ""}
+                            </p>
+                          </>
+                        )}
                       </div>
-                    )}
-                </div>
-              ))}
+
+                      <div className="flex flex-col gap-2 sm:items-end">
+                        <span
+                          className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${getStatusClass(
+                            guest.status
+                          )}`}
+                        >
+                          {getStatusLabel(guest.status)}
+                        </span>
+
+                        <Link
+                          href={`/i/${guest.token}`}
+                          target="_blank"
+                          className="text-sm font-semibold text-pink-600 hover:text-pink-700"
+                        >
+                          Ouvrir l’invitation →
+                        </Link>
+                      </div>
+                    </div>
+
+                    {guest.answers &&
+                      guest.answers.length > 0 && (
+                        <div className="mt-5 border-t border-gray-100 pt-5">
+                          <p className="text-sm font-semibold text-gray-900">
+                            Réponses personnalisées
+                          </p>
+
+                          <div className="mt-3 space-y-3">
+                            {guest.answers.map(
+                              (answer) => (
+                                <div
+                                  key={answer.questionId}
+                                  className="rounded-xl bg-gray-50 px-4 py-3"
+                                >
+                                  <p className="text-sm font-medium text-gray-600">
+                                    {answer.questionLabel}
+                                  </p>
+
+                                  <p className="mt-1 font-semibold text-gray-900">
+                                    {answer.value ||
+                                      "Pas de réponse"}
+                                  </p>
+                                </div>
+                              )
+                            )}
+                          </div>
+                        </div>
+                      )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

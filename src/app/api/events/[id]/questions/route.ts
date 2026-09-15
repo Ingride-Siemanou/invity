@@ -159,6 +159,7 @@ export async function POST(
       "text",
       "textarea",
       "yes_no",
+      "number",
     ];
 
     if (!label) {
