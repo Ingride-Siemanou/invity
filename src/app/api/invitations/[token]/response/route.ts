@@ -28,7 +28,11 @@ export async function POST(
     const body = await request.json();
     const status = body.status;
 
-    if (status !== "accepted" && status !== "declined") {
+    if (
+      status !== "accepted" &&
+      status !== "declined" &&
+      status !== "maybe"
+    ) {
       return NextResponse.json(
         { error: "Réponse invalide." },
         { status: 400 }

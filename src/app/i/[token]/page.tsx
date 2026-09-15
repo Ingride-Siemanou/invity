@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
+import ResponseButtons from "./response-buttons";
 
 type InvitationPageProps = {
   params: Promise<{
@@ -74,6 +75,11 @@ export default async function InvitationPage({
               {event.description}
             </p>
           )}
+
+          <ResponseButtons
+            token={guest.token}
+            initialStatus={guest.status}
+          />
 
           <div className="mt-10 border-t border-gray-100 pt-6">
             <p className="text-sm text-gray-400">
