@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'f828c18ef099e76169e8e512079c5c470f20cc7f12d54802fcd49c68a3de8f90'>;
+  StorageHashBase<'1fadb471bb9bebe9c8ce6859b9324451ce53d3aef2d6918c2a3b1a049c09743b'>;
 export type ExecutionHash =
   ExecutionHashBase<'f60c40dee085ec0408a255c3673ab1a28826598b5e312b246842c1906f2d4f2f'>;
 export type ProfileHash =
@@ -249,6 +249,10 @@ export type FieldOutputTypes = {
       readonly eventTime: CodecTypes['pg/text@1']['output'] | null;
       readonly location: CodecTypes['pg/text@1']['output'] | null;
       readonly description: CodecTypes['pg/text@1']['output'] | null;
+      readonly childrenPolicy: CodecTypes['pg/text@1']['output'];
+      readonly minimumChildAge: CodecTypes['pg/int4@1']['output'] | null;
+      readonly dressCode: CodecTypes['pg/text@1']['output'] | null;
+      readonly importantInfo: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly userId: CodecTypes['pg/int4@1']['output'];
@@ -286,6 +290,10 @@ export type FieldInputTypes = {
       readonly eventTime: CodecTypes['pg/text@1']['input'] | null;
       readonly location: CodecTypes['pg/text@1']['input'] | null;
       readonly description: CodecTypes['pg/text@1']['input'] | null;
+      readonly childrenPolicy: CodecTypes['pg/text@1']['input'];
+      readonly minimumChildAge: CodecTypes['pg/int4@1']['input'] | null;
+      readonly dressCode: CodecTypes['pg/text@1']['input'] | null;
+      readonly importantInfo: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly userId: CodecTypes['pg/int4@1']['input'];
@@ -317,12 +325,16 @@ export type FieldInputTypes = {
 export type StorageColumnTypes = {
   readonly public: {
     readonly event: {
+      readonly childrenPolicy: CodecTypes['pg/text@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly description: CodecTypes['pg/text@1']['output'] | null;
+      readonly dressCode: CodecTypes['pg/text@1']['output'] | null;
       readonly eventDate: CodecTypes['pg/text@1']['output'];
       readonly eventTime: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/int4@1']['output'];
+      readonly importantInfo: CodecTypes['pg/text@1']['output'] | null;
       readonly location: CodecTypes['pg/text@1']['output'] | null;
+      readonly minimumChildAge: CodecTypes['pg/int4@1']['output'] | null;
       readonly title: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly userId: CodecTypes['pg/int4@1']['output'];
@@ -354,12 +366,16 @@ export type StorageColumnTypes = {
 export type StorageColumnInputTypes = {
   readonly public: {
     readonly event: {
+      readonly childrenPolicy: CodecTypes['pg/text@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly description: CodecTypes['pg/text@1']['input'] | null;
+      readonly dressCode: CodecTypes['pg/text@1']['input'] | null;
       readonly eventDate: CodecTypes['pg/text@1']['input'];
       readonly eventTime: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/int4@1']['input'];
+      readonly importantInfo: CodecTypes['pg/text@1']['input'] | null;
       readonly location: CodecTypes['pg/text@1']['input'] | null;
+      readonly minimumChildAge: CodecTypes['pg/int4@1']['input'] | null;
       readonly title: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly userId: CodecTypes['pg/int4@1']['input'];
@@ -408,6 +424,10 @@ export namespace Models {
     eventTime: CodecTypes['pg/text@1']['output'] | null;
     location: CodecTypes['pg/text@1']['output'] | null;
     description: CodecTypes['pg/text@1']['output'] | null;
+    childrenPolicy: CodecTypes['pg/text@1']['output'];
+    minimumChildAge: CodecTypes['pg/int4@1']['output'] | null;
+    dressCode: CodecTypes['pg/text@1']['output'] | null;
+    importantInfo: CodecTypes['pg/text@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     userId: CodecTypes['pg/int4@1']['output'];
@@ -490,6 +510,30 @@ type ContractBase = Omit<
                   readonly nullable: true;
                 };
                 readonly description: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly childrenPolicy: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'allowed'>;
+                  };
+                };
+                readonly minimumChildAge: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
+                readonly dressCode: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly importantInfo: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
@@ -729,6 +773,22 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly childrenPolicy: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly minimumChildAge: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly dressCode: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly importantInfo: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly createdAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -780,6 +840,10 @@ type ContractBase = Omit<
                 readonly eventTime: { readonly column: 'eventTime' };
                 readonly location: { readonly column: 'location' };
                 readonly description: { readonly column: 'description' };
+                readonly childrenPolicy: { readonly column: 'childrenPolicy' };
+                readonly minimumChildAge: { readonly column: 'minimumChildAge' };
+                readonly dressCode: { readonly column: 'dressCode' };
+                readonly importantInfo: { readonly column: 'importantInfo' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
                 readonly userId: { readonly column: 'userId' };

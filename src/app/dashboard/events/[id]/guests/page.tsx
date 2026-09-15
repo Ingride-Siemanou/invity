@@ -11,6 +11,8 @@ type Guest = {
   email: string | null;
   status: string;
   token: string;
+  maxCompanions: number;
+  companionCount: number;
 };
 
 function getStatusLabel(status: string) {
@@ -62,7 +64,9 @@ export default function GuestsPage() {
         const result = await response.json();
 
         if (!response.ok) {
-          setError(result.error || "Impossible de charger les invités.");
+          setError(
+            result.error || "Impossible de charger les invités."
+          );
           return;
         }
 
@@ -92,6 +96,7 @@ export default function GuestsPage() {
       firstName: formData.get("firstName"),
       lastName: formData.get("lastName"),
       email: formData.get("email"),
+      maxCompanions: Number(formData.get("maxCompanions")),
     };
 
     try {
@@ -110,7 +115,11 @@ export default function GuestsPage() {
         return;
       }
 
-      setGuests((currentGuests) => [...currentGuests, result.guest]);
+      setGuests((currentGuests) => [
+        ...currentGuests,
+        result.guest,
+      ]);
+
       setSuccess("Invité ajouté avec succès !");
       form.reset();
     } catch {
@@ -181,7 +190,9 @@ export default function GuestsPage() {
           </div>
 
           <div className="rounded-2xl bg-white p-5 shadow-sm">
-            <p className="text-sm text-gray-500">En attente</p>
+            <p className="text-sm text-gray-500">
+              En attente
+            </p>
             <p className="mt-2 text-3xl font-bold text-gray-700">
               {pendingCount}
             </p>
@@ -251,6 +262,30 @@ export default function GuestsPage() {
               </p>
             </div>
 
+            <div>
+              <label
+                htmlFor="maxCompanions"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
+                Nombre maximum d’accompagnants
+              </label>
+
+              <input
+                id="maxCompanions"
+                name="maxCompanions"
+                type="number"
+                min="0"
+                max="20"
+                defaultValue="0"
+                required
+                className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
+              />
+
+              <p className="mt-2 text-xs text-gray-400">
+                Mettez 0 si cet invité ne peut pas venir accompagné.
+              </p>
+            </div>
+
             {error && (
               <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
                 {error}
@@ -280,7 +315,8 @@ export default function GuestsPage() {
             </h2>
 
             <span className="text-sm text-gray-500">
-              {guests.length} invité{guests.length > 1 ? "s" : ""}
+              {guests.length} invité
+              {guests.length > 1 ? "s" : ""}
             </span>
           </div>
 
@@ -309,6 +345,11 @@ export default function GuestsPage() {
                         {guest.email}
                       </p>
                     )}
+
+                    <p className="mt-2 text-sm text-gray-500">
+                      Accompagnants autorisés :{" "}
+                      {guest.maxCompanions}
+                    </p>
                   </div>
 
                   <div className="flex flex-col gap-2 sm:items-end">

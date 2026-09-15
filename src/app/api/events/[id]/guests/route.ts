@@ -87,6 +87,8 @@ export async function GET(
           email: guest.email,
           status: guest.status,
           token: guest.token,
+          maxCompanions: guest.maxCompanions,
+          companionCount: guest.companionCount,
         })),
       },
       { status: 200 }
@@ -95,7 +97,10 @@ export async function GET(
     console.error("Erreur récupération invités :", error);
 
     return NextResponse.json(
-      { error: "Une erreur est survenue lors de la récupération des invités." },
+      {
+        error:
+          "Une erreur est survenue lors de la récupération des invités.",
+      },
       { status: 500 }
     );
   }
@@ -127,10 +132,25 @@ export async function POST(
     const firstName = body.firstName?.trim();
     const lastName = body.lastName?.trim();
     const email = body.email?.trim().toLowerCase() || null;
+    const maxCompanions = Number(body.maxCompanions ?? 0);
 
     if (!firstName || !lastName) {
       return NextResponse.json(
         { error: "Le prénom et le nom sont obligatoires." },
+        { status: 400 }
+      );
+    }
+
+    if (
+      !Number.isInteger(maxCompanions) ||
+      maxCompanions < 0 ||
+      maxCompanions > 20
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Le nombre d’accompagnants doit être compris entre 0 et 20.",
+        },
         { status: 400 }
       );
     }
@@ -141,6 +161,8 @@ export async function POST(
       email,
       token: randomUUID(),
       status: "pending",
+      maxCompanions,
+      companionCount: 0,
       eventId,
     });
 
@@ -154,6 +176,8 @@ export async function POST(
           email: guest.email,
           status: guest.status,
           token: guest.token,
+          maxCompanions: guest.maxCompanions,
+          companionCount: guest.companionCount,
         },
       },
       { status: 201 }
@@ -162,7 +186,10 @@ export async function POST(
     console.error("Erreur ajout invité :", error);
 
     return NextResponse.json(
-      { error: "Une erreur est survenue lors de l’ajout de l’invité." },
+      {
+        error:
+          "Une erreur est survenue lors de l’ajout de l’invité.",
+      },
       { status: 500 }
     );
   }

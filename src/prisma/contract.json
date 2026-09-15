@@ -23,6 +23,13 @@
         "models": {
           "Event": {
             "fields": {
+              "childrenPolicy": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -31,6 +38,13 @@
                 }
               },
               "description": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "dressCode": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
@@ -58,10 +72,24 @@
                   "kind": "scalar"
                 }
               },
+              "importantInfo": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "location": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "minimumChildAge": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -122,11 +150,17 @@
             },
             "storage": {
               "fields": {
+                "childrenPolicy": {
+                  "column": "childrenPolicy"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
                 "description": {
                   "column": "description"
+                },
+                "dressCode": {
+                  "column": "dressCode"
                 },
                 "eventDate": {
                   "column": "eventDate"
@@ -137,8 +171,14 @@
                 "id": {
                   "column": "id"
                 },
+                "importantInfo": {
+                  "column": "importantInfo"
+                },
                 "location": {
                   "column": "location"
+                },
+                "minimumChildAge": {
+                  "column": "minimumChildAge"
                 },
                 "title": {
                   "column": "title"
@@ -400,6 +440,15 @@
           "table": {
             "event": {
               "columns": {
+                "childrenPolicy": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "allowed"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-string@1",
                   "default": {
@@ -410,6 +459,11 @@
                   "nullable": false
                 },
                 "description": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "dressCode": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
@@ -433,9 +487,19 @@
                   "nativeType": "int4",
                   "nullable": false
                 },
+                "importantInfo": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "location": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
+                  "nullable": true
+                },
+                "minimumChildAge": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
                   "nullable": true
                 },
                 "title": {
@@ -675,7 +739,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "f828c18ef099e76169e8e512079c5c470f20cc7f12d54802fcd49c68a3de8f90"
+    "storageHash": "1fadb471bb9bebe9c8ce6859b9324451ce53d3aef2d6918c2a3b1a049c09743b"
   },
   "execution": {
     "executionHash": "f60c40dee085ec0408a255c3673ab1a28826598b5e312b246842c1906f2d4f2f",
