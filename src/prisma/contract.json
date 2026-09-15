@@ -156,6 +156,13 @@
           },
           "Guest": {
             "fields": {
+              "companionCount": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -195,6 +202,13 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "maxCompanions": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -240,6 +254,9 @@
             },
             "storage": {
               "fields": {
+                "companionCount": {
+                  "column": "companionCount"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
@@ -257,6 +274,9 @@
                 },
                 "lastName": {
                   "column": "lastName"
+                },
+                "maxCompanions": {
+                  "column": "maxCompanions"
                 },
                 "status": {
                   "column": "status"
@@ -471,6 +491,15 @@
             },
             "guest": {
               "columns": {
+                "companionCount": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-string@1",
                   "default": {
@@ -507,6 +536,15 @@
                 "lastName": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
+                  "nullable": false
+                },
+                "maxCompanions": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
                   "nullable": false
                 },
                 "status": {
@@ -637,7 +675,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "f1fa24eca40329000fd63167c8fe2227c217d2af43412b0d4a093efe56933aad"
+    "storageHash": "f828c18ef099e76169e8e512079c5c470f20cc7f12d54802fcd49c68a3de8f90"
   },
   "execution": {
     "executionHash": "f60c40dee085ec0408a255c3673ab1a28826598b5e312b246842c1906f2d4f2f",

@@ -35,6 +35,8 @@ model Guest {
   email     String?
   token     String   @unique
   status    String   @default("pending")
+  maxCompanions Int @default(0)
+  companionCount Int @default(0)
   createdAt TimestamptzString @default(now())
   updatedAt temporal.updatedAtString()
 
