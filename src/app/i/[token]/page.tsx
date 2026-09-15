@@ -145,6 +145,8 @@ export default async function InvitationPage({
           <ResponseButtons
             token={guest.token}
             initialStatus={guest.status}
+            maxCompanions={guest.maxCompanions}
+            initialCompanionCount={guest.companionCount}
           />
 
           <div className="mt-10 border-t border-gray-100 pt-6">

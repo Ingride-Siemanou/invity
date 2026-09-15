@@ -39,16 +39,37 @@ export async function POST(
       );
     }
 
+    let companionCount = 0;
+
+    if (status === "accepted") {
+      companionCount = Number(body.companionCount ?? 0);
+
+      if (
+        !Number.isInteger(companionCount) ||
+        companionCount < 0 ||
+        companionCount > guest.maxCompanions
+      ) {
+        return NextResponse.json(
+          {
+            error: `Le nombre d’accompagnants doit être compris entre 0 et ${guest.maxCompanions}.`,
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     await db.orm.public.Guest
       .where({ id: guest.id })
       .update({
         status,
+        companionCount,
       });
 
     return NextResponse.json(
       {
         message: "Réponse enregistrée avec succès.",
         status,
+        companionCount,
       },
       { status: 200 }
     );
