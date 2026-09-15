@@ -76,6 +76,72 @@ export default async function InvitationPage({
             </p>
           )}
 
+          <div className="mt-8 space-y-4 text-left">
+            {guest.maxCompanions > 0 && (
+              <div className="rounded-2xl border border-pink-100 bg-pink-50 p-5">
+                <p className="font-semibold text-gray-900">
+                  👥 Accompagnant
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-gray-600">
+                  {guest.maxCompanions === 1
+                    ? "Votre invitation vous permet de venir avec 1 accompagnant."
+                    : `Votre invitation vous permet de venir avec jusqu’à ${guest.maxCompanions} accompagnants.`}
+                </p>
+              </div>
+            )}
+
+            {event.childrenPolicy === "not_allowed" && (
+              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+                <p className="font-semibold text-gray-900">
+                  👶 Enfants
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-gray-600">
+                  Cet événement est réservé aux adultes.
+                </p>
+              </div>
+            )}
+
+            {event.childrenPolicy === "minimum_age" &&
+              event.minimumChildAge !== null && (
+                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+                  <p className="font-semibold text-gray-900">
+                    👶 Enfants
+                  </p>
+
+                  <p className="mt-2 text-sm leading-6 text-gray-600">
+                    Les enfants sont invités à partir de{" "}
+                    {event.minimumChildAge} ans.
+                  </p>
+                </div>
+              )}
+
+            {event.dressCode && (
+              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+                <p className="font-semibold text-gray-900">
+                  👗 Dress code
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-gray-600">
+                  {event.dressCode}
+                </p>
+              </div>
+            )}
+
+            {event.importantInfo && (
+              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+                <p className="font-semibold text-gray-900">
+                  ℹ️ Informations importantes
+                </p>
+
+                <p className="mt-2 whitespace-pre-line text-sm leading-6 text-gray-600">
+                  {event.importantInfo}
+                </p>
+              </div>
+            )}
+          </div>
+
           <ResponseButtons
             token={guest.token}
             initialStatus={guest.status}
