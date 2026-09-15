@@ -4,6 +4,14 @@ import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
+type GuestAnswer = {
+  questionId: number;
+  questionLabel: string;
+  questionType: string;
+  required: boolean;
+  value: string;
+};
+
 type Guest = {
   id: number;
   firstName: string;
@@ -13,6 +21,7 @@ type Guest = {
   token: string;
   maxCompanions: number;
   companionCount: number;
+  answers: GuestAnswer[];
 };
 
 function getStatusLabel(status: string) {
@@ -81,7 +90,9 @@ export default function GuestsPage() {
     loadGuests();
   }, [id]);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    event: FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
 
     const form = event.currentTarget;
@@ -96,22 +107,29 @@ export default function GuestsPage() {
       firstName: formData.get("firstName"),
       lastName: formData.get("lastName"),
       email: formData.get("email"),
-      maxCompanions: Number(formData.get("maxCompanions")),
+      maxCompanions: Number(
+        formData.get("maxCompanions")
+      ),
     };
 
     try {
-      const response = await fetch(`/api/events/${id}/guests`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        `/api/events/${id}/guests`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
 
       const result = await response.json();
 
       if (!response.ok) {
-        setError(result.error || "Une erreur est survenue.");
+        setError(
+          result.error || "Une erreur est survenue."
+        );
         return;
       }
 
@@ -150,7 +168,8 @@ export default function GuestsPage() {
   const totalExpectedPeople = guests
     .filter((guest) => guest.status === "accepted")
     .reduce(
-      (total, guest) => total + 1 + guest.companionCount,
+      (total, guest) =>
+        total + 1 + guest.companionCount,
       0
     );
 
@@ -174,7 +193,8 @@ export default function GuestsPage() {
           </h1>
 
           <p className="mt-2 text-gray-500">
-            Ajoutez vos invités et suivez leurs réponses.
+            Ajoutez vos invités et suivez leurs
+            réponses.
           </p>
         </div>
 
@@ -183,6 +203,7 @@ export default function GuestsPage() {
             <p className="text-sm text-gray-500">
               Invités
             </p>
+
             <p className="mt-2 text-3xl font-bold text-gray-900">
               {guests.length}
             </p>
@@ -192,6 +213,7 @@ export default function GuestsPage() {
             <p className="text-sm text-gray-500">
               Présents
             </p>
+
             <p className="mt-2 text-3xl font-bold text-green-600">
               {acceptedCount}
             </p>
@@ -201,6 +223,7 @@ export default function GuestsPage() {
             <p className="text-sm text-gray-500">
               Absents
             </p>
+
             <p className="mt-2 text-3xl font-bold text-red-600">
               {declinedCount}
             </p>
@@ -210,6 +233,7 @@ export default function GuestsPage() {
             <p className="text-sm text-gray-500">
               En attente
             </p>
+
             <p className="mt-2 text-3xl font-bold text-gray-700">
               {pendingCount + maybeCount}
             </p>
@@ -219,6 +243,7 @@ export default function GuestsPage() {
             <p className="text-sm font-medium text-pink-700">
               Personnes attendues
             </p>
+
             <p className="mt-2 text-3xl font-bold text-pink-600">
               {totalExpectedPeople}
             </p>
@@ -310,7 +335,8 @@ export default function GuestsPage() {
               />
 
               <p className="mt-2 text-xs text-gray-400">
-                Mettez 0 si cet invité ne peut pas venir accompagné.
+                Mettez 0 si cet invité ne peut pas venir
+                accompagné.
               </p>
             </div>
 
@@ -331,7 +357,9 @@ export default function GuestsPage() {
               disabled={loading}
               className="w-full rounded-xl bg-pink-600 py-3.5 font-semibold text-white transition hover:bg-pink-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading ? "Ajout..." : "Ajouter l’invité"}
+              {loading
+                ? "Ajout..."
+                : "Ajouter l’invité"}
             </button>
           </form>
         </div>
@@ -361,62 +389,99 @@ export default function GuestsPage() {
               {guests.map((guest) => (
                 <div
                   key={guest.id}
-                  className="flex flex-col gap-4 rounded-2xl border border-gray-100 p-5 sm:flex-row sm:items-center sm:justify-between"
+                  className="rounded-2xl border border-gray-100 p-5"
                 >
-                  <div>
-                    <p className="font-semibold text-gray-900">
-                      {guest.firstName} {guest.lastName}
-                    </p>
-
-                    {guest.email && (
-                      <p className="mt-1 text-sm text-gray-500">
-                        {guest.email}
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <p className="font-semibold text-gray-900">
+                        {guest.firstName}{" "}
+                        {guest.lastName}
                       </p>
-                    )}
 
-                    <p className="mt-2 text-sm text-gray-500">
-                      Accompagnants autorisés :{" "}
-                      {guest.maxCompanions}
-                    </p>
+                      {guest.email && (
+                        <p className="mt-1 text-sm text-gray-500">
+                          {guest.email}
+                        </p>
+                      )}
 
-                    {guest.status === "accepted" && (
-                      <p className="mt-1 text-sm font-medium text-green-700">
-                        {guest.companionCount === 0
-                          ? "Vient seul(e)"
-                          : guest.companionCount === 1
-                            ? "Vient avec 1 accompagnant"
-                            : `Vient avec ${guest.companionCount} accompagnants`}
+                      <p className="mt-2 text-sm text-gray-500">
+                        Accompagnants autorisés :{" "}
+                        {guest.maxCompanions}
                       </p>
-                    )}
 
-                    {guest.status === "accepted" && (
-                      <p className="mt-1 text-xs text-gray-500">
-                        Total pour cette invitation :{" "}
-                        {1 + guest.companionCount} personne
-                        {1 + guest.companionCount > 1
-                          ? "s"
-                          : ""}
-                      </p>
-                    )}
+                      {guest.status === "accepted" && (
+                        <p className="mt-1 text-sm font-medium text-green-700">
+                          {guest.companionCount === 0
+                            ? "Vient seul(e)"
+                            : guest.companionCount === 1
+                              ? "Vient avec 1 accompagnant"
+                              : `Vient avec ${guest.companionCount} accompagnants`}
+                        </p>
+                      )}
+
+                      {guest.status === "accepted" && (
+                        <p className="mt-1 text-xs text-gray-500">
+                          Total pour cette invitation :{" "}
+                          {1 + guest.companionCount}{" "}
+                          personne
+                          {1 + guest.companionCount > 1
+                            ? "s"
+                            : ""}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col gap-2 sm:items-end">
+                      <span
+                        className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${getStatusClass(
+                          guest.status
+                        )}`}
+                      >
+                        {getStatusLabel(guest.status)}
+                      </span>
+
+                      <Link
+                        href={`/i/${guest.token}`}
+                        target="_blank"
+                        className="text-sm font-semibold text-pink-600 hover:text-pink-700"
+                      >
+                        Ouvrir l’invitation →
+                      </Link>
+                    </div>
                   </div>
 
-                  <div className="flex flex-col gap-2 sm:items-end">
-                    <span
-                      className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${getStatusClass(
-                        guest.status
-                      )}`}
-                    >
-                      {getStatusLabel(guest.status)}
-                    </span>
+                  {guest.answers &&
+                    guest.answers.length > 0 && (
+                      <div className="mt-5 border-t border-gray-100 pt-5">
+                        <p className="text-sm font-semibold text-gray-900">
+                          Réponses personnalisées
+                        </p>
 
-                    <Link
-                      href={`/i/${guest.token}`}
-                      target="_blank"
-                      className="text-sm font-semibold text-pink-600 hover:text-pink-700"
-                    >
-                      Ouvrir l’invitation →
-                    </Link>
-                  </div>
+                        <div className="mt-3 space-y-3">
+                          {guest.answers.map(
+                            (answer) => (
+                              <div
+                                key={
+                                  answer.questionId
+                                }
+                                className="rounded-xl bg-gray-50 px-4 py-3"
+                              >
+                                <p className="text-sm font-medium text-gray-600">
+                                  {
+                                    answer.questionLabel
+                                  }
+                                </p>
+
+                                <p className="mt-1 font-semibold text-gray-900">
+                                  {answer.value ||
+                                    "Pas de réponse"}
+                                </p>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )}
                 </div>
               ))}
             </div>

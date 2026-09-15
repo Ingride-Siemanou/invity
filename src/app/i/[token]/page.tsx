@@ -29,6 +29,14 @@ export default async function InvitationPage({
     notFound();
   }
 
+  const questions = await db.orm.public.Question
+    .where({ eventId: event.id })
+    .all();
+
+  const sortedQuestions = [...questions].sort(
+    (a, b) => a.position - b.position
+  );
+
   return (
     <main className="min-h-screen bg-gray-50 px-6 py-12">
       <div className="mx-auto max-w-3xl">
@@ -147,6 +155,16 @@ export default async function InvitationPage({
             initialStatus={guest.status}
             maxCompanions={guest.maxCompanions}
             initialCompanionCount={guest.companionCount}
+            questions={sortedQuestions.map((question) => ({
+              id: question.id,
+              label: question.label,
+              type: question.type,
+              required: question.required,
+              position: question.position,
+              conditionQuestionId:
+                question.conditionQuestionId,
+              conditionValue: question.conditionValue,
+            }))}
           />
 
           <div className="mt-10 border-t border-gray-100 pt-6">

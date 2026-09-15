@@ -74,13 +74,45 @@ export async function GET(
       return authorization.error;
     }
 
+    // Récupération des invités
     const guests = await db.orm.public.Guest
       .where({ eventId })
       .all();
 
-    return NextResponse.json(
-      {
-        guests: guests.map((guest) => ({
+    // Récupération des questions de l'événement
+    const questions = await db.orm.public.Question
+      .where({ eventId })
+      .all();
+
+    const sortedQuestions = [...questions].sort(
+      (a, b) => a.position - b.position
+    );
+
+    // Récupération des réponses de chaque invité
+    const guestsWithAnswers = await Promise.all(
+      guests.map(async (guest) => {
+        const answers = await db.orm.public.Answer
+          .where({ guestId: guest.id })
+          .all();
+
+        const formattedAnswers = sortedQuestions.map(
+          (question) => {
+            const answer = answers.find(
+              (currentAnswer) =>
+                currentAnswer.questionId === question.id
+            );
+
+            return {
+              questionId: question.id,
+              questionLabel: question.label,
+              questionType: question.type,
+              required: question.required,
+              value: answer?.value ?? "",
+            };
+          }
+        );
+
+        return {
           id: guest.id,
           firstName: guest.firstName,
           lastName: guest.lastName,
@@ -89,7 +121,14 @@ export async function GET(
           token: guest.token,
           maxCompanions: guest.maxCompanions,
           companionCount: guest.companionCount,
-        })),
+          answers: formattedAnswers,
+        };
+      })
+    );
+
+    return NextResponse.json(
+      {
+        guests: guestsWithAnswers,
       },
       { status: 200 }
     );
@@ -178,6 +217,7 @@ export async function POST(
           token: guest.token,
           maxCompanions: guest.maxCompanions,
           companionCount: guest.companionCount,
+          answers: [],
         },
       },
       { status: 201 }

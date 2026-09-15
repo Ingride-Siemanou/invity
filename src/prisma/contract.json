@@ -476,6 +476,20 @@
           },
           "Question": {
             "fields": {
+              "conditionQuestionId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "conditionValue": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -568,6 +582,12 @@
             },
             "storage": {
               "fields": {
+                "conditionQuestionId": {
+                  "column": "conditionQuestionId"
+                },
+                "conditionValue": {
+                  "column": "conditionValue"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
@@ -1046,6 +1066,16 @@
             },
             "question": {
               "columns": {
+                "conditionQuestionId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "conditionValue": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-string@1",
                   "default": {
@@ -1209,7 +1239,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "6e16600b6a3e0b5895a05862886a2e4a314ed1f930b007d2e74b66aa8cf2d7d7"
+    "storageHash": "75cac1f861065c708a7584a4df35ca51483a641d8ce9f96a6805ccc97080ce09"
   },
   "execution": {
     "executionHash": "f04daf4d452569437cdd698110f4fedcbb7d53cc3def8da518d99f5150400902",

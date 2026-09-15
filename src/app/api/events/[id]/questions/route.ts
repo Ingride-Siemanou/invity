@@ -144,6 +144,17 @@ export async function POST(
 
     const required = body.required === true;
 
+    const conditionQuestionId =
+      typeof body.conditionQuestionId === "number" &&
+      Number.isInteger(body.conditionQuestionId)
+        ? body.conditionQuestionId
+        : null;
+
+    const conditionValue =
+      typeof body.conditionValue === "string"
+        ? body.conditionValue.trim()
+        : null;
+
     const allowedTypes = [
       "text",
       "textarea",
@@ -174,6 +185,58 @@ export async function POST(
       );
     }
 
+    let validatedConditionQuestionId: number | null = null;
+    let validatedConditionValue: string | null = null;
+
+    if (conditionQuestionId !== null) {
+      if (!conditionValue) {
+        return NextResponse.json(
+          {
+            error:
+              "La valeur de la condition est obligatoire.",
+          },
+          { status: 400 }
+        );
+      }
+
+      const conditionQuestion =
+        await db.orm.public.Question
+          .where({
+            id: conditionQuestionId,
+            eventId,
+          })
+          .first();
+
+      if (!conditionQuestion) {
+        return NextResponse.json(
+          {
+            error:
+              "La question utilisée comme condition est invalide.",
+          },
+          { status: 400 }
+        );
+      }
+
+      if (
+        conditionQuestion.type === "yes_no" &&
+        conditionValue !== "Oui" &&
+        conditionValue !== "Non"
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              "La condition doit être Oui ou Non pour cette question.",
+          },
+          { status: 400 }
+        );
+      }
+
+      validatedConditionQuestionId =
+        conditionQuestion.id;
+
+      validatedConditionValue = conditionValue;
+    }
+
     const existingQuestions =
       await db.orm.public.Question
         .where({ eventId })
@@ -193,6 +256,9 @@ export async function POST(
       type,
       required,
       position: nextPosition,
+      conditionQuestionId:
+        validatedConditionQuestionId,
+      conditionValue: validatedConditionValue,
       eventId,
     });
 

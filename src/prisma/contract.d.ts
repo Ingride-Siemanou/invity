@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'6e16600b6a3e0b5895a05862886a2e4a314ed1f930b007d2e74b66aa8cf2d7d7'>;
+  StorageHashBase<'75cac1f861065c708a7584a4df35ca51483a641d8ce9f96a6805ccc97080ce09'>;
 export type ExecutionHash =
   ExecutionHashBase<'f04daf4d452569437cdd698110f4fedcbb7d53cc3def8da518d99f5150400902'>;
 export type ProfileHash =
@@ -284,6 +284,8 @@ export type FieldOutputTypes = {
       readonly type: CodecTypes['pg/text@1']['output'];
       readonly required: CodecTypes['pg/bool@1']['output'];
       readonly position: CodecTypes['pg/int4@1']['output'];
+      readonly conditionQuestionId: CodecTypes['pg/int4@1']['output'] | null;
+      readonly conditionValue: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly eventId: CodecTypes['pg/int4@1']['output'];
@@ -343,6 +345,8 @@ export type FieldInputTypes = {
       readonly type: CodecTypes['pg/text@1']['input'];
       readonly required: CodecTypes['pg/bool@1']['input'];
       readonly position: CodecTypes['pg/int4@1']['input'];
+      readonly conditionQuestionId: CodecTypes['pg/int4@1']['input'] | null;
+      readonly conditionValue: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly eventId: CodecTypes['pg/int4@1']['input'];
@@ -397,6 +401,8 @@ export type StorageColumnTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
     readonly question: {
+      readonly conditionQuestionId: CodecTypes['pg/int4@1']['output'] | null;
+      readonly conditionValue: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly eventId: CodecTypes['pg/int4@1']['output'];
       readonly id: CodecTypes['pg/int4@1']['output'];
@@ -456,6 +462,8 @@ export type StorageColumnInputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
     readonly question: {
+      readonly conditionQuestionId: CodecTypes['pg/int4@1']['input'] | null;
+      readonly conditionValue: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly eventId: CodecTypes['pg/int4@1']['input'];
       readonly id: CodecTypes['pg/int4@1']['input'];
@@ -530,6 +538,8 @@ export namespace Models {
     type: CodecTypes['pg/text@1']['output'];
     required: CodecTypes['pg/bool@1']['output'];
     position: CodecTypes['pg/int4@1']['output'];
+    conditionQuestionId: CodecTypes['pg/int4@1']['output'] | null;
+    conditionValue: CodecTypes['pg/text@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     eventId: CodecTypes['pg/int4@1']['output'];
@@ -903,6 +913,16 @@ type ContractBase = Omit<
                     readonly kind: 'literal';
                     readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
                   };
+                };
+                readonly conditionQuestionId: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
+                readonly conditionValue: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                 };
                 readonly createdAt: {
                   readonly nativeType: 'timestamptz';
@@ -1319,6 +1339,14 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
               };
+              readonly conditionQuestionId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly conditionValue: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly createdAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -1372,6 +1400,8 @@ type ContractBase = Omit<
                 readonly type: { readonly column: 'type' };
                 readonly required: { readonly column: 'required' };
                 readonly position: { readonly column: 'position' };
+                readonly conditionQuestionId: { readonly column: 'conditionQuestionId' };
+                readonly conditionValue: { readonly column: 'conditionValue' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
                 readonly eventId: { readonly column: 'eventId' };
