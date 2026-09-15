@@ -13,6 +13,38 @@ type Guest = {
   token: string;
 };
 
+function getStatusLabel(status: string) {
+  if (status === "accepted") {
+    return "Présent(e)";
+  }
+
+  if (status === "declined") {
+    return "Absent(e)";
+  }
+
+  if (status === "maybe") {
+    return "Je ne sais pas encore";
+  }
+
+  return "En attente";
+}
+
+function getStatusClass(status: string) {
+  if (status === "accepted") {
+    return "bg-green-50 text-green-700";
+  }
+
+  if (status === "declined") {
+    return "bg-red-50 text-red-700";
+  }
+
+  if (status === "maybe") {
+    return "bg-yellow-50 text-yellow-700";
+  }
+
+  return "bg-gray-100 text-gray-600";
+}
+
 export default function GuestsPage() {
   const params = useParams();
   const id = params.id as string;
@@ -88,6 +120,22 @@ export default function GuestsPage() {
     }
   }
 
+  const acceptedCount = guests.filter(
+    (guest) => guest.status === "accepted"
+  ).length;
+
+  const declinedCount = guests.filter(
+    (guest) => guest.status === "declined"
+  ).length;
+
+  const maybeCount = guests.filter(
+    (guest) => guest.status === "maybe"
+  ).length;
+
+  const pendingCount = guests.filter(
+    (guest) => guest.status === "pending"
+  ).length;
+
   return (
     <main className="min-h-screen bg-gray-50 px-6 py-12">
       <div className="mx-auto max-w-5xl">
@@ -104,8 +152,40 @@ export default function GuestsPage() {
           </h1>
 
           <p className="mt-2 text-gray-600">
-            Gérez les invités de votre événement.
+            Gérez les invités et suivez leurs réponses.
           </p>
+        </div>
+
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-2xl bg-white p-5 shadow-sm">
+            <p className="text-sm text-gray-500">Présents</p>
+            <p className="mt-2 text-3xl font-bold text-green-700">
+              {acceptedCount}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-white p-5 shadow-sm">
+            <p className="text-sm text-gray-500">Absents</p>
+            <p className="mt-2 text-3xl font-bold text-red-700">
+              {declinedCount}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-white p-5 shadow-sm">
+            <p className="text-sm text-gray-500">
+              Ne savent pas encore
+            </p>
+            <p className="mt-2 text-3xl font-bold text-yellow-700">
+              {maybeCount}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-white p-5 shadow-sm">
+            <p className="text-sm text-gray-500">En attente</p>
+            <p className="mt-2 text-3xl font-bold text-gray-700">
+              {pendingCount}
+            </p>
+          </div>
         </div>
 
         <div className="mt-8 rounded-3xl bg-white p-8 shadow-sm">
@@ -232,8 +312,12 @@ export default function GuestsPage() {
                   </div>
 
                   <div className="flex flex-col gap-2 sm:items-end">
-                    <span className="w-fit rounded-full bg-yellow-50 px-3 py-1 text-xs font-semibold text-yellow-700">
-                      En attente de réponse
+                    <span
+                      className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${getStatusClass(
+                        guest.status
+                      )}`}
+                    >
+                      {getStatusLabel(guest.status)}
                     </span>
 
                     <Link
