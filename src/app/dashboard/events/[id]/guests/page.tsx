@@ -1,7 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
+import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
 type Guest = {
@@ -123,7 +123,9 @@ export default function GuestsPage() {
       setSuccess("Invité ajouté avec succès !");
       form.reset();
     } catch {
-      setError("Impossible d’ajouter l’invité pour le moment.");
+      setError(
+        "Impossible d’ajouter l’invité pour le moment."
+      );
     } finally {
       setLoading(false);
     }
@@ -145,6 +147,13 @@ export default function GuestsPage() {
     (guest) => guest.status === "pending"
   ).length;
 
+  const totalExpectedPeople = guests
+    .filter((guest) => guest.status === "accepted")
+    .reduce(
+      (total, guest) => total + 1 + guest.companionCount,
+      0
+    );
+
   return (
     <main className="min-h-screen bg-gray-50 px-6 py-12">
       <div className="mx-auto max-w-5xl">
@@ -155,37 +164,45 @@ export default function GuestsPage() {
           ← Retour à l’événement
         </Link>
 
-        <div className="mt-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Invités
+        <div className="mt-6">
+          <p className="text-sm font-semibold uppercase tracking-widest text-pink-600">
+            Invity
+          </p>
+
+          <h1 className="mt-2 text-3xl font-bold text-gray-900">
+            Gestion des invités
           </h1>
 
-          <p className="mt-2 text-gray-600">
-            Gérez les invités et suivez leurs réponses.
+          <p className="mt-2 text-gray-500">
+            Ajoutez vos invités et suivez leurs réponses.
           </p>
         </div>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <div className="rounded-2xl bg-white p-5 shadow-sm">
-            <p className="text-sm text-gray-500">Présents</p>
-            <p className="mt-2 text-3xl font-bold text-green-700">
-              {acceptedCount}
+            <p className="text-sm text-gray-500">
+              Invités
             </p>
-          </div>
-
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
-            <p className="text-sm text-gray-500">Absents</p>
-            <p className="mt-2 text-3xl font-bold text-red-700">
-              {declinedCount}
+            <p className="mt-2 text-3xl font-bold text-gray-900">
+              {guests.length}
             </p>
           </div>
 
           <div className="rounded-2xl bg-white p-5 shadow-sm">
             <p className="text-sm text-gray-500">
-              Ne savent pas encore
+              Présents
             </p>
-            <p className="mt-2 text-3xl font-bold text-yellow-700">
-              {maybeCount}
+            <p className="mt-2 text-3xl font-bold text-green-600">
+              {acceptedCount}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-white p-5 shadow-sm">
+            <p className="text-sm text-gray-500">
+              Absents
+            </p>
+            <p className="mt-2 text-3xl font-bold text-red-600">
+              {declinedCount}
             </p>
           </div>
 
@@ -194,7 +211,16 @@ export default function GuestsPage() {
               En attente
             </p>
             <p className="mt-2 text-3xl font-bold text-gray-700">
-              {pendingCount}
+              {pendingCount + maybeCount}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-pink-50 p-5 shadow-sm">
+            <p className="text-sm font-medium text-pink-700">
+              Personnes attendues
+            </p>
+            <p className="mt-2 text-3xl font-bold text-pink-600">
+              {totalExpectedPeople}
             </p>
           </div>
         </div>
@@ -204,47 +230,50 @@ export default function GuestsPage() {
             Ajouter un invité
           </h2>
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-5">
-            <div>
-              <label
-                htmlFor="firstName"
-                className="mb-2 block text-sm font-medium text-gray-700"
-              >
-                Prénom
-              </label>
+          <form
+            onSubmit={handleSubmit}
+            className="mt-6 space-y-5"
+          >
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="firstName"
+                  className="text-sm font-semibold text-gray-700"
+                >
+                  Prénom
+                </label>
 
-              <input
-                id="firstName"
-                name="firstName"
-                type="text"
-                required
-                placeholder="Marie"
-                className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
-              />
-            </div>
+                <input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  required
+                  className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none focus:border-pink-400"
+                />
+              </div>
 
-            <div>
-              <label
-                htmlFor="lastName"
-                className="mb-2 block text-sm font-medium text-gray-700"
-              >
-                Nom
-              </label>
+              <div>
+                <label
+                  htmlFor="lastName"
+                  className="text-sm font-semibold text-gray-700"
+                >
+                  Nom
+                </label>
 
-              <input
-                id="lastName"
-                name="lastName"
-                type="text"
-                required
-                placeholder="Dupont"
-                className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
-              />
+                <input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  required
+                  className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none focus:border-pink-400"
+                />
+              </div>
             </div>
 
             <div>
               <label
                 htmlFor="email"
-                className="mb-2 block text-sm font-medium text-gray-700"
+                className="text-sm font-semibold text-gray-700"
               >
                 Adresse e-mail
               </label>
@@ -253,8 +282,7 @@ export default function GuestsPage() {
                 id="email"
                 name="email"
                 type="email"
-                placeholder="marie@exemple.fr"
-                className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
+                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none focus:border-pink-400"
               />
 
               <p className="mt-2 text-xs text-gray-400">
@@ -265,7 +293,7 @@ export default function GuestsPage() {
             <div>
               <label
                 htmlFor="maxCompanions"
-                className="mb-2 block text-sm font-medium text-gray-700"
+                className="text-sm font-semibold text-gray-700"
               >
                 Nombre maximum d’accompagnants
               </label>
@@ -278,7 +306,7 @@ export default function GuestsPage() {
                 max="20"
                 defaultValue="0"
                 required
-                className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
+                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 outline-none focus:border-pink-400"
               />
 
               <p className="mt-2 text-xs text-gray-400">
@@ -287,7 +315,7 @@ export default function GuestsPage() {
             </div>
 
             {error && (
-              <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+              <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
                 {error}
               </div>
             )}
@@ -350,6 +378,26 @@ export default function GuestsPage() {
                       Accompagnants autorisés :{" "}
                       {guest.maxCompanions}
                     </p>
+
+                    {guest.status === "accepted" && (
+                      <p className="mt-1 text-sm font-medium text-green-700">
+                        {guest.companionCount === 0
+                          ? "Vient seul(e)"
+                          : guest.companionCount === 1
+                            ? "Vient avec 1 accompagnant"
+                            : `Vient avec ${guest.companionCount} accompagnants`}
+                      </p>
+                    )}
+
+                    {guest.status === "accepted" && (
+                      <p className="mt-1 text-xs text-gray-500">
+                        Total pour cette invitation :{" "}
+                        {1 + guest.companionCount} personne
+                        {1 + guest.companionCount > 1
+                          ? "s"
+                          : ""}
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex flex-col gap-2 sm:items-end">
