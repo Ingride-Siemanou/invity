@@ -63,7 +63,7 @@ export default function Home() {
         <div className="mx-auto grid min-h-[780px] max-w-7xl items-center gap-14 px-6 py-20 lg:grid-cols-2 lg:py-24">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-pink-100 bg-pink-50 px-4 py-2 text-sm font-semibold text-pink-700">
-              <span>✦</span>
+              <span></span>
               L’invitation digitale, simplement
             </div>
 
@@ -125,7 +125,7 @@ export default function Home() {
               </div>
 
               <div className="mt-6 rounded-3xl bg-gradient-to-br from-pink-50 to-white p-6">
-                <div className="text-3xl">💍</div>
+                <div className="text-3xl"></div>
 
                 <p className="mt-5 text-xs font-semibold uppercase tracking-widest text-pink-600">
                   Vous êtes invité(e)
@@ -201,12 +201,12 @@ export default function Home() {
 
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             {[
-              ["💍", "Mariage"],
-              ["🎂", "Anniversaire"],
-              ["🕊️", "Baptême"],
-              ["🎉", "Fête"],
-              ["🥂", "Cérémonie"],
-              ["💼", "Professionnel"],
+              ["", "Mariage"],
+              ["", "Anniversaire"],
+              ["", "Baptême"],
+              ["", "Fête"],
+              ["", "Cérémonie"],
+              ["", "Professionnel"],
             ].map(([icon, label]) => (
               <div
                 key={label}
