@@ -51,10 +51,50 @@ function getEventIcon(title: string) {
     return "🎂";
   }
 
+  if (
+    normalizedTitle.includes("professionnel") ||
+    normalizedTitle.includes("entreprise")
+  ) {
+    return "💼";
+  }
+
+  if (
+    normalizedTitle.includes("cérémonie") ||
+    normalizedTitle.includes("ceremonie")
+  ) {
+    return "✨";
+  }
+
   return "🎉";
 }
 
-export default async function EventPage({ params }: EventPageProps) {
+function formatEventDate(date: string) {
+  if (!date) {
+    return "";
+  }
+
+  const parsedDate = new Date(`${date}T12:00:00`);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return date;
+  }
+
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(parsedDate);
+}
+
+function safeNumber(value: unknown) {
+  const number = Number(value);
+
+  return Number.isFinite(number) ? number : 0;
+}
+
+export default async function EventPage({
+  params,
+}: EventPageProps) {
   const { id } = await params;
   const eventId = Number(id);
 
@@ -119,194 +159,194 @@ export default async function EventPage({ params }: EventPageProps) {
       (total, guest) =>
         total +
         1 +
-        guest.companionCount +
-        guest.childrenCount,
+        safeNumber(guest.companionCount) +
+        safeNumber(guest.childrenCount),
       0
     );
 
   const totalCompanions = guests
     .filter((guest) => guest.status === "accepted")
     .reduce(
-      (total, guest) => total + guest.companionCount,
+      (total, guest) =>
+        total + safeNumber(guest.companionCount),
       0
     );
 
   const totalChildren = guests
     .filter((guest) => guest.status === "accepted")
     .reduce(
-      (total, guest) => total + guest.childrenCount,
+      (total, guest) =>
+        total + safeNumber(guest.childrenCount),
       0
     );
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <header className="border-b border-gray-100 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-          <div>
-            <Link
-              href="/dashboard"
-              className="text-2xl font-bold text-pink-600"
-            >
+    <main className="min-h-screen bg-[#f8f8fb] text-gray-900">
+      {/* Navigation */}
+      <header className="sticky top-0 z-40 border-b border-gray-200/70 bg-white/90 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
+          <Link href="/dashboard" className="min-w-0">
+            <div className="text-2xl font-bold tracking-tight text-pink-600">
               Invity
-            </Link>
+            </div>
 
-            <p className="mt-1 text-xs text-gray-500">
+            <div className="hidden text-[10px] font-medium tracking-wide text-gray-400 sm:block">
               Créez. Invitez. Célébrez.
-            </p>
-          </div>
+            </div>
+          </Link>
 
           <Link
             href="/dashboard"
-            className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+            className="shrink-0 rounded-full border border-gray-200 bg-white px-3 py-2.5 text-xs font-semibold text-gray-700 transition hover:border-pink-200 hover:text-pink-600 sm:px-5 sm:text-sm"
           >
             ← Tableau de bord
           </Link>
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-6 py-10">
-        <section className="overflow-hidden rounded-3xl bg-white shadow-sm">
-          <div className="p-7 sm:p-9">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-              <div className="flex items-start gap-5">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-pink-50 text-3xl">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+        {/* Présentation événement */}
+        <section className="relative overflow-hidden rounded-[28px] bg-gray-950 text-white shadow-xl sm:rounded-[36px]">
+          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-pink-600/20 blur-3xl" />
+
+          <div className="absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl" />
+
+          <div className="relative p-5 sm:p-8 lg:p-10">
+            <div className="flex flex-col gap-7 lg:flex-row lg:items-start lg:justify-between">
+              <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-3xl sm:h-16 sm:w-16">
                   {getEventIcon(event.title)}
                 </div>
 
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-widest text-pink-600">
+                <div className="min-w-0">
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-pink-300">
                     Votre événement
                   </p>
 
-                  <h1 className="mt-2 text-3xl font-bold text-gray-900 sm:text-4xl">
+                  <h1 className="mt-2 break-words text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
                     {event.title}
                   </h1>
 
-                  <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-600">
-                    <span>📅 {event.eventDate}</span>
+                  <div className="mt-5 flex flex-col gap-2 text-sm text-gray-300 sm:flex-row sm:flex-wrap sm:gap-x-5">
+                    <span>
+                      📅 {formatEventDate(event.eventDate)}
+                    </span>
 
                     {event.eventTime && (
                       <span>🕐 {event.eventTime}</span>
                     )}
 
                     {event.location && (
-                      <span>📍 {event.location}</span>
+                      <span className="break-words">
+                        📍 {event.location}
+                      </span>
                     )}
                   </div>
+
+                  {event.description && (
+                    <p className="mt-5 max-w-3xl text-sm leading-7 text-gray-300 sm:text-base">
+                      {event.description}
+                    </p>
+                  )}
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-3">
+              <div className="grid gap-3 sm:grid-cols-2 lg:w-auto">
                 <Link
                   href={`/dashboard/events/${event.id}/guests`}
-                  className="rounded-xl bg-pink-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-pink-700"
+                  className="inline-flex items-center justify-center rounded-full bg-pink-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-pink-500"
                 >
-                  Gérer les invités
+                  👥 Gérer les invités
                 </Link>
 
                 <Link
                   href={`/dashboard/events/${event.id}/questions`}
-                  className="rounded-xl border border-pink-200 bg-pink-50 px-5 py-3 text-sm font-semibold text-pink-700 transition hover:bg-pink-100"
+                  className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/15"
                 >
-                  Gérer les questions
+                  ❓ Gérer les questions
                 </Link>
               </div>
             </div>
-
-            {event.description && (
-              <p className="mt-7 max-w-3xl leading-7 text-gray-600">
-                {event.description}
-              </p>
-            )}
           </div>
         </section>
 
+        {/* Réponses */}
         <section className="mt-8">
-          <div className="mb-4">
-            <h2 className="text-xl font-bold text-gray-900">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-pink-600">
+              Suivi
+            </p>
+
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-gray-950">
               Réponses des invités
             </h2>
 
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-2 text-sm leading-6 text-gray-500">
               Suivez l’évolution des réponses pour cet événement.
             </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            <div className="rounded-2xl bg-white p-5 shadow-sm">
-              <p className="text-sm font-medium text-gray-500">
-                Invités
-              </p>
+          <div className="mt-5 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
+            <StatCard
+              label="Invités"
+              value={guests.length}
+              icon="👥"
+            />
 
-              <p className="mt-3 text-3xl font-bold text-gray-900">
-                {guests.length}
-              </p>
-            </div>
+            <StatCard
+              label="Présents"
+              value={accepted}
+              icon="✓"
+              variant="green"
+            />
 
-            <div className="rounded-2xl bg-green-50 p-5 shadow-sm">
-              <p className="text-sm font-medium text-green-700">
-                Présents
-              </p>
+            <StatCard
+              label="Absents"
+              value={declined}
+              icon="✕"
+              variant="red"
+            />
 
-              <p className="mt-3 text-3xl font-bold text-green-700">
-                {accepted}
-              </p>
-            </div>
+            <StatCard
+              label="En attente"
+              value={pending + maybe}
+              icon="⏳"
+              variant="yellow"
+              note={
+                maybe > 0
+                  ? `dont ${maybe} indécis`
+                  : undefined
+              }
+            />
 
-            <div className="rounded-2xl bg-red-50 p-5 shadow-sm">
-              <p className="text-sm font-medium text-red-700">
-                Absents
-              </p>
-
-              <p className="mt-3 text-3xl font-bold text-red-700">
-                {declined}
-              </p>
-            </div>
-
-            <div className="rounded-2xl bg-yellow-50 p-5 shadow-sm">
-              <p className="text-sm font-medium text-yellow-700">
-                En attente
-              </p>
-
-              <p className="mt-3 text-3xl font-bold text-yellow-700">
-                {pending + maybe}
-              </p>
-
-              {maybe > 0 && (
-                <p className="mt-1 text-xs text-yellow-700">
-                  dont {maybe} indécis
-                </p>
-              )}
-            </div>
-
-            <div className="rounded-2xl bg-pink-50 p-5 shadow-sm">
-              <p className="text-sm font-medium text-pink-700">
-                Personnes attendues
-              </p>
-
-              <p className="mt-3 text-3xl font-bold text-pink-700">
-                {peopleExpected}
-              </p>
-            </div>
+            <StatCard
+              label="Personnes attendues"
+              value={peopleExpected}
+              icon="🎟️"
+              variant="pink"
+              wideOnMobile
+            />
           </div>
         </section>
 
-        <section className="mt-8 grid gap-6 lg:grid-cols-3">
-          <div className="rounded-3xl bg-white p-6 shadow-sm lg:col-span-2">
-            <div className="flex items-center justify-between gap-4">
+        {/* Progression et actions */}
+        <section className="mt-6 grid gap-5 lg:grid-cols-3">
+          <div className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:p-7 lg:col-span-2">
+            <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-xl font-bold text-gray-950">
                   Progression des réponses
                 </h2>
 
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm leading-6 text-gray-500">
                   {responded} réponse
                   {responded > 1 ? "s" : ""} reçue
-                  {responded > 1 ? "s" : ""} sur {guests.length}.
+                  {responded > 1 ? "s" : ""} sur{" "}
+                  {guests.length}.
                 </p>
               </div>
 
-              <span className="rounded-full bg-pink-50 px-4 py-2 text-sm font-bold text-pink-700">
+              <span className="shrink-0 rounded-full bg-pink-50 px-3 py-2 text-sm font-bold text-pink-700 sm:px-4">
                 {responseRate}%
               </span>
             </div>
@@ -320,41 +360,43 @@ export default async function EventPage({ params }: EventPageProps) {
               />
             </div>
 
-            <div className="mt-7 grid gap-4 sm:grid-cols-3">
-              <div className="rounded-2xl bg-gray-50 p-4">
-                <p className="text-sm text-gray-500">
-                  Invités présents
-                </p>
+            <div className="mt-7 grid gap-3 sm:grid-cols-3">
+              <SummaryCard
+                icon="🙋"
+                label="Invités présents"
+                value={accepted}
+              />
 
-                <p className="mt-2 text-2xl font-bold text-gray-900">
-                  {accepted}
-                </p>
-              </div>
+              <SummaryCard
+                icon="🤝"
+                label="Accompagnants"
+                value={totalCompanions}
+              />
 
-              <div className="rounded-2xl bg-gray-50 p-4">
-                <p className="text-sm text-gray-500">
-                  Accompagnants
-                </p>
+              <SummaryCard
+                icon="👶"
+                label="Enfants"
+                value={totalChildren}
+              />
+            </div>
 
-                <p className="mt-2 text-2xl font-bold text-gray-900">
-                  {totalCompanions}
-                </p>
-              </div>
+            <div className="mt-5 rounded-2xl bg-pink-50 p-4">
+              <p className="text-xs font-medium text-pink-700">
+                Total prévu pour l’événement
+              </p>
 
-              <div className="rounded-2xl bg-gray-50 p-4">
-                <p className="text-sm text-gray-500">
-                  Enfants
-                </p>
+              <p className="mt-1 text-2xl font-bold text-pink-700">
+                {peopleExpected}
+              </p>
 
-                <p className="mt-2 text-2xl font-bold text-gray-900">
-                  {totalChildren}
-                </p>
-              </div>
+              <p className="mt-1 text-xs leading-5 text-pink-700/70">
+                invités présents + accompagnants + enfants
+              </p>
             </div>
           </div>
 
-          <div className="rounded-3xl bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-bold text-gray-900">
+          <div className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:p-7">
+            <h2 className="text-xl font-bold text-gray-950">
               Actions rapides
             </h2>
 
@@ -365,104 +407,92 @@ export default async function EventPage({ params }: EventPageProps) {
             <div className="mt-5 space-y-3">
               <Link
                 href={`/dashboard/events/${event.id}/guests`}
-                className="flex items-center justify-between rounded-2xl border border-gray-100 p-4 transition hover:border-pink-200 hover:bg-pink-50"
+                className="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 p-4 transition hover:border-pink-200 hover:bg-pink-50"
               >
-                <div>
+                <div className="min-w-0">
                   <p className="font-semibold text-gray-900">
                     👥 Invités
                   </p>
 
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-1 text-xs leading-5 text-gray-500">
                     Ajouter et suivre les réponses
                   </p>
                 </div>
 
-                <span className="text-pink-600">→</span>
+                <span className="shrink-0 text-pink-600">
+                  →
+                </span>
               </Link>
 
               <Link
                 href={`/dashboard/events/${event.id}/questions`}
-                className="flex items-center justify-between rounded-2xl border border-gray-100 p-4 transition hover:border-pink-200 hover:bg-pink-50"
+                className="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 p-4 transition hover:border-pink-200 hover:bg-pink-50"
               >
-                <div>
+                <div className="min-w-0">
                   <p className="font-semibold text-gray-900">
                     ❓ Questions
                   </p>
 
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-1 text-xs leading-5 text-gray-500">
                     Personnaliser le formulaire
                   </p>
                 </div>
 
-                <span className="text-pink-600">→</span>
+                <span className="shrink-0 text-pink-600">
+                  →
+                </span>
               </Link>
             </div>
           </div>
         </section>
 
+        {/* Informations événement */}
         <section className="mt-8">
-          <div className="mb-4">
-            <h2 className="text-xl font-bold text-gray-900">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-pink-600">
+              Configuration
+            </p>
+
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-gray-950">
               Informations de l’événement
             </h2>
 
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-2 text-sm leading-6 text-gray-500">
               Les informations communiquées à vos invités.
             </p>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2">
-            <div className="rounded-3xl bg-white p-6 shadow-sm">
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            <InfoCard
+              icon="👶"
+              label="Enfants"
+              value={getChildrenRule(
+                event.childrenPolicy,
+                event.minimumChildAge
+              )}
+            />
+
+            <InfoCard
+              icon="👗"
+              label="Dress code"
+              value={
+                event.dressCode ||
+                "Aucun dress code indiqué"
+              }
+            />
+
+            <div className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:p-6 md:col-span-2">
               <div className="flex items-start gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-pink-50 text-xl">
-                  👶
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium text-gray-500">
-                    Enfants
-                  </p>
-
-                  <p className="mt-1 font-semibold text-gray-900">
-                    {getChildrenRule(
-                      event.childrenPolicy,
-                      event.minimumChildAge
-                    )}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-3xl bg-white p-6 shadow-sm">
-              <div className="flex items-start gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-pink-50 text-xl">
-                  👗
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium text-gray-500">
-                    Dress code
-                  </p>
-
-                  <p className="mt-1 font-semibold text-gray-900">
-                    {event.dressCode || "Aucun dress code indiqué"}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-3xl bg-white p-6 shadow-sm md:col-span-2">
-              <div className="flex items-start gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-pink-50 text-xl">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-pink-50 text-xl">
                   📌
                 </div>
 
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm font-medium text-gray-500">
                     Informations importantes
                   </p>
 
-                  <p className="mt-1 whitespace-pre-line leading-7 text-gray-900">
+                  <p className="mt-2 break-words whitespace-pre-line leading-7 text-gray-900">
                     {event.importantInfo ||
                       "Aucune information importante ajoutée."}
                   </p>
@@ -472,7 +502,7 @@ export default async function EventPage({ params }: EventPageProps) {
           </div>
         </section>
 
-        <div className="mt-10 border-t border-gray-200 pt-6">
+        <div className="mt-10 border-t border-gray-200 py-7">
           <Link
             href="/dashboard"
             className="text-sm font-semibold text-pink-600 transition hover:text-pink-700"
@@ -482,5 +512,140 @@ export default async function EventPage({ params }: EventPageProps) {
         </div>
       </div>
     </main>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  icon,
+  variant = "default",
+  note,
+  wideOnMobile = false,
+}: {
+  label: string;
+  value: number;
+  icon: string;
+  variant?:
+    | "default"
+    | "green"
+    | "red"
+    | "yellow"
+    | "pink";
+  note?: string;
+  wideOnMobile?: boolean;
+}) {
+  const styles = {
+    default: {
+      card: "bg-white",
+      icon: "bg-gray-100 text-gray-700",
+      value: "text-gray-950",
+    },
+    green: {
+      card: "bg-green-50/70",
+      icon: "bg-green-100 text-green-700",
+      value: "text-green-700",
+    },
+    red: {
+      card: "bg-red-50/70",
+      icon: "bg-red-100 text-red-700",
+      value: "text-red-700",
+    },
+    yellow: {
+      card: "bg-yellow-50/70",
+      icon: "bg-yellow-100 text-yellow-700",
+      value: "text-yellow-700",
+    },
+    pink: {
+      card: "bg-pink-50/80",
+      icon: "bg-pink-100 text-pink-700",
+      value: "text-pink-700",
+    },
+  };
+
+  const style = styles[variant];
+
+  return (
+    <div
+      className={`rounded-2xl border border-white/70 p-4 shadow-sm sm:p-5 ${
+        style.card
+      } ${wideOnMobile ? "col-span-2 lg:col-span-1" : ""}`}
+    >
+      <div
+        className={`flex h-9 w-9 items-center justify-center rounded-xl text-sm font-bold ${style.icon}`}
+      >
+        {icon}
+      </div>
+
+      <p className="mt-4 text-xs font-medium leading-5 text-gray-500 sm:text-sm">
+        {label}
+      </p>
+
+      <p
+        className={`mt-1 text-2xl font-bold sm:text-3xl ${style.value}`}
+      >
+        {value}
+      </p>
+
+      {note && (
+        <p className="mt-1 text-xs text-gray-500">
+          {note}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function SummaryCard({
+  icon,
+  label,
+  value,
+}: {
+  icon: string;
+  label: string;
+  value: number;
+}) {
+  return (
+    <div className="rounded-2xl bg-gray-50 p-4">
+      <div className="text-xl">{icon}</div>
+
+      <p className="mt-3 text-sm text-gray-500">
+        {label}
+      </p>
+
+      <p className="mt-1 text-2xl font-bold text-gray-950">
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function InfoCard({
+  icon,
+  label,
+  value,
+}: {
+  icon: string;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
+      <div className="flex items-start gap-4">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-pink-50 text-xl">
+          {icon}
+        </div>
+
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-gray-500">
+            {label}
+          </p>
+
+          <p className="mt-2 break-words font-semibold leading-6 text-gray-900">
+            {value}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
