@@ -250,6 +250,13 @@ export default async function EventPage({
               {/* Actions principales */}
               <div className="grid w-full gap-3 sm:grid-cols-2 lg:w-auto lg:min-w-[390px]">
                 <Link
+                  href={`/dashboard/events/${event.id}/edit`}
+                  className="inline-flex items-center justify-center rounded-2xl border border-pink-200 bg-white px-5 py-3.5 text-sm font-semibold text-pink-700 transition hover:bg-pink-50 sm:col-span-2"
+                >
+                  Modifier l&apos;événement
+                </Link>
+
+                <Link
                   href={`/dashboard/events/${event.id}/guests`}
                   className="inline-flex items-center justify-center rounded-2xl bg-pink-600 px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-pink-700"
                 >
@@ -267,7 +274,7 @@ export default async function EventPage({
                   href={`/dashboard/events/${event.id}/customize`}
                   className="inline-flex items-center justify-center rounded-2xl border border-blue-200 bg-blue-50 px-5 py-3.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100 sm:col-span-2"
                 >
-                  Personnaliser l’invitation
+                  Personnaliser l&apos;invitation
                 </Link>
               </div>
             </div>
@@ -286,7 +293,7 @@ export default async function EventPage({
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-gray-500">
-              Suivez l’évolution des réponses pour cet événement.
+              Suivez l&apos;évolution des réponses pour cet événement.
             </p>
           </div>
 
@@ -382,7 +389,7 @@ export default async function EventPage({
 
             <div className="mt-5 rounded-2xl border border-pink-100 bg-gradient-to-r from-pink-50 to-purple-50 p-4">
               <p className="text-xs font-medium text-pink-700">
-                Total prévu pour l’événement
+                Total prévu pour l&apos;événement
               </p>
 
               <p className="mt-1 text-3xl font-bold text-pink-700">
@@ -406,6 +413,13 @@ export default async function EventPage({
             </p>
 
             <div className="mt-5 space-y-3">
+              <QuickAction
+                href={`/dashboard/events/${event.id}/edit`}
+                title="Modifier l’événement"
+                description="Modifier la date, le lieu et les informations générales"
+                variant="pink"
+              />
+
               <QuickAction
                 href={`/dashboard/events/${event.id}/guests`}
                 title="Invités"
@@ -438,7 +452,7 @@ export default async function EventPage({
             </p>
 
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-gray-950">
-              Informations de l’événement
+              Informations de l&apos;événement
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-gray-500">
