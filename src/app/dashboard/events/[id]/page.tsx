@@ -208,7 +208,6 @@ export default async function EventPage({
         {/* Présentation événement */}
         <section className="relative overflow-hidden rounded-[28px] bg-gray-950 text-white shadow-xl sm:rounded-[36px]">
           <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-pink-600/20 blur-3xl" />
-
           <div className="absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl" />
 
           <div className="relative p-5 sm:p-8 lg:p-10">
@@ -251,6 +250,7 @@ export default async function EventPage({
                 </div>
               </div>
 
+              {/* Actions principales */}
               <div className="grid gap-3 sm:grid-cols-2 lg:w-auto">
                 <Link
                   href={`/dashboard/events/${event.id}/guests`}
@@ -264,6 +264,13 @@ export default async function EventPage({
                   className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/15"
                 >
                   ❓ Gérer les questions
+                </Link>
+
+                <Link
+                  href={`/dashboard/events/${event.id}/customize`}
+                  className="inline-flex items-center justify-center rounded-full border border-pink-400/30 bg-pink-500/10 px-5 py-3 text-sm font-semibold text-pink-200 transition hover:bg-pink-500/20 sm:col-span-2"
+                >
+                  🎨 Personnaliser l’invitation
                 </Link>
               </div>
             </div>
@@ -395,6 +402,7 @@ export default async function EventPage({
             </div>
           </div>
 
+          {/* Actions rapides */}
           <div className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:p-7">
             <h2 className="text-xl font-bold text-gray-950">
               Actions rapides
@@ -435,6 +443,25 @@ export default async function EventPage({
 
                   <p className="mt-1 text-xs leading-5 text-gray-500">
                     Personnaliser le formulaire
+                  </p>
+                </div>
+
+                <span className="shrink-0 text-pink-600">
+                  →
+                </span>
+              </Link>
+
+              <Link
+                href={`/dashboard/events/${event.id}/customize`}
+                className="flex items-center justify-between gap-4 rounded-2xl border border-pink-100 bg-pink-50/40 p-4 transition hover:border-pink-200 hover:bg-pink-50"
+              >
+                <div className="min-w-0">
+                  <p className="font-semibold text-gray-900">
+                    🎨 Personnalisation
+                  </p>
+
+                  <p className="mt-1 text-xs leading-5 text-gray-500">
+                    Modifier le thème, les couleurs et la photo
                   </p>
                 </div>
 
