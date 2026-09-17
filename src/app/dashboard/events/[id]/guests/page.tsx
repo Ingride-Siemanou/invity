@@ -72,7 +72,6 @@ export default function GuestsPage() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingGuests, setLoadingGuests] = useState(true);
-
   const [copiedGuestId, setCopiedGuestId] =
     useState<number | null>(null);
 
@@ -148,7 +147,7 @@ export default function GuestsPage() {
         result.guest,
       ]);
 
-      setSuccess("Invité ajouté avec succès !");
+      setSuccess("Invité ajouté avec succès.");
       form.reset();
     } catch {
       setError(
@@ -223,9 +222,9 @@ export default function GuestsPage() {
     );
 
   return (
-    <main className="min-h-screen bg-[#f8f8fb] text-gray-900">
+    <main className="min-h-screen bg-[#faf9fc] text-gray-900">
       {/* Navigation */}
-      <header className="sticky top-0 z-40 border-b border-gray-200/70 bg-white/90 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-pink-100 bg-white/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/dashboard">
             <div className="text-2xl font-bold tracking-tight text-pink-600">
@@ -239,43 +238,42 @@ export default function GuestsPage() {
 
           <Link
             href={`/dashboard/events/${id}`}
-            className="shrink-0 rounded-full border border-gray-200 bg-white px-3 py-2.5 text-xs font-semibold text-gray-700 transition hover:border-pink-200 hover:text-pink-600 sm:px-5 sm:text-sm"
+            className="shrink-0 rounded-full border border-gray-200 bg-white px-4 py-2.5 text-xs font-semibold text-gray-700 transition hover:border-pink-200 hover:text-pink-600 sm:px-5 sm:text-sm"
           >
-            ← Événement
+            Retour à l’événement
           </Link>
         </div>
       </header>
 
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
-        {/* Hero */}
-        <section className="relative overflow-hidden rounded-[28px] bg-gray-950 px-5 py-8 text-white shadow-xl sm:rounded-[36px] sm:px-8 sm:py-10 lg:px-10">
-          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-pink-600/20 blur-3xl" />
-
-          <div className="absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl" />
+        {/* Présentation */}
+        <section className="relative overflow-hidden rounded-[28px] border border-pink-100 bg-gradient-to-br from-pink-50 via-white to-purple-50 px-5 py-8 shadow-sm sm:rounded-[36px] sm:px-8 sm:py-10 lg:px-10">
+          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-pink-200/40 blur-3xl" />
+          <div className="absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-purple-200/40 blur-3xl" />
 
           <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <div className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-pink-300">
+              <div className="inline-flex rounded-full border border-pink-200 bg-white/80 px-3 py-1.5 text-xs font-semibold text-pink-700">
                 Gestion des invités
               </div>
 
-              <h1 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-                Vos invités 👥
+              <h1 className="mt-5 text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl lg:text-5xl">
+                Vos invités
               </h1>
 
-              <p className="mt-4 max-w-xl text-sm leading-6 text-gray-300 sm:text-base sm:leading-7">
+              <p className="mt-4 max-w-xl text-sm leading-6 text-gray-600 sm:text-base sm:leading-7">
                 Ajoutez vos invités, gérez leurs accompagnants
                 et partagez facilement leur lien personnel
                 d’invitation.
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 backdrop-blur">
-              <p className="text-xs text-gray-400">
+            <div className="rounded-2xl border border-purple-100 bg-white/80 px-5 py-4 shadow-sm backdrop-blur">
+              <p className="text-xs font-medium text-gray-500">
                 Personnes attendues
               </p>
 
-              <p className="mt-1 text-3xl font-bold text-pink-300">
+              <p className="mt-1 text-3xl font-bold text-purple-700">
                 {totalExpectedPeople}
               </p>
             </div>
@@ -285,34 +283,30 @@ export default function GuestsPage() {
         {/* Statistiques */}
         <section className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
           <StatCard
-            icon="👥"
             label="Invités"
             value={guests.length}
+            variant="default"
           />
 
           <StatCard
-            icon="✓"
             label="Présents"
             value={acceptedCount}
             variant="green"
           />
 
           <StatCard
-            icon="✕"
             label="Absents"
             value={declinedCount}
             variant="red"
           />
 
           <StatCard
-            icon="⏳"
             label="En attente"
             value={pendingCount + maybeCount}
             variant="yellow"
           />
 
           <StatCard
-            icon="🎟️"
             label="Personnes attendues"
             value={totalExpectedPeople}
             variant="pink"
@@ -323,21 +317,21 @@ export default function GuestsPage() {
         {acceptedCount > 0 && (
           <section className="mt-4 grid gap-3 sm:grid-cols-3">
             <SmallSummary
-              icon="🙋"
               value={acceptedCount}
               label="invités présents"
+              variant="green"
             />
 
             <SmallSummary
-              icon="🤝"
               value={totalCompanions}
               label="accompagnants"
+              variant="blue"
             />
 
             <SmallSummary
-              icon="👶"
               value={totalChildren}
               label="enfants"
+              variant="purple"
             />
           </section>
         )}
@@ -345,17 +339,15 @@ export default function GuestsPage() {
         {/* Contenu */}
         <div className="mt-8 grid items-start gap-6 lg:grid-cols-[380px_minmax(0,1fr)]">
           {/* Formulaire */}
-          <section className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:p-6 lg:sticky lg:top-28">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-pink-50 text-xl">
-              ➕
-            </div>
+          <section className="rounded-[28px] border border-pink-100 bg-white p-5 shadow-sm sm:p-6 lg:sticky lg:top-28">
+            <div className="h-1 w-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500" />
 
-            <h2 className="mt-4 text-xl font-bold text-gray-950">
+            <h2 className="mt-5 text-xl font-bold text-gray-950">
               Ajouter un invité
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-gray-500">
-              Chaque invité recevra son propre lien
+              Chaque invité dispose de son propre lien
               d’invitation.
             </p>
 
@@ -395,7 +387,7 @@ export default function GuestsPage() {
                   type="text"
                   required
                   placeholder="Ex. Dupont"
-                  className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-pink-400 focus:ring-4 focus:ring-pink-50"
+                  className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-purple-400 focus:ring-4 focus:ring-purple-50"
                 />
               </div>
 
@@ -418,7 +410,7 @@ export default function GuestsPage() {
                   name="email"
                   type="email"
                   placeholder="exemple@email.com"
-                  className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-pink-400 focus:ring-4 focus:ring-pink-50"
+                  className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-50"
                 />
               </div>
 
@@ -438,7 +430,7 @@ export default function GuestsPage() {
                   max="20"
                   defaultValue="0"
                   required
-                  className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-900 outline-none transition focus:border-pink-400 focus:ring-4 focus:ring-pink-50"
+                  className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-900 outline-none transition focus:border-purple-400 focus:ring-4 focus:ring-purple-50"
                 />
 
                 <p className="mt-2 text-xs leading-5 text-gray-400">
@@ -462,17 +454,17 @@ export default function GuestsPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-full bg-pink-600 px-5 py-3.5 font-semibold text-white shadow-sm transition hover:bg-pink-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-full bg-gradient-to-r from-pink-600 to-purple-600 px-5 py-3.5 font-semibold text-white shadow-sm transition hover:from-pink-700 hover:to-purple-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading
                   ? "Ajout en cours..."
-                  : "+ Ajouter l’invité"}
+                  : "Ajouter l’invité"}
               </button>
             </form>
           </section>
 
           {/* Liste */}
-          <section className="min-w-0 rounded-[28px] border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
+          <section className="min-w-0 rounded-[28px] border border-purple-100 bg-white p-4 shadow-sm sm:p-6">
             <div className="flex flex-col gap-3 border-b border-gray-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-xl font-bold text-gray-950">
@@ -485,7 +477,7 @@ export default function GuestsPage() {
                 </p>
               </div>
 
-              <span className="w-fit rounded-full bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-600">
+              <span className="w-fit rounded-full bg-purple-50 px-3 py-1.5 text-xs font-semibold text-purple-700">
                 {guests.length} invité
                 {guests.length !== 1 ? "s" : ""}
               </span>
@@ -501,11 +493,9 @@ export default function GuestsPage() {
               </div>
             ) : guests.length === 0 ? (
               <div className="py-14 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-pink-50 text-2xl">
-                  👥
-                </div>
+                <div className="mx-auto h-1 w-16 rounded-full bg-pink-500" />
 
-                <h3 className="mt-4 font-bold text-gray-900">
+                <h3 className="mt-5 font-bold text-gray-900">
                   Aucun invité pour le moment
                 </h3>
 
@@ -537,12 +527,12 @@ export default function GuestsPage() {
                   return (
                     <article
                       key={guest.id}
-                      className="overflow-hidden rounded-2xl border border-gray-100 bg-white transition hover:border-gray-200 hover:shadow-sm"
+                      className="overflow-hidden rounded-2xl border border-gray-100 bg-white transition hover:border-pink-100 hover:shadow-sm"
                     >
                       <div className="p-4 sm:p-5">
                         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                           <div className="flex min-w-0 gap-3 sm:gap-4">
-                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gray-100 font-bold text-gray-700">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-pink-50 to-purple-50 font-bold text-purple-700">
                               {guest.firstName
                                 .charAt(0)
                                 .toUpperCase()}
@@ -595,14 +585,14 @@ export default function GuestsPage() {
                             rel="noopener noreferrer"
                             className="inline-flex w-full shrink-0 items-center justify-center rounded-full border border-pink-200 bg-pink-50 px-4 py-2.5 text-sm font-semibold text-pink-700 transition hover:bg-pink-100 sm:w-auto"
                           >
-                            Ouvrir l’invitation ↗
+                            Ouvrir l’invitation
                           </Link>
                         </div>
 
                         {/* Lien individuel */}
-                        <div className="mt-5 rounded-2xl border border-pink-100 bg-pink-50/50 p-3 sm:p-4">
-                          <p className="text-xs font-bold uppercase tracking-wide text-pink-700">
-                            🔗 Lien individuel
+                        <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50/50 p-3 sm:p-4">
+                          <p className="text-xs font-bold uppercase tracking-wide text-blue-700">
+                            Lien individuel
                           </p>
 
                           <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -626,8 +616,8 @@ export default function GuestsPage() {
                               }`}
                             >
                               {copiedGuestId === guest.id
-                                ? "✓ Lien copié"
-                                : "📋 Copier le lien"}
+                                ? "Lien copié"
+                                : "Copier le lien"}
                             </button>
                           </div>
 
@@ -640,21 +630,21 @@ export default function GuestsPage() {
                         {guest.status === "accepted" && (
                           <div className="mt-5 grid gap-3 sm:grid-cols-3">
                             <GuestInfo
-                              icon="🙋"
                               label="Invité"
                               value="1"
+                              variant="green"
                             />
 
                             <GuestInfo
-                              icon="🤝"
                               label="Accompagnants"
                               value={String(companionCount)}
+                              variant="blue"
                             />
 
                             <GuestInfo
-                              icon="👶"
                               label="Enfants"
                               value={String(childrenCount)}
+                              variant="purple"
                             />
                           </div>
                         )}
@@ -663,7 +653,6 @@ export default function GuestsPage() {
                           childrenCount > 0 && (
                             <div className="mt-3 rounded-2xl border border-purple-100 bg-purple-50/70 px-4 py-3">
                               <p className="text-sm font-semibold text-purple-700">
-                                👶{" "}
                                 {childrenCount === 1
                                   ? "1 enfant"
                                   : `${childrenCount} enfants`}
@@ -681,7 +670,7 @@ export default function GuestsPage() {
                           )}
 
                         {guest.status === "accepted" && (
-                          <div className="mt-4 flex flex-col gap-2 rounded-2xl bg-green-50/60 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="mt-4 flex flex-col gap-2 rounded-2xl border border-green-100 bg-green-50/60 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                             <p className="text-sm font-medium text-green-700">
                               {companionCount === 0
                                 ? "Vient seul(e)"
@@ -744,9 +733,9 @@ export default function GuestsPage() {
         <div className="mt-10 border-t border-gray-200 py-7">
           <Link
             href={`/dashboard/events/${id}`}
-            className="text-sm font-semibold text-pink-600 transition hover:text-pink-700"
+            className="inline-flex rounded-full border border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-700 transition hover:border-pink-200 hover:text-pink-600"
           >
-            ← Retour à l’événement
+            Retour à l’événement
           </Link>
         </div>
       </div>
@@ -755,13 +744,11 @@ export default function GuestsPage() {
 }
 
 function StatCard({
-  icon,
   label,
   value,
   variant = "default",
   wideOnMobile = false,
 }: {
-  icon: string;
   label: string;
   value: number;
   variant?:
@@ -774,28 +761,28 @@ function StatCard({
 }) {
   const styles = {
     default: {
-      card: "bg-white",
-      icon: "bg-gray-100 text-gray-700",
+      card: "bg-white border-gray-100",
+      line: "bg-gray-300",
       value: "text-gray-950",
     },
     green: {
-      card: "bg-green-50/70",
-      icon: "bg-green-100 text-green-700",
+      card: "bg-green-50/70 border-green-100",
+      line: "bg-green-500",
       value: "text-green-700",
     },
     red: {
-      card: "bg-red-50/70",
-      icon: "bg-red-100 text-red-700",
+      card: "bg-red-50/70 border-red-100",
+      line: "bg-red-500",
       value: "text-red-700",
     },
     yellow: {
-      card: "bg-yellow-50/70",
-      icon: "bg-yellow-100 text-yellow-700",
+      card: "bg-yellow-50/70 border-yellow-100",
+      line: "bg-yellow-500",
       value: "text-yellow-700",
     },
     pink: {
-      card: "bg-pink-50/80",
-      icon: "bg-pink-100 text-pink-700",
+      card: "bg-pink-50/80 border-pink-100",
+      line: "bg-pink-500",
       value: "text-pink-700",
     },
   };
@@ -804,15 +791,11 @@ function StatCard({
 
   return (
     <div
-      className={`min-w-0 rounded-2xl border border-white/70 p-4 shadow-sm sm:p-5 ${
+      className={`min-w-0 rounded-2xl border p-4 shadow-sm sm:p-5 ${
         style.card
       } ${wideOnMobile ? "col-span-2 lg:col-span-1" : ""}`}
     >
-      <div
-        className={`flex h-9 w-9 items-center justify-center rounded-xl text-sm font-bold ${style.icon}`}
-      >
-        {icon}
-      </div>
+      <div className={`h-1 w-8 rounded-full ${style.line}`} />
 
       <p className="mt-4 break-words text-xs font-medium leading-5 text-gray-500 sm:text-sm">
         {label}
@@ -828,53 +811,65 @@ function StatCard({
 }
 
 function SmallSummary({
-  icon,
   value,
   label,
+  variant,
 }: {
-  icon: string;
   value: number;
   label: string;
+  variant: "green" | "blue" | "purple";
 }) {
+  const styles = {
+    green:
+      "border-green-100 bg-green-50 text-green-700",
+    blue:
+      "border-blue-100 bg-blue-50 text-blue-700",
+    purple:
+      "border-purple-100 bg-purple-50 text-purple-700",
+  };
+
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-50 text-lg">
-        {icon}
-      </div>
+    <div
+      className={`rounded-2xl border p-4 shadow-sm ${styles[variant]}`}
+    >
+      <p className="text-xl font-bold">
+        {value}
+      </p>
 
-      <div className="min-w-0">
-        <p className="text-lg font-bold text-gray-950">
-          {value}
-        </p>
-
-        <p className="break-words text-xs text-gray-500">
-          {label}
-        </p>
-      </div>
+      <p className="mt-1 break-words text-xs opacity-80">
+        {label}
+      </p>
     </div>
   );
 }
 
 function GuestInfo({
-  icon,
   label,
   value,
+  variant,
 }: {
-  icon: string;
   label: string;
   value: string;
+  variant: "green" | "blue" | "purple";
 }) {
+  const styles = {
+    green:
+      "border-green-100 bg-green-50 text-green-700",
+    blue:
+      "border-blue-100 bg-blue-50 text-blue-700",
+    purple:
+      "border-purple-100 bg-purple-50 text-purple-700",
+  };
+
   return (
-    <div className="rounded-2xl bg-gray-50 p-3">
-      <div className="flex items-center gap-2">
-        <span>{icon}</span>
+    <div
+      className={`rounded-2xl border p-3 ${styles[variant]}`}
+    >
+      <p className="text-xs opacity-75">
+        {label}
+      </p>
 
-        <span className="text-xs text-gray-500">
-          {label}
-        </span>
-      </div>
-
-      <p className="mt-2 text-lg font-bold text-gray-950">
+      <p className="mt-2 text-lg font-bold">
         {value}
       </p>
     </div>

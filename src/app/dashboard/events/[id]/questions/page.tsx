@@ -21,11 +21,11 @@ function getQuestionTypeLabel(type: string) {
   return "Réponse courte";
 }
 
-function getQuestionTypeIcon(type: string) {
-  if (type === "textarea") return "☰";
-  if (type === "yes_no") return "✓";
+function getQuestionTypeCode(type: string) {
+  if (type === "textarea") return "LONG";
+  if (type === "yes_no") return "O/N";
   if (type === "number") return "123";
-  return "Aa";
+  return "ABC";
 }
 
 export default function QuestionsPage() {
@@ -35,25 +35,29 @@ export default function QuestionsPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loadingQuestions, setLoadingQuestions] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [deletingQuestionId, setDeletingQuestionId] = useState<number | null>(
-    null
-  );
+  const [deletingQuestionId, setDeletingQuestionId] =
+    useState<number | null>(null);
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const [conditionQuestionId, setConditionQuestionId] = useState("");
+  const [conditionQuestionId, setConditionQuestionId] =
+    useState("");
   const [conditionValue, setConditionValue] = useState("");
 
   useEffect(() => {
     async function loadQuestions() {
       try {
-        const response = await fetch(`/api/events/${id}/questions`);
+        const response = await fetch(
+          `/api/events/${id}/questions`
+        );
+
         const result = await response.json();
 
         if (!response.ok) {
           setError(
-            result.error || "Impossible de charger les questions."
+            result.error ||
+              "Impossible de charger les questions."
           );
           return;
         }
@@ -71,7 +75,9 @@ export default function QuestionsPage() {
     loadQuestions();
   }, [id]);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    event: FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
 
     const form = event.currentTarget;
@@ -106,19 +112,23 @@ export default function QuestionsPage() {
     }
 
     try {
-      const response = await fetch(`/api/events/${id}/questions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        `/api/events/${id}/questions`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
 
       const result = await response.json();
 
       if (!response.ok) {
         setError(
-          result.error || "Impossible d’ajouter la question."
+          result.error ||
+            "Impossible d’ajouter la question."
         );
         return;
       }
@@ -128,7 +138,7 @@ export default function QuestionsPage() {
         result.question,
       ]);
 
-      setSuccess("Question ajoutée avec succès !");
+      setSuccess("Question ajoutée avec succès.");
       form.reset();
       setConditionQuestionId("");
       setConditionValue("");
@@ -141,7 +151,9 @@ export default function QuestionsPage() {
     }
   }
 
-  async function handleDeleteQuestion(question: Question) {
+  async function handleDeleteQuestion(
+    question: Question
+  ) {
     const confirmed = window.confirm(
       `Voulez-vous vraiment supprimer la question « ${question.label} » ?`
     );
@@ -166,7 +178,8 @@ export default function QuestionsPage() {
 
       if (!response.ok) {
         setError(
-          result.error || "Impossible de supprimer la question."
+          result.error ||
+            "Impossible de supprimer la question."
         );
         return;
       }
@@ -185,12 +198,14 @@ export default function QuestionsPage() {
           )
       );
 
-      if (conditionQuestionId === String(question.id)) {
+      if (
+        conditionQuestionId === String(question.id)
+      ) {
         setConditionQuestionId("");
         setConditionValue("");
       }
 
-      setSuccess("Question supprimée avec succès !");
+      setSuccess("Question supprimée avec succès.");
     } catch {
       setError(
         "Impossible de supprimer la question pour le moment."
@@ -201,7 +216,8 @@ export default function QuestionsPage() {
   }
 
   const selectedConditionQuestion = questions.find(
-    (question) => question.id === Number(conditionQuestionId)
+    (question) =>
+      question.id === Number(conditionQuestionId)
   );
 
   const requiredQuestions = questions.filter(
@@ -209,84 +225,101 @@ export default function QuestionsPage() {
   ).length;
 
   const conditionalQuestions = questions.filter(
-    (question) => question.conditionQuestionId !== null
+    (question) =>
+      question.conditionQuestionId !== null
   ).length;
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="border-b border-gray-200 bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <Link
-              href={`/dashboard/events/${id}`}
-              className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 transition hover:text-pink-600"
-            >
-              <span aria-hidden="true">←</span>
-              Retour à l’événement
-            </Link>
-
-            <Link
-              href={`/dashboard/events/${id}/guests`}
-              className="inline-flex w-full items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:border-pink-200 hover:bg-pink-50 hover:text-pink-700 sm:w-auto"
-            >
-              Voir les invités
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      <section className="bg-gray-950 text-white">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
-          <div className="max-w-3xl">
-            <div className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-pink-300">
+    <main className="min-h-screen bg-[#faf9fc] text-gray-900">
+      {/* Navigation */}
+      <header className="sticky top-0 z-40 border-b border-pink-100 bg-white/90 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
+          <Link href="/dashboard">
+            <div className="text-2xl font-bold tracking-tight text-pink-600">
               Invity
             </div>
 
-            <h1 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">
+            <div className="hidden text-[10px] font-medium tracking-wide text-gray-400 sm:block">
+              Créez. Invitez. Célébrez.
+            </div>
+          </Link>
+
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/dashboard/events/${id}/guests`}
+              className="hidden rounded-full border border-purple-200 bg-purple-50 px-4 py-2.5 text-sm font-semibold text-purple-700 transition hover:bg-purple-100 sm:inline-flex"
+            >
+              Invités
+            </Link>
+
+            <Link
+              href={`/dashboard/events/${id}`}
+              className="rounded-full border border-gray-200 bg-white px-4 py-2.5 text-xs font-semibold text-gray-700 transition hover:border-pink-200 hover:text-pink-600 sm:px-5 sm:text-sm"
+            >
+              Retour à l’événement
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+        {/* Présentation */}
+        <section className="relative overflow-hidden rounded-[28px] border border-purple-100 bg-gradient-to-br from-purple-50 via-white to-pink-50 px-5 py-8 shadow-sm sm:rounded-[36px] sm:px-8 sm:py-10 lg:px-10">
+          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-purple-200/40 blur-3xl" />
+          <div className="absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-pink-200/40 blur-3xl" />
+
+          <div className="relative">
+            <div className="inline-flex rounded-full border border-purple-200 bg-white/80 px-3 py-1.5 text-xs font-semibold text-purple-700">
+              Formulaire d’invitation
+            </div>
+
+            <h1 className="mt-5 text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl lg:text-5xl">
               Questions personnalisées
             </h1>
 
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-300 sm:text-base">
-              Demandez uniquement les informations dont vous avez besoin.
-              Les réponses seront associées à chaque invité et visibles
-              depuis votre espace organisateur.
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-gray-600 sm:text-base sm:leading-7">
+              Demandez uniquement les informations dont vous
+              avez besoin. Les réponses seront associées à
+              chaque invité et visibles depuis votre espace
+              organisateur.
             </p>
+
+            <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <HeroStat
+                value={questions.length}
+                label={
+                  questions.length > 1
+                    ? "Questions créées"
+                    : "Question créée"
+                }
+                variant="pink"
+              />
+
+              <HeroStat
+                value={requiredQuestions}
+                label={
+                  requiredQuestions > 1
+                    ? "Questions obligatoires"
+                    : "Question obligatoire"
+                }
+                variant="green"
+              />
+
+              <HeroStat
+                value={conditionalQuestions}
+                label={
+                  conditionalQuestions > 1
+                    ? "Questions conditionnelles"
+                    : "Question conditionnelle"
+                }
+                variant="purple"
+              />
+            </div>
           </div>
+        </section>
 
-          <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <HeroStat
-              value={questions.length}
-              label={
-                questions.length > 1
-                  ? "Questions créées"
-                  : "Question créée"
-              }
-            />
-
-            <HeroStat
-              value={requiredQuestions}
-              label={
-                requiredQuestions > 1
-                  ? "Questions obligatoires"
-                  : "Question obligatoire"
-              }
-            />
-
-            <HeroStat
-              value={conditionalQuestions}
-              label={
-                conditionalQuestions > 1
-                  ? "Questions conditionnelles"
-                  : "Question conditionnelle"
-              }
-            />
-          </div>
-        </div>
-      </section>
-
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
         {(error || success) && (
-          <div className="mb-6 space-y-3">
+          <div className="mt-6 space-y-3">
             {error && (
               <div
                 role="alert"
@@ -307,26 +340,21 @@ export default function QuestionsPage() {
           </div>
         )}
 
-        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
-          <section className="lg:sticky lg:top-6">
-            <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
-              <div className="border-b border-gray-100 px-5 py-5 sm:px-6">
-                <div className="flex items-start gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-pink-50 text-xl">
-                    ✦
-                  </div>
+        <div className="mt-8 grid items-start gap-8 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
+          {/* Formulaire */}
+          <section className="lg:sticky lg:top-28">
+            <div className="overflow-hidden rounded-[28px] border border-pink-100 bg-white shadow-sm">
+              <div className="border-b border-pink-50 bg-gradient-to-r from-pink-50/80 to-white px-5 py-5 sm:px-6">
+                <div className="h-1 w-12 rounded-full bg-pink-500" />
 
-                  <div>
-                    <h2 className="text-lg font-bold text-gray-950">
-                      Ajouter une question
-                    </h2>
+                <h2 className="mt-5 text-lg font-bold text-gray-950">
+                  Ajouter une question
+                </h2>
 
-                    <p className="mt-1 text-sm leading-5 text-gray-500">
-                      Cette question apparaîtra sur l’invitation de vos
-                      invités.
-                    </p>
-                  </div>
-                </div>
+                <p className="mt-1 text-sm leading-5 text-gray-500">
+                  Cette question apparaîtra sur
+                  l’invitation de vos invités.
+                </p>
               </div>
 
               <form
@@ -368,20 +396,28 @@ export default function QuestionsPage() {
                     id="type"
                     name="type"
                     defaultValue="text"
-                    className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-900 outline-none transition focus:border-pink-400 focus:ring-4 focus:ring-pink-50"
+                    className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base text-gray-900 outline-none transition focus:border-purple-400 focus:ring-4 focus:ring-purple-50"
                   >
-                    <option value="text">Réponse courte</option>
-                    <option value="textarea">Réponse longue</option>
-                    <option value="yes_no">Oui / Non</option>
-                    <option value="number">Nombre</option>
+                    <option value="text">
+                      Réponse courte
+                    </option>
+                    <option value="textarea">
+                      Réponse longue
+                    </option>
+                    <option value="yes_no">
+                      Oui / Non
+                    </option>
+                    <option value="number">
+                      Nombre
+                    </option>
                   </select>
                 </div>
 
-                <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-gray-100 bg-gray-50 p-4 transition hover:border-gray-200">
+                <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-green-100 bg-green-50/50 p-4 transition hover:bg-green-50">
                   <input
                     name="required"
                     type="checkbox"
-                    className="mt-1 h-4 w-4 shrink-0 accent-pink-600"
+                    className="mt-1 h-4 w-4 shrink-0 accent-green-600"
                   />
 
                   <span>
@@ -390,31 +426,26 @@ export default function QuestionsPage() {
                     </span>
 
                     <span className="mt-1 block text-xs leading-5 text-gray-500">
-                      L’invité devra répondre à cette question avant de
-                      pouvoir valider sa réponse à l’invitation.
+                      L’invité devra répondre à cette
+                      question avant de pouvoir valider sa
+                      réponse à l’invitation.
                     </span>
                   </span>
                 </label>
 
                 {questions.length > 0 && (
-                  <div className="rounded-2xl border border-pink-100 bg-pink-50/70 p-4 sm:p-5">
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-pink-600 shadow-sm">
-                        ↳
-                      </div>
+                  <div className="rounded-2xl border border-purple-100 bg-purple-50/60 p-4 sm:p-5">
+                    <div className="h-1 w-10 rounded-full bg-purple-500" />
 
-                      <div>
-                        <h3 className="text-sm font-bold text-gray-900">
-                          Affichage conditionnel
-                        </h3>
+                    <h3 className="mt-4 text-sm font-bold text-gray-900">
+                      Affichage conditionnel
+                    </h3>
 
-                        <p className="mt-1 text-xs leading-5 text-gray-600">
-                          Affichez cette question uniquement lorsque
-                          l’invité a donné une réponse précise à une autre
-                          question.
-                        </p>
-                      </div>
-                    </div>
+                    <p className="mt-1 text-xs leading-5 text-gray-600">
+                      Affichez cette question uniquement
+                      lorsque l’invité a donné une réponse
+                      précise à une autre question.
+                    </p>
 
                     <div className="mt-5">
                       <label
@@ -428,12 +459,16 @@ export default function QuestionsPage() {
                         id="conditionQuestion"
                         value={conditionQuestionId}
                         onChange={(event) => {
-                          setConditionQuestionId(event.target.value);
+                          setConditionQuestionId(
+                            event.target.value
+                          );
                           setConditionValue("");
                         }}
-                        className="mt-2 w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-pink-400 focus:ring-4 focus:ring-pink-100"
+                        className="mt-2 w-full rounded-xl border border-purple-100 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-400 focus:ring-4 focus:ring-purple-100"
                       >
-                        <option value="">Aucune condition</option>
+                        <option value="">
+                          Aucune condition
+                        </option>
 
                         {questions.map((question) => (
                           <option
@@ -461,16 +496,22 @@ export default function QuestionsPage() {
                             id="conditionValue"
                             value={conditionValue}
                             onChange={(event) =>
-                              setConditionValue(event.target.value)
+                              setConditionValue(
+                                event.target.value
+                              )
                             }
                             required
-                            className="mt-2 w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-pink-400 focus:ring-4 focus:ring-pink-100"
+                            className="mt-2 w-full rounded-xl border border-purple-100 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-400 focus:ring-4 focus:ring-purple-100"
                           >
                             <option value="">
                               Choisir une réponse
                             </option>
-                            <option value="Oui">Oui</option>
-                            <option value="Non">Non</option>
+                            <option value="Oui">
+                              Oui
+                            </option>
+                            <option value="Non">
+                              Non
+                            </option>
                           </select>
                         ) : (
                           <input
@@ -478,11 +519,13 @@ export default function QuestionsPage() {
                             type="text"
                             value={conditionValue}
                             onChange={(event) =>
-                              setConditionValue(event.target.value)
+                              setConditionValue(
+                                event.target.value
+                              )
                             }
                             required
                             placeholder="Ex. Oui"
-                            className="mt-2 w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-pink-400 focus:ring-4 focus:ring-pink-100"
+                            className="mt-2 w-full rounded-xl border border-purple-100 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-400 focus:ring-4 focus:ring-purple-100"
                           />
                         )}
 
@@ -490,9 +533,9 @@ export default function QuestionsPage() {
                           <strong className="text-gray-800">
                             Exemple :
                           </strong>{" "}
-                          « Précisez vos allergies » peut s’afficher
-                          uniquement si « Avez-vous des allergies ? »
-                          vaut « Oui ».
+                          « Précisez vos allergies » peut
+                          s’afficher uniquement si « Avez-vous
+                          des allergies ? » vaut « Oui ».
                         </div>
                       </div>
                     )}
@@ -502,16 +545,19 @@ export default function QuestionsPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-pink-600 px-5 py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-pink-700 focus:outline-none focus:ring-4 focus:ring-pink-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 px-5 py-3.5 text-sm font-bold text-white shadow-sm transition hover:from-pink-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-pink-100 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {loading ? "Ajout en cours..." : "Ajouter la question"}
+                  {loading
+                    ? "Ajout en cours..."
+                    : "Ajouter la question"}
                 </button>
               </form>
             </div>
           </section>
 
+          {/* Liste */}
           <section className="min-w-0">
-            <div className="rounded-3xl border border-gray-200 bg-white shadow-sm">
+            <div className="rounded-[28px] border border-purple-100 bg-white shadow-sm">
               <div className="flex flex-col gap-3 border-b border-gray-100 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                 <div>
                   <h2 className="text-lg font-bold text-gray-950">
@@ -519,11 +565,12 @@ export default function QuestionsPage() {
                   </h2>
 
                   <p className="mt-1 text-sm text-gray-500">
-                    Elles apparaîtront dans cet ordre sur l’invitation.
+                    Elles apparaîtront dans cet ordre sur
+                    l’invitation.
                   </p>
                 </div>
 
-                <span className="inline-flex w-fit rounded-full bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-600">
+                <span className="inline-flex w-fit rounded-full bg-purple-50 px-3 py-1.5 text-xs font-bold text-purple-700">
                   {questions.length} question
                   {questions.length > 1 ? "s" : ""}
                 </span>
@@ -534,148 +581,174 @@ export default function QuestionsPage() {
                   <div className="flex min-h-48 items-center justify-center rounded-2xl bg-gray-50 px-6 text-center">
                     <div>
                       <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-gray-200 border-t-pink-600" />
+
                       <p className="mt-4 text-sm font-medium text-gray-500">
                         Chargement des questions...
                       </p>
                     </div>
                   </div>
                 ) : questions.length === 0 ? (
-                  <div className="flex min-h-64 items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-10 text-center">
+                  <div className="flex min-h-64 items-center justify-center rounded-2xl border border-dashed border-purple-200 bg-purple-50/30 px-6 py-10 text-center">
                     <div className="max-w-sm">
-                      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
-                        ?
-                      </div>
+                      <div className="mx-auto h-1 w-16 rounded-full bg-purple-500" />
 
                       <h3 className="mt-5 font-bold text-gray-900">
                         Aucune question personnalisée
                       </h3>
 
                       <p className="mt-2 text-sm leading-6 text-gray-500">
-                        Ajoutez votre première question avec le formulaire.
-                        Vous pourrez ensuite créer des questions
-                        conditionnelles.
+                        Ajoutez votre première question avec
+                        le formulaire. Vous pourrez ensuite
+                        créer des questions conditionnelles.
                       </p>
                     </div>
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {questions.map((question, index) => {
-                      const parentQuestion = questions.find(
-                        (item) =>
-                          item.id === question.conditionQuestionId
-                      );
+                    {questions.map(
+                      (question, index) => {
+                        const parentQuestion =
+                          questions.find(
+                            (item) =>
+                              item.id ===
+                              question.conditionQuestionId
+                          );
 
-                      return (
-                        <article
-                          key={question.id}
-                          className="group overflow-hidden rounded-2xl border border-gray-200 bg-white transition hover:border-gray-300 hover:shadow-sm"
-                        >
-                          <div className="p-4 sm:p-5">
-                            <div className="flex items-start gap-3 sm:gap-4">
-                              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-950 text-xs font-bold text-white">
-                                {getQuestionTypeIcon(question.type)}
-                              </div>
-
-                              <div className="min-w-0 flex-1">
-                                <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-                                  <div className="min-w-0">
-                                    <p className="text-xs font-bold uppercase tracking-[0.15em] text-gray-400">
-                                      Question {index + 1}
-                                    </p>
-
-                                    <h3 className="mt-1.5 break-words text-sm font-bold leading-6 text-gray-950 sm:text-base">
-                                      {question.label}
-                                    </h3>
-                                  </div>
-
-                                  <div className="flex shrink-0 flex-wrap gap-2">
-                                    <span className="rounded-full bg-pink-50 px-3 py-1 text-xs font-bold text-pink-700">
-                                      {getQuestionTypeLabel(question.type)}
-                                    </span>
-
-                                    <span
-                                      className={`rounded-full px-3 py-1 text-xs font-bold ${
-                                        question.required
-                                          ? "bg-green-50 text-green-700"
-                                          : "bg-gray-100 text-gray-600"
-                                      }`}
-                                    >
-                                      {question.required
-                                        ? "Obligatoire"
-                                        : "Facultative"}
-                                    </span>
-
-                                    {question.conditionQuestionId && (
-                                      <span className="rounded-full bg-purple-50 px-3 py-1 text-xs font-bold text-purple-700">
-                                        Conditionnelle
-                                      </span>
-                                    )}
-                                  </div>
+                        return (
+                          <article
+                            key={question.id}
+                            className="group overflow-hidden rounded-2xl border border-gray-200 bg-white transition hover:border-purple-200 hover:shadow-sm"
+                          >
+                            <div className="p-4 sm:p-5">
+                              <div className="flex items-start gap-3 sm:gap-4">
+                                <div className="flex h-11 min-w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-pink-50 to-purple-50 px-2 text-[10px] font-bold text-purple-700">
+                                  {getQuestionTypeCode(
+                                    question.type
+                                  )}
                                 </div>
 
-                                {parentQuestion &&
-                                  question.conditionValue && (
-                                    <div className="mt-4 rounded-xl border border-purple-100 bg-purple-50 px-3 py-3 text-xs leading-5 text-purple-800 sm:text-sm">
-                                      <span className="font-bold">
-                                        Affichée si :
-                                      </span>{" "}
-                                      « {parentQuestion.label} » = «{" "}
-                                      {question.conditionValue} »
-                                    </div>
-                                  )}
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+                                    <div className="min-w-0">
+                                      <p className="text-xs font-bold uppercase tracking-[0.15em] text-gray-400">
+                                        Question {index + 1}
+                                      </p>
 
-                                <div className="mt-4 flex flex-col gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-                                  <div className="text-xs text-gray-400">
-                                    Position {index + 1}
+                                      <h3 className="mt-1.5 break-words text-sm font-bold leading-6 text-gray-950 sm:text-base">
+                                        {question.label}
+                                      </h3>
+                                    </div>
+
+                                    <div className="flex shrink-0 flex-wrap gap-2">
+                                      <span className="rounded-full bg-pink-50 px-3 py-1 text-xs font-bold text-pink-700">
+                                        {getQuestionTypeLabel(
+                                          question.type
+                                        )}
+                                      </span>
+
+                                      <span
+                                        className={`rounded-full px-3 py-1 text-xs font-bold ${
+                                          question.required
+                                            ? "bg-green-50 text-green-700"
+                                            : "bg-gray-100 text-gray-600"
+                                        }`}
+                                      >
+                                        {question.required
+                                          ? "Obligatoire"
+                                          : "Facultative"}
+                                      </span>
+
+                                      {question.conditionQuestionId && (
+                                        <span className="rounded-full bg-purple-50 px-3 py-1 text-xs font-bold text-purple-700">
+                                          Conditionnelle
+                                        </span>
+                                      )}
+                                    </div>
                                   </div>
 
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      handleDeleteQuestion(question)
-                                    }
-                                    disabled={
-                                      deletingQuestionId === question.id
-                                    }
-                                    className="inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-red-100 bg-red-50 px-4 py-2 text-xs font-bold text-red-700 transition hover:border-red-200 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-                                  >
-                                    {deletingQuestionId === question.id
-                                      ? "Suppression..."
-                                      : "Supprimer"}
-                                  </button>
+                                  {parentQuestion &&
+                                    question.conditionValue && (
+                                      <div className="mt-4 rounded-xl border border-purple-100 bg-purple-50 px-3 py-3 text-xs leading-5 text-purple-800 sm:text-sm">
+                                        <span className="font-bold">
+                                          Affichée si :
+                                        </span>{" "}
+                                        « {parentQuestion.label} »
+                                        = «{" "}
+                                        {
+                                          question.conditionValue
+                                        }{" "}
+                                        »
+                                      </div>
+                                    )}
+
+                                  <div className="mt-4 flex flex-col gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                                    <div className="text-xs text-gray-400">
+                                      Position {index + 1}
+                                    </div>
+
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        handleDeleteQuestion(
+                                          question
+                                        )
+                                      }
+                                      disabled={
+                                        deletingQuestionId ===
+                                        question.id
+                                      }
+                                      className="inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-red-100 bg-red-50 px-4 py-2 text-xs font-bold text-red-700 transition hover:border-red-200 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                                    >
+                                      {deletingQuestionId ===
+                                      question.id
+                                        ? "Suppression..."
+                                        : "Supprimer"}
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        </article>
-                      );
-                    })}
+                          </article>
+                        );
+                      }
+                    )}
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50 p-4 sm:p-5">
-              <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-sm shadow-sm">
-                  💡
-                </div>
+            {/* Information enfants */}
+            <div className="mt-5 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-4 sm:p-5">
+              <div className="h-1 w-10 rounded-full bg-blue-500" />
 
-                <div>
-                  <h3 className="text-sm font-bold text-gray-900">
-                    À propos des enfants
-                  </h3>
+              <h3 className="mt-4 text-sm font-bold text-gray-900">
+                À propos des enfants
+              </h3>
 
-                  <p className="mt-1 text-xs leading-5 text-gray-600 sm:text-sm">
-                    Les informations concernant les enfants sont gérées
-                    automatiquement selon les règles configurées pour
-                    l’événement. Vous n’avez pas besoin de recréer ces
-                    questions ici.
-                  </p>
-                </div>
-              </div>
+              <p className="mt-1 text-xs leading-5 text-gray-600 sm:text-sm">
+                Les informations concernant les enfants sont
+                gérées automatiquement selon les règles
+                configurées pour l’événement. Vous n’avez pas
+                besoin de recréer ces questions ici.
+              </p>
             </div>
           </section>
+        </div>
+
+        <div className="mt-10 flex flex-col gap-3 border-t border-gray-200 py-7 sm:flex-row">
+          <Link
+            href={`/dashboard/events/${id}`}
+            className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-700 transition hover:border-pink-200 hover:text-pink-600"
+          >
+            Retour à l’événement
+          </Link>
+
+          <Link
+            href={`/dashboard/events/${id}/guests`}
+            className="inline-flex items-center justify-center rounded-full border border-purple-200 bg-purple-50 px-5 py-3 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
+          >
+            Voir les invités
+          </Link>
         </div>
       </div>
     </main>
@@ -685,14 +758,29 @@ export default function QuestionsPage() {
 function HeroStat({
   value,
   label,
+  variant,
 }: {
   value: number;
   label: string;
+  variant: "pink" | "green" | "purple";
 }) {
+  const styles = {
+    pink: "border-pink-100 bg-pink-50 text-pink-700",
+    green:
+      "border-green-100 bg-green-50 text-green-700",
+    purple:
+      "border-purple-100 bg-purple-50 text-purple-700",
+  };
+
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
-      <p className="text-2xl font-bold text-white">{value}</p>
-      <p className="mt-1 text-xs font-medium text-gray-400 sm:text-sm">
+    <div
+      className={`rounded-2xl border p-4 ${styles[variant]}`}
+    >
+      <p className="text-2xl font-bold">
+        {value}
+      </p>
+
+      <p className="mt-1 text-xs font-medium opacity-75 sm:text-sm">
         {label}
       </p>
     </div>

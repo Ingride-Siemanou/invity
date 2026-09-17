@@ -9,9 +9,9 @@ type InvitationPageProps = {
 };
 
 function formatEventDate(date: string) {
-  // On découpe manuellement YYYY-MM-DD pour éviter
-  // les problèmes de fuseau horaire avec new Date().
-  const match = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const match = date.match(
+    /^(\d{4})-(\d{2})-(\d{2})$/
+  );
 
   if (!match) {
     return date;
@@ -45,7 +45,9 @@ function formatEventDate(date: string) {
     return date;
   }
 
-  return `${Number(day)} ${months[monthIndex]} ${year}`;
+  return `${Number(day)} ${
+    months[monthIndex]
+  } ${year}`;
 }
 
 export default async function InvitationPage({
@@ -69,11 +71,14 @@ export default async function InvitationPage({
     notFound();
   }
 
-  const questions = await db.orm.public.Question
-    .where({ eventId: event.id })
-    .all();
+  const questions =
+    await db.orm.public.Question
+      .where({ eventId: event.id })
+      .all();
 
-  const sortedQuestions = [...questions].sort(
+  const sortedQuestions = [
+    ...questions,
+  ].sort(
     (a, b) => a.position - b.position
   );
 
@@ -98,6 +103,7 @@ export default async function InvitationPage({
 
   const softColor = `${invitationColor}12`;
   const borderColor = `${invitationColor}35`;
+  const mediumColor = `${invitationColor}22`;
 
   const cardRadius = isModern
     ? "rounded-none"
@@ -113,35 +119,50 @@ export default async function InvitationPage({
       ? "font-bold uppercase tracking-wide"
       : isFestive
         ? "font-extrabold"
-        : "font-bold";
+        : "font-serif font-bold";
+
+  const informationRadius = isModern
+    ? "0"
+    : "1rem";
 
   return (
     <main
-      className="min-h-screen px-4 py-8 sm:px-6 sm:py-12"
+      className="min-h-screen px-4 py-6 text-gray-900 sm:px-6 sm:py-12"
       style={{
         backgroundColor: softColor,
       }}
     >
       <div className="mx-auto max-w-3xl">
         <div
-          className={`overflow-hidden bg-white text-center shadow-xl ${cardRadius}`}
+          className={`overflow-hidden border bg-white text-center shadow-xl ${cardRadius}`}
+          style={{
+            borderColor,
+          }}
         >
-          {/* PHOTO DE COUVERTURE */}
+          {/* Photo de couverture */}
           {event.coverImageUrl && (
-            <div className="relative h-56 w-full sm:h-72">
+            <div className="relative h-56 w-full sm:h-72 lg:h-80">
               <img
                 src={event.coverImageUrl}
                 alt={`Photo de couverture de ${event.title}`}
                 className="h-full w-full object-cover"
               />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
             </div>
           )}
 
-          {/* CONTENU */}
-          <div className="p-6 sm:p-8">
-            {/* LOGO */}
+          {/* Bandeau de couleur */}
+          <div
+            className="h-2 w-full"
+            style={{
+              backgroundColor:
+                invitationColor,
+            }}
+          />
+
+          <div className="p-5 sm:p-8 lg:p-10">
+            {/* Marque */}
             <div
               className={`text-3xl font-bold ${
                 isRomantic
@@ -157,17 +178,26 @@ export default async function InvitationPage({
               Invity
             </div>
 
+            {/* Décoration festive sans emoji */}
             {isFestive && (
-              <div className="mt-4 flex justify-center gap-3 text-xl">
-                <span>✨</span>
-                <span>🎉</span>
-                <span>✨</span>
+              <div className="mt-5 flex justify-center gap-2">
+                <span
+                  className="h-2 w-10 rounded-full"
+                  style={{
+                    backgroundColor:
+                      invitationColor,
+                  }}
+                />
+
+                <span className="h-2 w-10 rounded-full bg-purple-300" />
+
+                <span className="h-2 w-10 rounded-full bg-pink-300" />
               </div>
             )}
 
-            {/* INTRODUCTION */}
+            {/* Introduction */}
             <p
-              className="mt-8 text-sm font-semibold uppercase tracking-widest"
+              className="mt-8 text-xs font-bold uppercase tracking-[0.2em] sm:text-sm"
               style={{
                 color: invitationColor,
               }}
@@ -176,201 +206,250 @@ export default async function InvitationPage({
             </p>
 
             <h1
-              className={`mt-3 text-4xl text-gray-900 sm:text-5xl ${titleClass}`}
+              className={`mx-auto mt-3 max-w-2xl break-words text-3xl text-gray-950 sm:text-5xl ${titleClass}`}
             >
               {event.title}
             </h1>
 
-            <p className="mt-6 text-lg text-gray-600">
+            <div
+              className="mx-auto mt-6 h-1 w-16 rounded-full"
+              style={{
+                backgroundColor:
+                  invitationColor,
+              }}
+            />
+
+            <p className="mt-6 text-base text-gray-600 sm:text-lg">
               Bonjour{" "}
-              <span className="font-semibold text-gray-900">
-                {guest.firstName} {guest.lastName}
+              <span className="font-semibold text-gray-950">
+                {guest.firstName}{" "}
+                {guest.lastName}
               </span>
             </p>
 
-            {/* DATE / HEURE / LIEU */}
-            <div
-              className={`mt-8 p-6 ${
-                isModern ? "rounded-none" : "rounded-2xl"
+            {/* Date, heure et lieu */}
+            <section
+              className={`mt-8 overflow-hidden border ${
+                isModern
+                  ? "rounded-none"
+                  : "rounded-2xl"
               }`}
               style={{
-                backgroundColor: softColor,
-                border: `1px solid ${borderColor}`,
+                borderColor,
+                backgroundColor:
+                  softColor,
               }}
             >
-              <p className="font-semibold text-gray-900">
-                {formatEventDate(event.eventDate)}
-              </p>
+              <div className="grid divide-y divide-gray-200/60 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+                <EventDetail
+                  label="Date"
+                  value={formatEventDate(
+                    event.eventDate
+                  )}
+                  color={invitationColor}
+                />
 
-              {event.eventTime && (
-                <p className="mt-2 text-gray-600">
-                  À {event.eventTime}
-                </p>
-              )}
+                {event.eventTime ? (
+                  <EventDetail
+                    label="Heure"
+                    value={event.eventTime}
+                    color={invitationColor}
+                  />
+                ) : (
+                  <EventDetail
+                    label="Heure"
+                    value="À préciser"
+                    color={invitationColor}
+                  />
+                )}
 
-              {event.location && (
-                <p className="mt-2 text-gray-600">
-                  {event.location}
-                </p>
-              )}
-            </div>
+                {event.location ? (
+                  <EventDetail
+                    label="Lieu"
+                    value={event.location}
+                    color={invitationColor}
+                  />
+                ) : (
+                  <EventDetail
+                    label="Lieu"
+                    value="À préciser"
+                    color={invitationColor}
+                  />
+                )}
+              </div>
+            </section>
 
-            {/* DESCRIPTION */}
+            {/* Description */}
             {event.description && (
-              <p className="mt-8 leading-7 text-gray-600">
-                {event.description}
-              </p>
+              <div className="mx-auto mt-8 max-w-2xl">
+                <p className="whitespace-pre-line text-sm leading-7 text-gray-600 sm:text-base">
+                  {event.description}
+                </p>
+              </div>
             )}
 
-            {/* INFORMATIONS */}
-            <div className="mt-8 space-y-4 text-left">
+            {/* Informations */}
+            <div className="mt-10 space-y-4 text-left">
               {guest.maxCompanions > 0 && (
-                <div
-                  className="p-5"
-                  style={{
-                    backgroundColor: softColor,
-                    border: `1px solid ${borderColor}`,
-                    borderRadius: isModern
-                      ? "0"
-                      : "1rem",
-                  }}
+                <InformationCard
+                  title="Accompagnant"
+                  color={invitationColor}
+                  backgroundColor={
+                    softColor
+                  }
+                  borderColor={
+                    borderColor
+                  }
+                  borderRadius={
+                    informationRadius
+                  }
                 >
-                  <p className="font-semibold text-gray-900">
-                    👥 Accompagnant
-                  </p>
-
-                  <p className="mt-2 text-sm leading-6 text-gray-600">
-                    {guest.maxCompanions === 1
-                      ? "Votre invitation vous permet de venir avec 1 accompagnant."
-                      : `Votre invitation vous permet de venir avec jusqu’à ${guest.maxCompanions} accompagnants.`}
-                  </p>
-                </div>
+                  {guest.maxCompanions ===
+                  1
+                    ? "Votre invitation vous permet de venir avec 1 accompagnant."
+                    : `Votre invitation vous permet de venir avec jusqu’à ${guest.maxCompanions} accompagnants.`}
+                </InformationCard>
               )}
 
               {event.childrenPolicy ===
                 "not_allowed" && (
-                <div
-                  className="p-5"
-                  style={{
-                    backgroundColor: softColor,
-                    border: `1px solid ${borderColor}`,
-                    borderRadius: isModern
-                      ? "0"
-                      : "1rem",
-                  }}
+                <InformationCard
+                  title="Enfants"
+                  color={invitationColor}
+                  backgroundColor={
+                    softColor
+                  }
+                  borderColor={
+                    borderColor
+                  }
+                  borderRadius={
+                    informationRadius
+                  }
                 >
-                  <p className="font-semibold text-gray-900">
-                    👶 Enfants
-                  </p>
-
-                  <p className="mt-2 text-sm leading-6 text-gray-600">
-                    Cet événement est réservé
-                    aux adultes.
-                  </p>
-                </div>
+                  Cet événement est
+                  réservé aux adultes.
+                </InformationCard>
               )}
 
               {event.childrenPolicy ===
                 "minimum_age" &&
                 event.minimumChildAge !==
                   null && (
-                  <div
-                    className="p-5"
-                    style={{
-                      backgroundColor: softColor,
-                      border: `1px solid ${borderColor}`,
-                      borderRadius: isModern
-                        ? "0"
-                        : "1rem",
-                    }}
+                  <InformationCard
+                    title="Enfants"
+                    color={
+                      invitationColor
+                    }
+                    backgroundColor={
+                      softColor
+                    }
+                    borderColor={
+                      borderColor
+                    }
+                    borderRadius={
+                      informationRadius
+                    }
                   >
-                    <p className="font-semibold text-gray-900">
-                      👶 Enfants
-                    </p>
-
-                    <p className="mt-2 text-sm leading-6 text-gray-600">
-                      Les enfants sont invités
-                      à partir de{" "}
-                      {
-                        event.minimumChildAge
-                      }{" "}
-                      ans.
-                    </p>
-                  </div>
+                    Les enfants sont
+                    invités à partir de{" "}
+                    {
+                      event.minimumChildAge
+                    }{" "}
+                    ans.
+                  </InformationCard>
                 )}
 
               {event.childrenPolicy ===
                 "allowed" && (
-                <div
-                  className="p-5"
-                  style={{
-                    backgroundColor: softColor,
-                    border: `1px solid ${borderColor}`,
-                    borderRadius: isModern
-                      ? "0"
-                      : "1rem",
-                  }}
+                <InformationCard
+                  title="Enfants"
+                  color={invitationColor}
+                  backgroundColor={
+                    softColor
+                  }
+                  borderColor={
+                    borderColor
+                  }
+                  borderRadius={
+                    informationRadius
+                  }
                 >
-                  <p className="font-semibold text-gray-900">
-                    👶 Enfants
-                  </p>
-
-                  <p className="mt-2 text-sm leading-6 text-gray-600">
-                    Les enfants sont les
-                    bienvenus à cet
-                    événement.
-                  </p>
-                </div>
+                  Les enfants sont les
+                  bienvenus à cet
+                  événement.
+                </InformationCard>
               )}
 
               {event.dressCode && (
-                <div
-                  className="p-5"
-                  style={{
-                    backgroundColor: softColor,
-                    border: `1px solid ${borderColor}`,
-                    borderRadius: isModern
-                      ? "0"
-                      : "1rem",
-                  }}
+                <InformationCard
+                  title="Dress code"
+                  color={invitationColor}
+                  backgroundColor={
+                    softColor
+                  }
+                  borderColor={
+                    borderColor
+                  }
+                  borderRadius={
+                    informationRadius
+                  }
                 >
-                  <p className="font-semibold text-gray-900">
-                    👗 Dress code
-                  </p>
-
-                  <p className="mt-2 text-sm leading-6 text-gray-600">
-                    {event.dressCode}
-                  </p>
-                </div>
+                  {event.dressCode}
+                </InformationCard>
               )}
 
               {event.importantInfo && (
-                <div
-                  className="p-5"
-                  style={{
-                    backgroundColor: softColor,
-                    border: `1px solid ${borderColor}`,
-                    borderRadius: isModern
-                      ? "0"
-                      : "1rem",
-                  }}
+                <InformationCard
+                  title="Informations importantes"
+                  color={invitationColor}
+                  backgroundColor={
+                    softColor
+                  }
+                  borderColor={
+                    borderColor
+                  }
+                  borderRadius={
+                    informationRadius
+                  }
                 >
-                  <p className="font-semibold text-gray-900">
-                    ℹ️ Informations importantes
-                  </p>
-
-                  <p className="mt-2 whitespace-pre-line text-sm leading-6 text-gray-600">
-                    {event.importantInfo}
-                  </p>
-                </div>
+                  <span className="whitespace-pre-line">
+                    {
+                      event.importantInfo
+                    }
+                  </span>
+                </InformationCard>
               )}
             </div>
 
-            {/* RÉPONSE À L'INVITATION */}
+            {/* Séparation */}
+            <div className="mt-10">
+              <div
+                className="mx-auto h-px w-full max-w-lg"
+                style={{
+                  backgroundColor:
+                    borderColor,
+                }}
+              />
+
+              <p
+                className="mt-8 text-xs font-bold uppercase tracking-[0.18em]"
+                style={{
+                  color: invitationColor,
+                }}
+              >
+                Réponse à l’invitation
+              </p>
+            </div>
+
+            {/* Formulaire de réponse */}
             <ResponseButtons
               token={guest.token}
-              initialStatus={guest.status}
-              maxCompanions={guest.maxCompanions}
+              initialStatus={
+                guest.status
+              }
+              maxCompanions={
+                guest.maxCompanions
+              }
               initialCompanionCount={
                 guest.companionCount
               }
@@ -389,7 +468,8 @@ export default async function InvitationPage({
               questions={sortedQuestions.map(
                 (question) => ({
                   id: question.id,
-                  label: question.label,
+                  label:
+                    question.label,
                   type: question.type,
                   required:
                     question.required,
@@ -403,14 +483,14 @@ export default async function InvitationPage({
               )}
             />
 
-            {/* PIED DE PAGE */}
+            {/* Pied de page */}
             <div
               className="mt-10 border-t pt-6"
               style={{
-                borderColor: borderColor,
+                borderColor,
               }}
             >
-              <p className="text-sm text-gray-400">
+              <p className="text-xs text-gray-400 sm:text-sm">
                 Invity — Créez. Invitez.
                 Célébrez.
               </p>
@@ -419,5 +499,76 @@ export default async function InvitationPage({
         </div>
       </div>
     </main>
+  );
+}
+
+function EventDetail({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value: string;
+  color: string;
+}) {
+  return (
+    <div className="min-w-0 px-4 py-5">
+      <p
+        className="text-[10px] font-bold uppercase tracking-[0.18em]"
+        style={{ color }}
+      >
+        {label}
+      </p>
+
+      <p className="mt-2 break-words text-sm font-semibold text-gray-900">
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function InformationCard({
+  title,
+  children,
+  color,
+  backgroundColor,
+  borderColor,
+  borderRadius,
+}: {
+  title: string;
+  children: React.ReactNode;
+  color: string;
+  backgroundColor: string;
+  borderColor: string;
+  borderRadius: string;
+}) {
+  return (
+    <div
+      className="overflow-hidden border p-5"
+      style={{
+        backgroundColor,
+        borderColor,
+        borderRadius,
+      }}
+    >
+      <div className="flex items-start gap-3">
+        <span
+          className="mt-1 block h-8 w-1 shrink-0 rounded-full"
+          style={{
+            backgroundColor: color,
+          }}
+        />
+
+        <div className="min-w-0">
+          <p className="font-semibold text-gray-950">
+            {title}
+          </p>
+
+          <div className="mt-2 break-words text-sm leading-6 text-gray-600">
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

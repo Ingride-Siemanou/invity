@@ -27,29 +27,22 @@ function getChildrenRule(
   return "Enfants autorisés";
 }
 
-function getEventIcon(eventType: string) {
+function getEventTypeLabel(eventType: string) {
   switch (eventType) {
     case "wedding":
-      return "💍";
-
+      return "Mariage";
     case "birthday":
-      return "🎂";
-
+      return "Anniversaire";
     case "baptism":
-      return "🕊️";
-
+      return "Baptême";
     case "ceremony":
-      return "✨";
-
+      return "Cérémonie";
     case "party":
-      return "🎉";
-
+      return "Fête";
     case "professional":
-      return "💼";
-
-    case "other":
+      return "Événement professionnel";
     default:
-      return "🎟️";
+      return "Événement";
   }
 }
 
@@ -73,7 +66,6 @@ function formatEventDate(date: string) {
 
 function safeNumber(value: unknown) {
   const number = Number(value);
-
   return Number.isFinite(number) ? number : 0;
 }
 
@@ -166,9 +158,9 @@ export default async function EventPage({
     );
 
   return (
-    <main className="min-h-screen bg-[#f8f8fb] text-gray-900">
+    <main className="min-h-screen bg-[#faf9fc] text-gray-900">
       {/* Navigation */}
-      <header className="sticky top-0 z-40 border-b border-gray-200/70 bg-white/90 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-pink-100 bg-white/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/dashboard" className="min-w-0">
             <div className="text-2xl font-bold tracking-tight text-pink-600">
@@ -182,80 +174,100 @@ export default async function EventPage({
 
           <Link
             href="/dashboard"
-            className="shrink-0 rounded-full border border-gray-200 bg-white px-3 py-2.5 text-xs font-semibold text-gray-700 transition hover:border-pink-200 hover:text-pink-600 sm:px-5 sm:text-sm"
+            className="shrink-0 rounded-full border border-gray-200 bg-white px-4 py-2.5 text-xs font-semibold text-gray-700 transition hover:border-pink-200 hover:text-pink-600 sm:px-5 sm:text-sm"
           >
-            ← Tableau de bord
+            Tableau de bord
           </Link>
         </div>
       </header>
 
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
-        {/* Présentation événement */}
-        <section className="relative overflow-hidden rounded-[28px] bg-gray-950 text-white shadow-xl sm:rounded-[36px]">
-          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-pink-600/20 blur-3xl" />
-          <div className="absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl" />
+        {/* Présentation */}
+        <section className="relative overflow-hidden rounded-[28px] border border-pink-100 bg-gradient-to-br from-pink-50 via-white to-purple-50 shadow-sm sm:rounded-[36px]">
+          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-pink-200/40 blur-3xl" />
+          <div className="absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-purple-200/40 blur-3xl" />
 
           <div className="relative p-5 sm:p-8 lg:p-10">
-            <div className="flex flex-col gap-7 lg:flex-row lg:items-start lg:justify-between">
-              <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-3xl sm:h-16 sm:w-16">
-                  {getEventIcon(event.eventType)}
+            <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+              <div className="min-w-0 max-w-3xl">
+                <div className="flex flex-wrap gap-2">
+                  <span className="rounded-full border border-pink-200 bg-white/80 px-3 py-1.5 text-xs font-bold text-pink-700">
+                    {getEventTypeLabel(event.eventType)}
+                  </span>
+
+                  <span className="rounded-full border border-purple-100 bg-purple-50 px-3 py-1.5 text-xs font-semibold text-purple-700">
+                    {responseRate}% de réponses
+                  </span>
                 </div>
 
-                <div className="min-w-0">
-                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-pink-300">
-                    Votre événement
-                  </p>
+                <h1 className="mt-5 break-words text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl lg:text-5xl">
+                  {event.title}
+                </h1>
 
-                  <h1 className="mt-2 break-words text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-                    {event.title}
-                  </h1>
-
-                  <div className="mt-5 flex flex-col gap-2 text-sm text-gray-300 sm:flex-row sm:flex-wrap sm:gap-x-5">
-                    <span>
-                      📅 {formatEventDate(event.eventDate)}
+                <div className="mt-5 flex flex-col gap-3 text-sm text-gray-600 sm:flex-row sm:flex-wrap sm:gap-x-6">
+                  <div>
+                    <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400">
+                      Date
                     </span>
 
-                    {event.eventTime && (
-                      <span>🕐 {event.eventTime}</span>
-                    )}
-
-                    {event.location && (
-                      <span className="break-words">
-                        📍 {event.location}
-                      </span>
-                    )}
+                    <span className="mt-1 block font-semibold text-gray-800">
+                      {formatEventDate(event.eventDate)}
+                    </span>
                   </div>
 
-                  {event.description && (
-                    <p className="mt-5 max-w-3xl text-sm leading-7 text-gray-300 sm:text-base">
-                      {event.description}
-                    </p>
+                  {event.eventTime && (
+                    <div>
+                      <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400">
+                        Heure
+                      </span>
+
+                      <span className="mt-1 block font-semibold text-gray-800">
+                        {event.eventTime}
+                      </span>
+                    </div>
+                  )}
+
+                  {event.location && (
+                    <div className="min-w-0">
+                      <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400">
+                        Lieu
+                      </span>
+
+                      <span className="mt-1 block break-words font-semibold text-gray-800">
+                        {event.location}
+                      </span>
+                    </div>
                   )}
                 </div>
+
+                {event.description && (
+                  <p className="mt-6 max-w-3xl text-sm leading-7 text-gray-600 sm:text-base">
+                    {event.description}
+                  </p>
+                )}
               </div>
 
               {/* Actions principales */}
-              <div className="grid gap-3 sm:grid-cols-2 lg:w-auto">
+              <div className="grid w-full gap-3 sm:grid-cols-2 lg:w-auto lg:min-w-[390px]">
                 <Link
                   href={`/dashboard/events/${event.id}/guests`}
-                  className="inline-flex items-center justify-center rounded-full bg-pink-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-pink-500"
+                  className="inline-flex items-center justify-center rounded-2xl bg-pink-600 px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-pink-700"
                 >
-                  👥 Gérer les invités
+                  Gérer les invités
                 </Link>
 
                 <Link
                   href={`/dashboard/events/${event.id}/questions`}
-                  className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/15"
+                  className="inline-flex items-center justify-center rounded-2xl border border-purple-200 bg-purple-50 px-5 py-3.5 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
                 >
-                  ❓ Gérer les questions
+                  Gérer les questions
                 </Link>
 
                 <Link
                   href={`/dashboard/events/${event.id}/customize`}
-                  className="inline-flex items-center justify-center rounded-full border border-pink-400/30 bg-pink-500/10 px-5 py-3 text-sm font-semibold text-pink-200 transition hover:bg-pink-500/20 sm:col-span-2"
+                  className="inline-flex items-center justify-center rounded-2xl border border-blue-200 bg-blue-50 px-5 py-3.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100 sm:col-span-2"
                 >
-                  🎨 Personnaliser l’invitation
+                  Personnaliser l’invitation
                 </Link>
               </div>
             </div>
@@ -282,27 +294,24 @@ export default async function EventPage({
             <StatCard
               label="Invités"
               value={guests.length}
-              icon="👥"
+              variant="default"
             />
 
             <StatCard
               label="Présents"
               value={accepted}
-              icon="✓"
               variant="green"
             />
 
             <StatCard
               label="Absents"
               value={declined}
-              icon="✕"
               variant="red"
             />
 
             <StatCard
               label="En attente"
               value={pending + maybe}
-              icon="⏳"
               variant="yellow"
               note={
                 maybe > 0
@@ -314,16 +323,15 @@ export default async function EventPage({
             <StatCard
               label="Personnes attendues"
               value={peopleExpected}
-              icon="🎟️"
               variant="pink"
               wideOnMobile
             />
           </div>
         </section>
 
-        {/* Progression et actions */}
+        {/* Progression */}
         <section className="mt-6 grid gap-5 lg:grid-cols-3">
-          <div className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:p-7 lg:col-span-2">
+          <div className="rounded-[28px] border border-purple-100 bg-white p-5 shadow-sm sm:p-7 lg:col-span-2">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-xl font-bold text-gray-950">
@@ -345,7 +353,7 @@ export default async function EventPage({
 
             <div className="mt-6 h-3 overflow-hidden rounded-full bg-gray-100">
               <div
-                className="h-full rounded-full bg-pink-500 transition-all"
+                className="h-full rounded-full bg-gradient-to-r from-pink-500 to-purple-500 transition-all"
                 style={{
                   width: `${responseRate}%`,
                 }}
@@ -354,114 +362,78 @@ export default async function EventPage({
 
             <div className="mt-7 grid gap-3 sm:grid-cols-3">
               <SummaryCard
-                icon="🙋"
                 label="Invités présents"
                 value={accepted}
+                variant="green"
               />
 
               <SummaryCard
-                icon="🤝"
                 label="Accompagnants"
                 value={totalCompanions}
+                variant="blue"
               />
 
               <SummaryCard
-                icon="👶"
                 label="Enfants"
                 value={totalChildren}
+                variant="purple"
               />
             </div>
 
-            <div className="mt-5 rounded-2xl bg-pink-50 p-4">
+            <div className="mt-5 rounded-2xl border border-pink-100 bg-gradient-to-r from-pink-50 to-purple-50 p-4">
               <p className="text-xs font-medium text-pink-700">
                 Total prévu pour l’événement
               </p>
 
-              <p className="mt-1 text-2xl font-bold text-pink-700">
+              <p className="mt-1 text-3xl font-bold text-pink-700">
                 {peopleExpected}
               </p>
 
-              <p className="mt-1 text-xs leading-5 text-pink-700/70">
+              <p className="mt-1 text-xs leading-5 text-gray-500">
                 invités présents + accompagnants + enfants
               </p>
             </div>
           </div>
 
           {/* Actions rapides */}
-          <div className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:p-7">
+          <div className="rounded-[28px] border border-blue-100 bg-white p-5 shadow-sm sm:p-7">
             <h2 className="text-xl font-bold text-gray-950">
               Actions rapides
             </h2>
 
             <p className="mt-1 text-sm text-gray-500">
-              Gérez votre événement.
+              Gérez les différentes parties de votre événement.
             </p>
 
             <div className="mt-5 space-y-3">
-              <Link
+              <QuickAction
                 href={`/dashboard/events/${event.id}/guests`}
-                className="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 p-4 transition hover:border-pink-200 hover:bg-pink-50"
-              >
-                <div className="min-w-0">
-                  <p className="font-semibold text-gray-900">
-                    👥 Invités
-                  </p>
+                title="Invités"
+                description="Ajouter et suivre les réponses"
+                variant="pink"
+              />
 
-                  <p className="mt-1 text-xs leading-5 text-gray-500">
-                    Ajouter et suivre les réponses
-                  </p>
-                </div>
-
-                <span className="shrink-0 text-pink-600">
-                  →
-                </span>
-              </Link>
-
-              <Link
+              <QuickAction
                 href={`/dashboard/events/${event.id}/questions`}
-                className="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 p-4 transition hover:border-pink-200 hover:bg-pink-50"
-              >
-                <div className="min-w-0">
-                  <p className="font-semibold text-gray-900">
-                    ❓ Questions
-                  </p>
+                title="Questions"
+                description="Personnaliser le formulaire"
+                variant="purple"
+              />
 
-                  <p className="mt-1 text-xs leading-5 text-gray-500">
-                    Personnaliser le formulaire
-                  </p>
-                </div>
-
-                <span className="shrink-0 text-pink-600">
-                  →
-                </span>
-              </Link>
-
-              <Link
+              <QuickAction
                 href={`/dashboard/events/${event.id}/customize`}
-                className="flex items-center justify-between gap-4 rounded-2xl border border-pink-100 bg-pink-50/40 p-4 transition hover:border-pink-200 hover:bg-pink-50"
-              >
-                <div className="min-w-0">
-                  <p className="font-semibold text-gray-900">
-                    🎨 Personnalisation
-                  </p>
-
-                  <p className="mt-1 text-xs leading-5 text-gray-500">
-                    Modifier le thème, les couleurs et la photo
-                  </p>
-                </div>
-
-                <span className="shrink-0 text-pink-600">
-                  →
-                </span>
-              </Link>
+                title="Personnalisation"
+                description="Modifier le thème, les couleurs et la photo"
+                variant="blue"
+              />
             </div>
           </div>
         </section>
 
-        {/* Informations événement */}
+        {/* Informations */}
         <section className="mt-8">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-pink-600">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-purple-600">
               Configuration
             </p>
 
@@ -476,40 +448,34 @@ export default async function EventPage({
 
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <InfoCard
-              icon="👶"
               label="Enfants"
               value={getChildrenRule(
                 event.childrenPolicy,
                 event.minimumChildAge
               )}
+              variant="blue"
             />
 
             <InfoCard
-              icon="👗"
               label="Dress code"
               value={
                 event.dressCode ||
                 "Aucun dress code indiqué"
               }
+              variant="purple"
             />
 
-            <div className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:p-6 md:col-span-2">
-              <div className="flex items-start gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-pink-50 text-xl">
-                  📌
-                </div>
+            <div className="rounded-[28px] border border-amber-100 bg-gradient-to-br from-amber-50/70 to-white p-5 shadow-sm sm:p-6 md:col-span-2">
+              <div className="h-1 w-10 rounded-full bg-amber-400" />
 
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-gray-500">
-                    Informations importantes
-                  </p>
+              <p className="mt-5 text-sm font-medium text-gray-500">
+                Informations importantes
+              </p>
 
-                  <p className="mt-2 break-words whitespace-pre-line leading-7 text-gray-900">
-                    {event.importantInfo ||
-                      "Aucune information importante ajoutée."}
-                  </p>
-                </div>
-              </div>
+              <p className="mt-2 break-words whitespace-pre-line leading-7 text-gray-900">
+                {event.importantInfo ||
+                  "Aucune information importante ajoutée."}
+              </p>
             </div>
           </div>
         </section>
@@ -517,9 +483,9 @@ export default async function EventPage({
         <div className="mt-10 border-t border-gray-200 py-7">
           <Link
             href="/dashboard"
-            className="text-sm font-semibold text-pink-600 transition hover:text-pink-700"
+            className="inline-flex rounded-full border border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-700 transition hover:border-pink-200 hover:text-pink-600"
           >
-            ← Retour au tableau de bord
+            Retour au tableau de bord
           </Link>
         </div>
       </div>
@@ -530,14 +496,12 @@ export default async function EventPage({
 function StatCard({
   label,
   value,
-  icon,
   variant = "default",
   note,
   wideOnMobile = false,
 }: {
   label: string;
   value: number;
-  icon: string;
   variant?:
     | "default"
     | "green"
@@ -549,28 +513,28 @@ function StatCard({
 }) {
   const styles = {
     default: {
-      card: "bg-white",
-      icon: "bg-gray-100 text-gray-700",
+      card: "bg-white border-gray-100",
+      line: "bg-gray-300",
       value: "text-gray-950",
     },
     green: {
-      card: "bg-green-50/70",
-      icon: "bg-green-100 text-green-700",
+      card: "bg-green-50/70 border-green-100",
+      line: "bg-green-500",
       value: "text-green-700",
     },
     red: {
-      card: "bg-red-50/70",
-      icon: "bg-red-100 text-red-700",
+      card: "bg-red-50/70 border-red-100",
+      line: "bg-red-500",
       value: "text-red-700",
     },
     yellow: {
-      card: "bg-yellow-50/70",
-      icon: "bg-yellow-100 text-yellow-700",
+      card: "bg-yellow-50/70 border-yellow-100",
+      line: "bg-yellow-500",
       value: "text-yellow-700",
     },
     pink: {
-      card: "bg-pink-50/80",
-      icon: "bg-pink-100 text-pink-700",
+      card: "bg-pink-50/80 border-pink-100",
+      line: "bg-pink-500",
       value: "text-pink-700",
     },
   };
@@ -579,15 +543,13 @@ function StatCard({
 
   return (
     <div
-      className={`rounded-2xl border border-white/70 p-4 shadow-sm sm:p-5 ${
+      className={`rounded-2xl border p-4 shadow-sm sm:p-5 ${
         style.card
-      } ${wideOnMobile ? "col-span-2 lg:col-span-1" : ""}`}
+      } ${
+        wideOnMobile ? "col-span-2 lg:col-span-1" : ""
+      }`}
     >
-      <div
-        className={`flex h-9 w-9 items-center justify-center rounded-xl text-sm font-bold ${style.icon}`}
-      >
-        {icon}
-      </div>
+      <div className={`h-1 w-8 rounded-full ${style.line}`} />
 
       <p className="mt-4 text-xs font-medium leading-5 text-gray-500 sm:text-sm">
         {label}
@@ -609,55 +571,118 @@ function StatCard({
 }
 
 function SummaryCard({
-  icon,
   label,
   value,
+  variant,
 }: {
-  icon: string;
   label: string;
   value: number;
+  variant: "green" | "blue" | "purple";
 }) {
-  return (
-    <div className="rounded-2xl bg-gray-50 p-4">
-      <div className="text-xl">{icon}</div>
+  const styles = {
+    green: {
+      card: "bg-green-50 border-green-100",
+      line: "bg-green-500",
+      value: "text-green-700",
+    },
+    blue: {
+      card: "bg-blue-50 border-blue-100",
+      line: "bg-blue-500",
+      value: "text-blue-700",
+    },
+    purple: {
+      card: "bg-purple-50 border-purple-100",
+      line: "bg-purple-500",
+      value: "text-purple-700",
+    },
+  };
 
-      <p className="mt-3 text-sm text-gray-500">
+  const style = styles[variant];
+
+  return (
+    <div className={`rounded-2xl border p-4 ${style.card}`}>
+      <div className={`h-1 w-8 rounded-full ${style.line}`} />
+
+      <p className="mt-4 text-sm text-gray-500">
         {label}
       </p>
 
-      <p className="mt-1 text-2xl font-bold text-gray-950">
+      <p className={`mt-1 text-2xl font-bold ${style.value}`}>
         {value}
       </p>
     </div>
   );
 }
 
+function QuickAction({
+  href,
+  title,
+  description,
+  variant,
+}: {
+  href: string;
+  title: string;
+  description: string;
+  variant: "pink" | "purple" | "blue";
+}) {
+  const styles = {
+    pink: "border-pink-100 bg-pink-50/50 hover:bg-pink-50",
+    purple:
+      "border-purple-100 bg-purple-50/50 hover:bg-purple-50",
+    blue: "border-blue-100 bg-blue-50/50 hover:bg-blue-50",
+  };
+
+  return (
+    <Link
+      href={href}
+      className={`block rounded-2xl border p-4 transition ${styles[variant]}`}
+    >
+      <p className="font-semibold text-gray-900">
+        {title}
+      </p>
+
+      <p className="mt-1 text-xs leading-5 text-gray-500">
+        {description}
+      </p>
+    </Link>
+  );
+}
+
 function InfoCard({
-  icon,
   label,
   value,
+  variant,
 }: {
-  icon: string;
   label: string;
   value: string;
+  variant: "blue" | "purple";
 }) {
+  const styles = {
+    blue: {
+      card: "border-blue-100 bg-gradient-to-br from-blue-50/70 to-white",
+      line: "bg-blue-500",
+    },
+    purple: {
+      card: "border-purple-100 bg-gradient-to-br from-purple-50/70 to-white",
+      line: "bg-purple-500",
+    },
+  };
+
+  const style = styles[variant];
+
   return (
-    <div className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
-      <div className="flex items-start gap-4">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-pink-50 text-xl">
-          {icon}
-        </div>
+    <div
+      className={`rounded-[28px] border p-5 shadow-sm sm:p-6 ${style.card}`}
+    >
+      <div className={`h-1 w-10 rounded-full ${style.line}`} />
 
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-gray-500">
-            {label}
-          </p>
+      <p className="mt-5 text-sm font-medium text-gray-500">
+        {label}
+      </p>
 
-          <p className="mt-2 break-words font-semibold leading-6 text-gray-900">
-            {value}
-          </p>
-        </div>
-      </div>
+      <p className="mt-2 break-words font-semibold leading-6 text-gray-900">
+        {value}
+      </p>
     </div>
   );
 }

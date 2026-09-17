@@ -5,12 +5,12 @@ export default function Home() {
     <main className="min-h-screen bg-white text-gray-900">
       {/* Navigation */}
       <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 backdrop-blur">
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
           <Link href="/" className="group">
             <div className="text-2xl font-bold tracking-tight text-pink-600">
               Invity
             </div>
-            <div className="text-[10px] font-medium tracking-wide text-gray-400">
+            <div className="hidden text-[10px] font-medium tracking-wide text-gray-400 sm:block">
               Créez. Invitez. Célébrez.
             </div>
           </Link>
@@ -41,7 +41,7 @@ export default function Home() {
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
               href="/login"
-              className="rounded-full px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100"
+              className="rounded-full px-3 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 sm:px-4"
             >
               Se connecter
             </Link>
@@ -60,19 +60,20 @@ export default function Home() {
       <section className="relative overflow-hidden">
         <div className="absolute left-1/2 top-20 -z-10 h-96 w-96 -translate-x-1/2 rounded-full bg-pink-100 opacity-50 blur-3xl" />
 
-        <div className="mx-auto grid min-h-[780px] max-w-7xl items-center gap-14 px-6 py-20 lg:grid-cols-2 lg:py-24">
+        <div className="mx-auto grid min-h-[720px] max-w-7xl items-center gap-14 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-2 lg:py-24">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-pink-100 bg-pink-50 px-4 py-2 text-sm font-semibold text-pink-700">
-              <span></span>
+            <div className="inline-flex rounded-full border border-pink-100 bg-pink-50 px-4 py-2 text-sm font-semibold text-pink-700">
               L’invitation digitale, simplement
             </div>
 
-            <h1 className="mt-7 max-w-3xl text-5xl font-bold leading-[1.08] tracking-tight text-gray-950 sm:text-6xl lg:text-7xl">
+            <h1 className="mt-7 max-w-3xl text-4xl font-bold leading-[1.08] tracking-tight text-gray-950 sm:text-6xl lg:text-7xl">
               Vos plus beaux moments commencent par une{" "}
-              <span className="text-pink-600">belle invitation.</span>
+              <span className="text-pink-600">
+                belle invitation.
+              </span>
             </h1>
 
-            <p className="mt-7 max-w-xl text-lg leading-8 text-gray-600">
+            <p className="mt-7 max-w-xl text-base leading-7 text-gray-600 sm:text-lg sm:leading-8">
               Créez votre événement, invitez chaque personne avec
               un lien individuel et suivez toutes les réponses depuis
               un seul espace.
@@ -94,10 +95,10 @@ export default function Home() {
               </Link>
             </div>
 
-            <div className="mt-9 flex flex-wrap gap-x-6 gap-y-3 text-sm text-gray-500">
-              <span>✓ Sans compte pour les invités</span>
-              <span>✓ Liens individuels</span>
-              <span>✓ Réponses centralisées</span>
+            <div className="mt-9 flex flex-col gap-2 text-sm text-gray-500 sm:flex-row sm:flex-wrap sm:gap-x-6">
+              <span>Sans compte pour les invités</span>
+              <span>Liens individuels</span>
+              <span>Réponses centralisées</span>
             </div>
           </div>
 
@@ -106,7 +107,7 @@ export default function Home() {
             <div className="absolute -left-8 -top-8 h-32 w-32 rounded-full bg-pink-100 blur-2xl" />
             <div className="absolute -bottom-8 -right-8 h-40 w-40 rounded-full bg-purple-100 blur-2xl" />
 
-            <div className="relative overflow-hidden rounded-[32px] border border-gray-100 bg-white p-5 shadow-2xl shadow-gray-200/70 sm:p-7">
+            <div className="relative overflow-hidden rounded-[28px] border border-gray-100 bg-white p-4 shadow-2xl shadow-gray-200/70 sm:rounded-[32px] sm:p-7">
               <div className="flex items-center justify-between border-b border-gray-100 pb-5">
                 <div>
                   <p className="text-sm font-bold text-pink-600">
@@ -124,10 +125,8 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="mt-6 rounded-3xl bg-gradient-to-br from-pink-50 to-white p-6">
-                <div className="text-3xl"></div>
-
-                <p className="mt-5 text-xs font-semibold uppercase tracking-widest text-pink-600">
+              <div className="mt-6 rounded-3xl bg-gradient-to-br from-pink-50 to-white p-5 sm:p-6">
+                <p className="text-xs font-semibold uppercase tracking-widest text-pink-600">
                   Vous êtes invité(e)
                 </p>
 
@@ -148,7 +147,7 @@ export default function Home() {
                     Serez-vous présent(e) ?
                   </p>
 
-                  <div className="mt-4 grid grid-cols-2 gap-2">
+                  <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
                     <div className="rounded-xl bg-pink-600 px-3 py-3 text-center text-xs font-semibold text-white">
                       Oui, avec plaisir
                     </div>
@@ -160,16 +159,18 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="mt-5 grid grid-cols-3 gap-3">
-                <div className="rounded-2xl bg-green-50 p-4">
-                  <p className="text-xs text-green-700">Présents</p>
+              <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3">
+                <div className="rounded-2xl bg-green-50 p-3 sm:p-4">
+                  <p className="text-[11px] text-green-700 sm:text-xs">
+                    Présents
+                  </p>
                   <p className="mt-1 text-xl font-bold text-green-700">
                     42
                   </p>
                 </div>
 
-                <div className="rounded-2xl bg-yellow-50 p-4">
-                  <p className="text-xs text-yellow-700">
+                <div className="rounded-2xl bg-yellow-50 p-3 sm:p-4">
+                  <p className="text-[11px] text-yellow-700 sm:text-xs">
                     En attente
                   </p>
                   <p className="mt-1 text-xl font-bold text-yellow-700">
@@ -177,8 +178,10 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div className="rounded-2xl bg-pink-50 p-4">
-                  <p className="text-xs text-pink-700">Total</p>
+                <div className="rounded-2xl bg-pink-50 p-3 sm:p-4">
+                  <p className="text-[11px] text-pink-700 sm:text-xs">
+                    Total
+                  </p>
                   <p className="mt-1 text-xl font-bold text-pink-700">
                     58
                   </p>
@@ -192,7 +195,7 @@ export default function Home() {
       {/* Types d'événements */}
       <section
         id="evenements"
-        className="border-y border-gray-100 bg-gray-50 px-6 py-10"
+        className="border-y border-gray-100 bg-gray-50 px-4 py-10 sm:px-6"
       >
         <div className="mx-auto max-w-6xl">
           <p className="text-center text-sm font-medium text-gray-500">
@@ -201,18 +204,17 @@ export default function Home() {
 
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             {[
-              ["", "Mariage"],
-              ["", "Anniversaire"],
-              ["", "Baptême"],
-              ["", "Fête"],
-              ["", "Cérémonie"],
-              ["", "Professionnel"],
-            ].map(([icon, label]) => (
+              "Mariage",
+              "Anniversaire",
+              "Baptême",
+              "Fête",
+              "Cérémonie",
+              "Professionnel",
+            ].map((label) => (
               <div
                 key={label}
                 className="rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 shadow-sm"
               >
-                <span className="mr-2">{icon}</span>
                 {label}
               </div>
             ))}
@@ -223,7 +225,7 @@ export default function Home() {
       {/* Fonctionnalités */}
       <section
         id="fonctionnalites"
-        className="scroll-mt-24 px-6 py-24"
+        className="scroll-mt-24 px-4 py-20 sm:px-6 sm:py-24"
       >
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto max-w-2xl text-center">
@@ -244,37 +246,37 @@ export default function Home() {
 
           <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <FeatureCard
-              icon="✉️"
+              number="01"
               title="Invitations personnalisées"
               description="Présentez votre événement avec sa date, son lieu, son dress code et toutes les informations importantes."
             />
 
             <FeatureCard
-              icon="🔗"
+              number="02"
               title="Un lien individuel"
               description="Chaque invité dispose de son propre lien et peut répondre sans avoir besoin de créer un compte."
             />
 
             <FeatureCard
-              icon="📊"
+              number="03"
               title="Tableau de bord"
               description="Suivez les présents, les absents, les réponses en attente et le nombre réel de personnes attendues."
             />
 
             <FeatureCard
-              icon="👨‍👩‍👧"
+              number="04"
               title="Accompagnants et enfants"
               description="Définissez les règles de votre événement et connaissez précisément le nombre d’accompagnants et d’enfants."
             />
 
             <FeatureCard
-              icon="❓"
+              number="05"
               title="Questions sur mesure"
               description="Ajoutez les questions dont vous avez besoin et adaptez le formulaire de réponse à votre événement."
             />
 
             <FeatureCard
-              icon="✨"
+              number="06"
               title="Une expérience simple"
               description="Vos invités répondent rapidement depuis leur téléphone, sans inscription et sans parcours compliqué."
             />
@@ -285,7 +287,7 @@ export default function Home() {
       {/* Comment ça marche */}
       <section
         id="comment-ca-marche"
-        className="scroll-mt-24 bg-gray-950 px-6 py-24 text-white"
+        className="scroll-mt-24 bg-gray-950 px-4 py-20 text-white sm:px-6 sm:py-24"
       >
         <div className="mx-auto max-w-7xl">
           <div className="max-w-2xl">
@@ -326,7 +328,7 @@ export default function Home() {
       </section>
 
       {/* Expérience organisateur */}
-      <section className="px-6 py-24">
+      <section className="px-4 py-20 sm:px-6 sm:py-24">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.2em] text-pink-600">
@@ -344,10 +346,10 @@ export default function Home() {
             </p>
 
             <div className="mt-8 space-y-4">
-              <CheckItem text="Nombre de présents et d’absents" />
-              <CheckItem text="Accompagnants et enfants inclus dans le total" />
-              <CheckItem text="Réponses aux questions personnalisées" />
-              <CheckItem text="Suivi des invités qui n’ont pas encore répondu" />
+              <InfoItem text="Nombre de présents et d’absents" />
+              <InfoItem text="Accompagnants et enfants inclus dans le total" />
+              <InfoItem text="Réponses aux questions personnalisées" />
+              <InfoItem text="Suivi des invités qui n’ont pas encore répondu" />
             </div>
 
             <Link
@@ -358,9 +360,9 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="rounded-[32px] bg-pink-50 p-6 sm:p-9">
-            <div className="rounded-3xl bg-white p-6 shadow-xl shadow-pink-100">
-              <div className="flex items-center justify-between">
+          <div className="rounded-[28px] bg-pink-50 p-4 sm:rounded-[32px] sm:p-9">
+            <div className="rounded-3xl bg-white p-5 shadow-xl shadow-pink-100 sm:p-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-500">
                     Tableau de bord
@@ -371,7 +373,7 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div className="rounded-full bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-700">
+                <div className="w-fit rounded-full bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-700">
                   72% répondu
                 </div>
               </div>
@@ -381,14 +383,17 @@ export default function Home() {
                   label="Invités"
                   value="65"
                 />
+
                 <DashboardStat
                   label="Présents"
                   value="42"
                 />
+
                 <DashboardStat
                   label="En attente"
                   value="15"
                 />
+
                 <DashboardStat
                   label="Personnes attendues"
                   value="58"
@@ -411,8 +416,8 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="px-6 pb-24">
-        <div className="mx-auto max-w-6xl overflow-hidden rounded-[36px] bg-gradient-to-br from-pink-600 to-pink-500 px-6 py-16 text-center text-white shadow-xl shadow-pink-100 sm:px-12">
+      <section className="px-4 pb-20 sm:px-6 sm:pb-24">
+        <div className="mx-auto max-w-6xl overflow-hidden rounded-[28px] bg-gradient-to-br from-pink-600 to-pink-500 px-5 py-14 text-center text-white shadow-xl shadow-pink-100 sm:rounded-[36px] sm:px-12 sm:py-16">
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-pink-100">
             Votre prochain événement
           </p>
@@ -446,7 +451,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-gray-100 bg-gray-50">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-10 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
             <div className="text-xl font-bold text-pink-600">
               Invity
@@ -483,18 +488,18 @@ export default function Home() {
 }
 
 function FeatureCard({
-  icon,
+  number,
   title,
   description,
 }: {
-  icon: string;
+  number: string;
   title: string;
   description: string;
 }) {
   return (
     <article className="group rounded-3xl border border-gray-100 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-pink-50 text-2xl">
-        {icon}
+      <div className="text-xs font-bold uppercase tracking-[0.2em] text-pink-600">
+        {number}
       </div>
 
       <h3 className="mt-5 text-lg font-bold text-gray-900">
@@ -534,13 +539,9 @@ function StepCard({
   );
 }
 
-function CheckItem({ text }: { text: string }) {
+function InfoItem({ text }: { text: string }) {
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-green-50 text-sm font-bold text-green-700">
-        ✓
-      </div>
-
+    <div className="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3">
       <p className="font-medium text-gray-700">
         {text}
       </p>

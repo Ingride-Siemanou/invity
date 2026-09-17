@@ -5,32 +5,6 @@ import { verifySessionToken } from "@/lib/session";
 import { db } from "@/prisma/db";
 import LogoutButton from "./logout-button";
 
-function getEventTypeIcon(eventType: string) {
-  switch (eventType) {
-    case "wedding":
-      return "💍";
-
-    case "birthday":
-      return "🎂";
-
-    case "baptism":
-      return "🕊️";
-
-    case "ceremony":
-      return "✨";
-
-    case "party":
-      return "🎉";
-
-    case "professional":
-      return "💼";
-
-    case "other":
-    default:
-      return "🎟️";
-  }
-}
-
 function formatEventDate(date: string) {
   if (!date) {
     return "";
@@ -51,7 +25,6 @@ function formatEventDate(date: string) {
 
 function safeNumber(value: unknown) {
   const number = Number(value);
-
   return Number.isFinite(number) ? number : 0;
 }
 
@@ -198,7 +171,7 @@ export default async function DashboardPage() {
     <main className="min-h-screen bg-[#f8f8fb] text-gray-900">
       {/* Navigation */}
       <header className="sticky top-0 z-40 border-b border-gray-200/70 bg-white/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/dashboard" className="min-w-0">
             <div className="text-2xl font-bold tracking-tight text-pink-600">
               Invity
@@ -214,10 +187,10 @@ export default async function DashboardPage() {
               href="/dashboard/events/new"
               className="rounded-full bg-pink-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-pink-700 sm:px-5"
             >
-              <span className="sm:hidden">+ Créer</span>
+              <span className="sm:hidden">Créer</span>
 
               <span className="hidden sm:inline">
-                + Créer un événement
+                Créer un événement
               </span>
             </Link>
 
@@ -240,7 +213,7 @@ export default async function DashboardPage() {
               </div>
 
               <h1 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-                Bonjour {session.firstName} 👋
+                Bonjour {session.firstName}
               </h1>
 
               <p className="mt-4 max-w-xl text-sm leading-6 text-gray-300 sm:text-base sm:leading-7">
@@ -277,41 +250,35 @@ export default async function DashboardPage() {
         {/* Statistiques générales */}
         <section className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-6">
           <StatCard
-            icon="👥"
             label="Invités"
             value={totalGuests}
           />
 
           <StatCard
-            icon="✓"
             label="Présents"
             value={totalAccepted}
             variant="green"
           />
 
           <StatCard
-            icon="✕"
             label="Absents"
             value={totalDeclined}
             variant="red"
           />
 
           <StatCard
-            icon="⏳"
             label="En attente"
             value={totalWaiting}
             variant="yellow"
           />
 
           <StatCard
-            icon="🎟️"
             label="Personnes attendues"
             value={totalPeopleExpected}
             variant="pink"
           />
 
           <StatCard
-            icon="📅"
             label="Événements"
             value={events.length}
             variant="purple"
@@ -322,21 +289,21 @@ export default async function DashboardPage() {
         {totalAccepted > 0 && (
           <section className="mt-6 grid gap-4 md:grid-cols-3">
             <SummaryCard
-              icon="🙋"
               value={totalAccepted}
               label="invités présents"
+              accent="green"
             />
 
             <SummaryCard
-              icon="🤝"
               value={totalCompanionsExpected}
               label="accompagnants"
+              accent="blue"
             />
 
             <SummaryCard
-              icon="👶"
               value={totalChildrenExpected}
               label="enfants"
+              accent="purple"
             />
           </section>
         )}
@@ -363,17 +330,15 @@ export default async function DashboardPage() {
               href="/dashboard/events/new"
               className="inline-flex w-full items-center justify-center rounded-full border border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-pink-200 hover:text-pink-600 sm:w-auto"
             >
-              + Nouvel événement
+              Nouvel événement
             </Link>
           </div>
 
           {eventsWithStats.length === 0 ? (
             <div className="mt-6 overflow-hidden rounded-[28px] border border-gray-100 bg-white px-5 py-12 text-center shadow-sm sm:px-10 sm:py-16">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-pink-50 text-3xl">
-                🎉
-              </div>
+              <div className="mx-auto h-1 w-16 rounded-full bg-pink-500" />
 
-              <h3 className="mt-5 text-xl font-bold text-gray-900">
+              <h3 className="mt-6 text-xl font-bold text-gray-900">
                 Votre premier événement vous attend
               </h3>
 
@@ -410,41 +375,26 @@ export default async function DashboardPage() {
                   >
                     <div className="p-5 sm:p-6">
                       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                        <div className="flex min-w-0 items-start gap-3 sm:gap-4">
-                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-pink-50 text-2xl sm:h-14 sm:w-14">
-                            {getEventTypeIcon(event.eventType)}
-                          </div>
+                        <div className="min-w-0">
+                          <div className="mb-3 h-1 w-10 rounded-full bg-pink-500" />
 
-                          <div className="min-w-0">
-                            <h3 className="break-words text-lg font-bold text-gray-950 sm:text-xl">
-                              {event.title}
-                            </h3>
+                          <h3 className="break-words text-lg font-bold text-gray-950 sm:text-xl">
+                            {event.title}
+                          </h3>
 
-                            <div className="mt-2 space-y-1.5 text-sm text-gray-500">
-                              <p className="flex items-start gap-2">
-                                <span>📅</span>
+                          <div className="mt-2 space-y-1.5 text-sm text-gray-500">
+                            <p>
+                              {formatEventDate(event.eventDate)}
+                              {event.eventTime
+                                ? ` • ${event.eventTime}`
+                                : ""}
+                            </p>
 
-                                <span>
-                                  {formatEventDate(
-                                    event.eventDate
-                                  )}
-
-                                  {event.eventTime
-                                    ? ` • ${event.eventTime}`
-                                    : ""}
-                                </span>
+                            {event.location && (
+                              <p className="break-words">
+                                {event.location}
                               </p>
-
-                              {event.location && (
-                                <p className="flex items-start gap-2">
-                                  <span>📍</span>
-
-                                  <span className="break-words">
-                                    {event.location}
-                                  </span>
-                                </p>
-                              )}
-                            </div>
+                            )}
                           </div>
                         </div>
 
@@ -519,14 +469,14 @@ export default async function DashboardPage() {
                         <div className="mt-4 flex flex-wrap gap-2">
                           {companionsExpected > 0 && (
                             <span className="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">
-                              🤝 {companionsExpected} accompagnant
+                              {companionsExpected} accompagnant
                               {companionsExpected > 1 ? "s" : ""}
                             </span>
                           )}
 
                           {childrenExpected > 0 && (
                             <span className="rounded-full bg-purple-50 px-3 py-1.5 text-xs font-semibold text-purple-700">
-                              👶 {childrenExpected} enfant
+                              {childrenExpected} enfant
                               {childrenExpected > 1 ? "s" : ""}
                             </span>
                           )}
@@ -538,34 +488,30 @@ export default async function DashboardPage() {
                     <div className="grid border-t border-gray-100 sm:grid-cols-2 lg:grid-cols-4">
                       <Link
                         href={`/dashboard/events/${event.id}`}
-                        className="flex items-center justify-center gap-2 px-4 py-4 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                        className="flex items-center justify-center px-4 py-4 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
                       >
-                        <span>👁️</span>
-                        <span>Voir</span>
+                        Voir
                       </Link>
 
                       <Link
                         href={`/dashboard/events/${event.id}/guests`}
-                        className="flex items-center justify-center gap-2 border-t border-gray-100 px-4 py-4 text-sm font-semibold text-pink-600 transition hover:bg-pink-50 sm:border-l sm:border-t-0"
+                        className="flex items-center justify-center border-t border-gray-100 px-4 py-4 text-sm font-semibold text-pink-600 transition hover:bg-pink-50 sm:border-l sm:border-t-0"
                       >
-                        <span>👥</span>
-                        <span>Invités</span>
+                        Invités
                       </Link>
 
                       <Link
                         href={`/dashboard/events/${event.id}/questions`}
-                        className="flex items-center justify-center gap-2 border-t border-gray-100 px-4 py-4 text-sm font-semibold text-pink-600 transition hover:bg-pink-50 lg:border-l lg:border-t-0"
+                        className="flex items-center justify-center border-t border-gray-100 px-4 py-4 text-sm font-semibold text-pink-600 transition hover:bg-pink-50 lg:border-l lg:border-t-0"
                       >
-                        <span>❓</span>
-                        <span>Questions</span>
+                        Questions
                       </Link>
 
                       <Link
                         href={`/dashboard/events/${event.id}/customize`}
-                        className="flex items-center justify-center gap-2 border-t border-gray-100 px-4 py-4 text-sm font-semibold text-pink-600 transition hover:bg-pink-50 sm:border-l lg:border-t-0"
+                        className="flex items-center justify-center border-t border-gray-100 px-4 py-4 text-sm font-semibold text-pink-600 transition hover:bg-pink-50 sm:border-l lg:border-t-0"
                       >
-                        <span>🎨</span>
-                        <span>Personnaliser</span>
+                        Personnaliser
                       </Link>
                     </div>
                   </article>
@@ -609,12 +555,10 @@ export default async function DashboardPage() {
 }
 
 function StatCard({
-  icon,
   label,
   value,
   variant = "default",
 }: {
-  icon: string;
   label: string;
   value: number;
   variant?:
@@ -628,37 +572,37 @@ function StatCard({
   const styles = {
     default: {
       card: "bg-white",
-      icon: "bg-gray-100 text-gray-700",
+      line: "bg-gray-300",
       value: "text-gray-950",
     },
 
     green: {
       card: "bg-green-50/70",
-      icon: "bg-green-100 text-green-700",
+      line: "bg-green-500",
       value: "text-green-700",
     },
 
     red: {
       card: "bg-red-50/70",
-      icon: "bg-red-100 text-red-700",
+      line: "bg-red-500",
       value: "text-red-700",
     },
 
     yellow: {
       card: "bg-yellow-50/70",
-      icon: "bg-yellow-100 text-yellow-700",
+      line: "bg-yellow-500",
       value: "text-yellow-700",
     },
 
     pink: {
       card: "bg-pink-50/80",
-      icon: "bg-pink-100 text-pink-700",
+      line: "bg-pink-500",
       value: "text-pink-700",
     },
 
     purple: {
       card: "bg-purple-50/70",
-      icon: "bg-purple-100 text-purple-700",
+      line: "bg-purple-500",
       value: "text-purple-700",
     },
   };
@@ -669,11 +613,7 @@ function StatCard({
     <div
       className={`min-w-0 rounded-2xl border border-white/70 p-4 shadow-sm sm:p-5 ${style.card}`}
     >
-      <div
-        className={`flex h-9 w-9 items-center justify-center rounded-xl text-sm font-bold ${style.icon}`}
-      >
-        {icon}
-      </div>
+      <div className={`h-1 w-8 rounded-full ${style.line}`} />
 
       <p className="mt-4 break-words text-xs font-medium leading-5 text-gray-500 sm:text-sm">
         {label}
@@ -689,29 +629,32 @@ function StatCard({
 }
 
 function SummaryCard({
-  icon,
   value,
   label,
+  accent = "default",
 }: {
-  icon: string;
   value: number;
   label: string;
+  accent?: "default" | "green" | "blue" | "purple";
 }) {
+  const styles = {
+    default: "bg-gray-300",
+    green: "bg-green-500",
+    blue: "bg-blue-500",
+    purple: "bg-purple-500",
+  };
+
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gray-50 text-xl">
-        {icon}
-      </div>
+    <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
+      <div className={`h-1 w-8 rounded-full ${styles[accent]}`} />
 
-      <div className="min-w-0">
-        <p className="text-xl font-bold text-gray-950">
-          {value}
-        </p>
+      <p className="mt-4 text-xl font-bold text-gray-950">
+        {value}
+      </p>
 
-        <p className="break-words text-sm text-gray-500">
-          {label}
-        </p>
-      </div>
+      <p className="mt-1 break-words text-sm text-gray-500">
+        {label}
+      </p>
     </div>
   );
 }

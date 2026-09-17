@@ -27,34 +27,39 @@ type EventData = {
 const themes: {
   id: ThemeId;
   name: string;
-  icon: string;
+  code: string;
   description: string;
+  accent: string;
 }[] = [
   {
     id: "elegant",
     name: "Élégant",
-    icon: "✨",
+    code: "EL",
     description: "Sobre, raffiné et intemporel.",
+    accent: "bg-gray-900",
   },
   {
     id: "romantic",
     name: "Romantique",
-    icon: "🌸",
+    code: "RO",
     description:
       "Doux et délicat pour une ambiance chaleureuse.",
+    accent: "bg-pink-500",
   },
   {
     id: "modern",
     name: "Moderne",
-    icon: "◼",
+    code: "MO",
     description: "Minimaliste, épuré et contemporain.",
+    accent: "bg-blue-500",
   },
   {
     id: "festive",
     name: "Festif",
-    icon: "🎉",
+    code: "FE",
     description:
       "Coloré et joyeux pour célébrer en grand.",
+    accent: "bg-purple-500",
   },
 ];
 
@@ -119,10 +124,12 @@ function hexToRgba(hex: string, opacity: number) {
     normalized.substring(0, 2),
     16
   );
+
   const green = parseInt(
     normalized.substring(2, 4),
     16
   );
+
   const blue = parseInt(
     normalized.substring(4, 6),
     16
@@ -289,8 +296,7 @@ export default function CustomizeInvitationPage() {
               invitationTheme: theme,
               invitationColor: color,
               coverImageUrl:
-                savedCoverImageUrl ||
-                null,
+                savedCoverImageUrl || null,
             }
           : currentEvent
       );
@@ -300,7 +306,7 @@ export default function CustomizeInvitationPage() {
       );
 
       setSuccess(
-        "Personnalisation enregistrée avec succès !"
+        "Personnalisation enregistrée avec succès."
       );
     } catch {
       setError(
@@ -331,11 +337,6 @@ export default function CustomizeInvitationPage() {
     const file =
       event.target.files?.[0];
 
-    /*
-     * On remet immédiatement la valeur à vide.
-     * Cela permet de sélectionner à nouveau
-     * exactement la même photo plus tard.
-     */
     event.target.value = "";
 
     if (!file) {
@@ -401,7 +402,7 @@ export default function CustomizeInvitationPage() {
       setCoverImageUrl(result.url);
 
       setSuccess(
-        "Photo envoyée avec succès ! Pensez maintenant à enregistrer la personnalisation."
+        "Photo envoyée avec succès. Pensez maintenant à enregistrer la personnalisation."
       );
     } catch {
       setError(
@@ -429,7 +430,7 @@ export default function CustomizeInvitationPage() {
     hexToRgba(color, 0.2);
 
   return (
-    <main className="min-h-screen bg-[#f8f8fb] text-gray-900">
+    <main className="min-h-screen bg-[#faf9fc] text-gray-900">
       <input
         ref={fileInputRef}
         type="file"
@@ -438,7 +439,8 @@ export default function CustomizeInvitationPage() {
         className="hidden"
       />
 
-      <header className="sticky top-0 z-40 border-b border-gray-200/70 bg-white/90 backdrop-blur-xl">
+      {/* Navigation */}
+      <header className="sticky top-0 z-40 border-b border-pink-100 bg-white/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
           <Link
             href="/dashboard"
@@ -455,35 +457,32 @@ export default function CustomizeInvitationPage() {
 
           <Link
             href={`/dashboard/events/${id}`}
-            className="shrink-0 rounded-full border border-gray-200 bg-white px-3 py-2.5 text-xs font-semibold text-gray-700 transition hover:border-pink-200 hover:text-pink-600 sm:px-5 sm:text-sm"
+            className="shrink-0 rounded-full border border-gray-200 bg-white px-4 py-2.5 text-xs font-semibold text-gray-700 transition hover:border-pink-200 hover:text-pink-600 sm:px-5 sm:text-sm"
           >
-            ← Événement
+            Retour à l’événement
           </Link>
         </div>
       </header>
 
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
-        <section className="relative overflow-hidden rounded-[28px] bg-gray-950 px-5 py-8 text-white shadow-xl sm:rounded-[36px] sm:px-8 sm:py-10 lg:px-10">
-          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-pink-600/20 blur-3xl" />
-
-          <div className="absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl" />
+        {/* Présentation */}
+        <section className="relative overflow-hidden rounded-[28px] border border-pink-100 bg-gradient-to-br from-pink-50 via-white to-purple-50 px-5 py-8 shadow-sm sm:rounded-[36px] sm:px-8 sm:py-10 lg:px-10">
+          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-pink-200/40 blur-3xl" />
+          <div className="absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-purple-200/40 blur-3xl" />
 
           <div className="relative max-w-3xl">
-            <div className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-pink-300">
+            <div className="inline-flex rounded-full border border-pink-200 bg-white/80 px-3 py-1.5 text-xs font-semibold text-pink-700">
               Personnalisation
             </div>
 
-            <h1 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-              Créez votre invitation 🎨
+            <h1 className="mt-5 text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl lg:text-5xl">
+              Créez votre invitation
             </h1>
 
-            <p className="mt-4 max-w-2xl text-sm leading-6 text-gray-300 sm:text-base sm:leading-7">
-              Choisissez le style, les
-              couleurs et la photo de
-              couverture de votre
-              invitation. Visualisez le
-              résultat en direct avant de
-              l’enregistrer.
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-gray-600 sm:text-base sm:leading-7">
+              Choisissez le style, les couleurs et la photo
+              de couverture de votre invitation. Visualisez
+              le résultat en direct avant de l’enregistrer.
             </p>
           </div>
         </section>
@@ -493,8 +492,7 @@ export default function CustomizeInvitationPage() {
             <div className="mx-auto h-9 w-9 animate-spin rounded-full border-2 border-gray-200 border-t-pink-600" />
 
             <p className="mt-4 text-sm text-gray-500">
-              Chargement de votre
-              invitation...
+              Chargement de votre invitation...
             </p>
           </div>
         ) : error && !event ? (
@@ -505,8 +503,10 @@ export default function CustomizeInvitationPage() {
           <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
             <div className="space-y-6">
               {/* THÈME */}
-              <section className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:p-7">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-pink-600">
+              <section className="rounded-[28px] border border-pink-100 bg-white p-5 shadow-sm sm:p-7">
+                <div className="h-1 w-12 rounded-full bg-pink-500" />
+
+                <p className="mt-5 text-xs font-bold uppercase tracking-[0.18em] text-pink-600">
                   Étape 1
                 </p>
 
@@ -515,8 +515,7 @@ export default function CustomizeInvitationPage() {
                 </h2>
 
                 <p className="mt-2 text-sm leading-6 text-gray-500">
-                  Le thème définit
-                  l’ambiance générale de
+                  Le thème définit l’ambiance générale de
                   votre invitation.
                 </p>
 
@@ -542,13 +541,9 @@ export default function CustomizeInvitationPage() {
                       >
                         <div className="flex items-start gap-3">
                           <div
-                            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-xl ${
-                              selected
-                                ? "bg-pink-100"
-                                : "bg-gray-100"
-                            }`}
+                            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-xs font-bold text-white ${item.accent}`}
                           >
-                            {item.icon}
+                            {item.code}
                           </div>
 
                           <div className="min-w-0">
@@ -565,9 +560,7 @@ export default function CustomizeInvitationPage() {
                             </div>
 
                             <p className="mt-1 text-xs leading-5 text-gray-500">
-                              {
-                                item.description
-                              }
+                              {item.description}
                             </p>
                           </div>
                         </div>
@@ -578,8 +571,10 @@ export default function CustomizeInvitationPage() {
               </section>
 
               {/* COULEUR */}
-              <section className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:p-7">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-pink-600">
+              <section className="rounded-[28px] border border-purple-100 bg-white p-5 shadow-sm sm:p-7">
+                <div className="h-1 w-12 rounded-full bg-purple-500" />
+
+                <p className="mt-5 text-xs font-bold uppercase tracking-[0.18em] text-purple-600">
                   Étape 2
                 </p>
 
@@ -588,68 +583,61 @@ export default function CustomizeInvitationPage() {
                 </h2>
 
                 <p className="mt-2 text-sm leading-6 text-gray-500">
-                  Sélectionnez une couleur
-                  proposée ou créez
-                  exactement la couleur que
-                  vous souhaitez.
+                  Sélectionnez une couleur proposée ou créez
+                  exactement la couleur que vous souhaitez.
                 </p>
 
                 <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  {presetColors.map(
-                    (item) => {
-                      const selected =
-                        color.toUpperCase() ===
-                        item.value.toUpperCase();
+                  {presetColors.map((item) => {
+                    const selected =
+                      color.toUpperCase() ===
+                      item.value.toUpperCase();
 
-                      return (
-                        <button
-                          key={item.value}
-                          type="button"
-                          onClick={() =>
-                            selectColor(
-                              item.value
-                            )
-                          }
-                          className={`min-w-0 rounded-2xl border p-3 text-center transition ${
-                            selected
-                              ? "border-gray-950 bg-gray-50 ring-2 ring-gray-100"
-                              : "border-gray-200 hover:border-gray-300"
-                          }`}
-                        >
-                          <span
-                            className="mx-auto block h-10 w-10 rounded-full border-4 border-white shadow-md"
-                            style={{
-                              backgroundColor:
-                                item.value,
-                            }}
-                          />
+                    return (
+                      <button
+                        key={item.value}
+                        type="button"
+                        onClick={() =>
+                          selectColor(item.value)
+                        }
+                        className={`min-w-0 rounded-2xl border p-3 text-center transition ${
+                          selected
+                            ? "border-purple-400 bg-purple-50 ring-2 ring-purple-100"
+                            : "border-gray-200 hover:border-purple-200"
+                        }`}
+                      >
+                        <span
+                          className="mx-auto block h-10 w-10 rounded-full border-4 border-white shadow-md"
+                          style={{
+                            backgroundColor:
+                              item.value,
+                          }}
+                        />
 
-                          <p className="mt-2 truncate text-xs font-semibold text-gray-800">
-                            {item.name}
+                        <p className="mt-2 truncate text-xs font-semibold text-gray-800">
+                          {item.name}
+                        </p>
+
+                        {selected && (
+                          <p className="mt-1 text-[9px] font-bold uppercase tracking-wide text-purple-600">
+                            Sélectionnée
                           </p>
-
-                          {selected && (
-                            <p className="mt-1 text-[9px] font-bold uppercase tracking-wide text-gray-400">
-                              Sélectionnée
-                            </p>
-                          )}
-                        </button>
-                      );
-                    }
-                  )}
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
 
-                <div className="mt-6 rounded-3xl border border-gray-200 bg-gray-50 p-4 sm:p-5">
+                <div className="mt-6 rounded-3xl border border-blue-100 bg-blue-50/50 p-4 sm:p-5">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="font-bold text-gray-950">
-                        🎨 Couleur
-                        personnalisée
+                        Couleur personnalisée
                       </p>
 
                       <p className="mt-1 text-xs leading-5 text-gray-500">
-                        Choisissez librement
-                        votre propre couleur.
+                        Choisissez librement votre propre
+                        couleur.
                       </p>
                     </div>
 
@@ -683,8 +671,10 @@ export default function CustomizeInvitationPage() {
               </section>
 
               {/* PHOTO */}
-              <section className="rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm sm:p-7">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-pink-600">
+              <section className="rounded-[28px] border border-blue-100 bg-white p-5 shadow-sm sm:p-7">
+                <div className="h-1 w-12 rounded-full bg-blue-500" />
+
+                <p className="mt-5 text-xs font-bold uppercase tracking-[0.18em] text-blue-600">
                   Étape 3
                 </p>
 
@@ -693,12 +683,9 @@ export default function CustomizeInvitationPage() {
                 </h2>
 
                 <p className="mt-2 text-sm leading-6 text-gray-500">
-                  Ajoutez une photo qui
-                  apparaîtra en haut de
-                  votre invitation.
-                  Choisissez de préférence
-                  une photo horizontale et
-                  de bonne qualité.
+                  Ajoutez une photo qui apparaîtra en haut de
+                  votre invitation. Choisissez de préférence
+                  une photo horizontale et de bonne qualité.
                 </p>
 
                 {coverImageUrl ? (
@@ -720,38 +707,31 @@ export default function CustomizeInvitationPage() {
                     <div className="mt-4 flex flex-col gap-3 sm:flex-row">
                       <button
                         type="button"
-                        onClick={
-                          openFilePicker
-                        }
+                        onClick={openFilePicker}
                         disabled={
-                          uploading ||
-                          saving
+                          uploading || saving
                         }
-                        className="w-full rounded-full border border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-800 transition hover:border-pink-300 hover:text-pink-600 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                        className="w-full rounded-full border border-blue-200 bg-blue-50 px-5 py-3 text-sm font-semibold text-blue-700 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                       >
                         {uploading
-                          ? "⏳ Envoi en cours..."
-                          : "📷 Remplacer la photo"}
+                          ? "Envoi en cours..."
+                          : "Remplacer la photo"}
                       </button>
 
                       <button
                         type="button"
-                        onClick={
-                          removeCoverImage
-                        }
+                        onClick={removeCoverImage}
                         disabled={
-                          uploading ||
-                          saving
+                          uploading || saving
                         }
                         className="w-full rounded-full border border-red-200 bg-red-50 px-5 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                       >
-                        🗑️ Retirer la photo
+                        Retirer la photo
                       </button>
                     </div>
 
                     <p className="mt-3 text-xs leading-5 text-gray-400">
-                      JPG, PNG ou WebP ·
-                      10 Mo maximum.
+                      JPG, PNG ou WebP · 10 Mo maximum.
                     </p>
                   </div>
                 ) : (
@@ -761,43 +741,36 @@ export default function CustomizeInvitationPage() {
                     disabled={
                       uploading || saving
                     }
-                    className="mt-6 flex min-h-48 w-full flex-col items-center justify-center rounded-[24px] border-2 border-dashed border-gray-200 bg-gray-50 px-6 py-10 text-center transition hover:border-pink-300 hover:bg-pink-50/40 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="mt-6 flex min-h-48 w-full flex-col items-center justify-center rounded-[24px] border-2 border-dashed border-blue-200 bg-blue-50/30 px-6 py-10 text-center transition hover:border-blue-300 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {uploading ? (
                       <>
-                        <span className="h-10 w-10 animate-spin rounded-full border-2 border-gray-200 border-t-pink-600" />
+                        <span className="h-10 w-10 animate-spin rounded-full border-2 border-gray-200 border-t-blue-600" />
 
                         <span className="mt-4 font-bold text-gray-950">
                           Envoi de la photo...
                         </span>
 
                         <span className="mt-2 max-w-sm text-xs leading-5 text-gray-500">
-                          Patientez quelques
-                          secondes pendant
-                          l’envoi vers
-                          Cloudinary.
+                          Patientez quelques secondes pendant
+                          l’envoi vers Cloudinary.
                         </span>
                       </>
                     ) : (
                       <>
-                        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-2xl shadow-sm">
-                          📷
-                        </span>
+                        <span className="h-1 w-16 rounded-full bg-blue-500" />
 
-                        <span className="mt-4 font-bold text-gray-950">
+                        <span className="mt-5 font-bold text-gray-950">
                           Ajouter une photo
                         </span>
 
                         <span className="mt-2 max-w-sm text-xs leading-5 text-gray-500">
-                          Choisissez une
-                          image depuis votre
-                          téléphone ou votre
-                          ordinateur.
+                          Choisissez une image depuis votre
+                          téléphone ou votre ordinateur.
                         </span>
 
                         <span className="mt-3 text-[11px] font-medium text-gray-400">
-                          JPG, PNG ou WebP ·
-                          10 Mo maximum
+                          JPG, PNG ou WebP · 10 Mo maximum
                         </span>
                       </>
                     )}
@@ -819,13 +792,11 @@ export default function CustomizeInvitationPage() {
 
               <button
                 type="button"
-                onClick={
-                  saveCustomization
-                }
+                onClick={saveCustomization}
                 disabled={
                   saving || uploading
                 }
-                className="w-full rounded-full bg-pink-600 px-6 py-4 font-semibold text-white shadow-sm transition hover:bg-pink-700 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                className="w-full rounded-full bg-gradient-to-r from-pink-600 to-purple-600 px-6 py-4 font-semibold text-white shadow-sm transition hover:from-pink-700 hover:to-purple-700 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
               >
                 {saving
                   ? "Enregistrement..."
@@ -842,12 +813,11 @@ export default function CustomizeInvitationPage() {
                   </p>
 
                   <p className="mt-1 text-sm font-semibold text-gray-900">
-                    Invitation de vos
-                    invités
+                    Invitation de vos invités
                   </p>
                 </div>
 
-                <span className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-gray-500 shadow-sm">
+                <span className="rounded-full border border-green-100 bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-700">
                   En direct
                 </span>
               </div>
@@ -870,33 +840,35 @@ export default function CustomizeInvitationPage() {
                     </div>
                   )}
 
-                  {theme ===
-                    "festive" && (
-                    <div className="flex justify-center gap-3 bg-gray-50 py-3 text-lg">
-                      <span>✨</span>
-                      <span>🎉</span>
-                      <span>✨</span>
+                  {theme === "festive" && (
+                    <div className="flex justify-center bg-gray-50 py-3">
+                      <div className="flex gap-2">
+                        <span
+                          className="h-2 w-8 rounded-full"
+                          style={{
+                            backgroundColor: color,
+                          }}
+                        />
+                        <span className="h-2 w-8 rounded-full bg-purple-300" />
+                        <span className="h-2 w-8 rounded-full bg-pink-300" />
+                      </div>
                     </div>
                   )}
 
                   <div
                     className="h-2"
                     style={{
-                      backgroundColor:
-                        color,
+                      backgroundColor: color,
                     }}
                   />
 
                   <div className="px-5 py-8 text-center sm:px-7 sm:py-10">
                     <div
-                      className="mx-auto flex h-14 w-14 items-center justify-center rounded-full text-2xl"
+                      className="mx-auto h-1 w-16 rounded-full"
                       style={{
-                        backgroundColor:
-                          softColor,
+                        backgroundColor: color,
                       }}
-                    >
-                      ✉️
-                    </div>
+                    />
 
                     <p
                       className="mt-6 text-xs font-bold uppercase tracking-[0.2em]"
@@ -916,25 +888,21 @@ export default function CustomizeInvitationPage() {
                     <div
                       className="mx-auto mt-6 h-px w-16"
                       style={{
-                        backgroundColor:
-                          color,
+                        backgroundColor: color,
                       }}
                     />
 
                     <p className="mt-6 text-sm leading-6 text-gray-500">
-                      Nous serions heureux
-                      de partager ce moment
-                      avec vous.
+                      Nous serions heureux de partager ce
+                      moment avec vous.
                     </p>
 
                     <div className="mt-7 space-y-3">
                       <div
                         className="rounded-2xl border px-4 py-3"
                         style={{
-                          borderColor:
-                            mediumColor,
-                          backgroundColor:
-                            softColor,
+                          borderColor: mediumColor,
+                          backgroundColor: softColor,
                         }}
                       >
                         <p className="text-xs text-gray-500">
@@ -942,16 +910,14 @@ export default function CustomizeInvitationPage() {
                         </p>
 
                         <p className="mt-1 text-sm font-bold text-gray-900">
-                          Réponse à
-                          l’invitation
+                          Réponse à l’invitation
                         </p>
                       </div>
 
                       <div
                         className="rounded-full px-5 py-3 text-sm font-semibold text-white"
                         style={{
-                          backgroundColor:
-                            color,
+                          backgroundColor: color,
                         }}
                       >
                         Présent(e)
@@ -963,17 +929,15 @@ export default function CustomizeInvitationPage() {
                     </div>
 
                     <p className="mt-8 text-[11px] text-gray-400">
-                      Invity — Créez.
-                      Invitez. Célébrez.
+                      Invity — Créez. Invitez. Célébrez.
                     </p>
                   </div>
                 </div>
               </div>
 
               <p className="mt-3 text-center text-xs leading-5 text-gray-400">
-                Cet aperçu sera ensuite
-                appliqué à la véritable
-                invitation publique.
+                Cet aperçu sera ensuite appliqué à la
+                véritable invitation publique.
               </p>
             </aside>
           </div>
@@ -982,9 +946,9 @@ export default function CustomizeInvitationPage() {
         <div className="mt-10 border-t border-gray-200 py-7">
           <Link
             href={`/dashboard/events/${id}`}
-            className="text-sm font-semibold text-pink-600 transition hover:text-pink-700"
+            className="inline-flex rounded-full border border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-700 transition hover:border-pink-200 hover:text-pink-600"
           >
-            ← Retour à l’événement
+            Retour à l’événement
           </Link>
         </div>
       </div>
