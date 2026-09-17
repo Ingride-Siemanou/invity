@@ -5,45 +5,30 @@ import { verifySessionToken } from "@/lib/session";
 import { db } from "@/prisma/db";
 import LogoutButton from "./logout-button";
 
-function getEventTypeIcon(title: string) {
-  const normalizedTitle = title.toLowerCase();
+function getEventTypeIcon(eventType: string) {
+  switch (eventType) {
+    case "wedding":
+      return "💍";
 
-  if (
-    normalizedTitle.includes("mariage") ||
-    normalizedTitle.includes("wedding")
-  ) {
-    return "💍";
+    case "birthday":
+      return "🎂";
+
+    case "baptism":
+      return "🕊️";
+
+    case "ceremony":
+      return "✨";
+
+    case "party":
+      return "🎉";
+
+    case "professional":
+      return "💼";
+
+    case "other":
+    default:
+      return "🎟️";
   }
-
-  if (
-    normalizedTitle.includes("baptême") ||
-    normalizedTitle.includes("bapteme")
-  ) {
-    return "🕊️";
-  }
-
-  if (
-    normalizedTitle.includes("anniversaire") ||
-    normalizedTitle.includes("birthday")
-  ) {
-    return "🎂";
-  }
-
-  if (
-    normalizedTitle.includes("professionnel") ||
-    normalizedTitle.includes("entreprise")
-  ) {
-    return "💼";
-  }
-
-  if (
-    normalizedTitle.includes("cérémonie") ||
-    normalizedTitle.includes("ceremonie")
-  ) {
-    return "✨";
-  }
-
-  return "🎉";
 }
 
 function formatEventDate(date: string) {
@@ -427,7 +412,7 @@ export default async function DashboardPage() {
                       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                         <div className="flex min-w-0 items-start gap-3 sm:gap-4">
                           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-pink-50 text-2xl sm:h-14 sm:w-14">
-                            {getEventTypeIcon(event.title)}
+                            {getEventTypeIcon(event.eventType)}
                           </div>
 
                           <div className="min-w-0">

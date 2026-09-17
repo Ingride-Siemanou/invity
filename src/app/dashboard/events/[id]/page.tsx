@@ -27,45 +27,30 @@ function getChildrenRule(
   return "Enfants autorisés";
 }
 
-function getEventIcon(title: string) {
-  const normalizedTitle = title.toLowerCase();
+function getEventIcon(eventType: string) {
+  switch (eventType) {
+    case "wedding":
+      return "💍";
 
-  if (
-    normalizedTitle.includes("mariage") ||
-    normalizedTitle.includes("wedding")
-  ) {
-    return "💍";
+    case "birthday":
+      return "🎂";
+
+    case "baptism":
+      return "🕊️";
+
+    case "ceremony":
+      return "✨";
+
+    case "party":
+      return "🎉";
+
+    case "professional":
+      return "💼";
+
+    case "other":
+    default:
+      return "🎟️";
   }
-
-  if (
-    normalizedTitle.includes("baptême") ||
-    normalizedTitle.includes("bapteme")
-  ) {
-    return "🕊️";
-  }
-
-  if (
-    normalizedTitle.includes("anniversaire") ||
-    normalizedTitle.includes("birthday")
-  ) {
-    return "🎂";
-  }
-
-  if (
-    normalizedTitle.includes("professionnel") ||
-    normalizedTitle.includes("entreprise")
-  ) {
-    return "💼";
-  }
-
-  if (
-    normalizedTitle.includes("cérémonie") ||
-    normalizedTitle.includes("ceremonie")
-  ) {
-    return "✨";
-  }
-
-  return "🎉";
 }
 
 function formatEventDate(date: string) {
@@ -214,7 +199,7 @@ export default async function EventPage({
             <div className="flex flex-col gap-7 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-3xl sm:h-16 sm:w-16">
-                  {getEventIcon(event.title)}
+                  {getEventIcon(event.eventType)}
                 </div>
 
                 <div className="min-w-0">
