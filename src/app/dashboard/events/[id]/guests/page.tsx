@@ -72,7 +72,14 @@ export default function GuestsPage() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingGuests, setLoadingGuests] = useState(true);
+
   const [copiedGuestId, setCopiedGuestId] =
+    useState<number | null>(null);
+
+  const [sendingGuestId, setSendingGuestId] =
+    useState<number | null>(null);
+
+  const [sentGuestId, setSentGuestId] =
     useState<number | null>(null);
 
   useEffect(() => {
@@ -178,6 +185,56 @@ export default function GuestsPage() {
     }
   }
 
+  async function sendInvitationEmail(guest: Guest) {
+    if (!guest.email) {
+      setError(
+        "Cet invité ne possède pas d’adresse e-mail."
+      );
+      return;
+    }
+
+    setError("");
+    setSuccess("");
+    setSendingGuestId(guest.id);
+    setSentGuestId(null);
+
+    try {
+      const response = await fetch(
+        `/api/events/${id}/guests/${guest.id}/send-invitation`,
+        {
+          method: "POST",
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setError(
+          result.error ||
+            "Impossible d’envoyer l’invitation par e-mail."
+        );
+        return;
+      }
+
+      setSentGuestId(guest.id);
+      setSuccess(
+        `Invitation envoyée à ${guest.firstName}.`
+      );
+
+      window.setTimeout(() => {
+        setSentGuestId((currentId) =>
+          currentId === guest.id ? null : currentId
+        );
+      }, 4000);
+    } catch {
+      setError(
+        "Impossible d’envoyer l’invitation par e-mail."
+      );
+    } finally {
+      setSendingGuestId(null);
+    }
+  }
+
   const acceptedCount = guests.filter(
     (guest) => guest.status === "accepted"
   ).length;
@@ -223,7 +280,6 @@ export default function GuestsPage() {
 
   return (
     <main className="min-h-screen bg-[#faf9fc] text-gray-900">
-      {/* Navigation */}
       <header className="sticky top-0 z-40 border-b border-pink-100 bg-white/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/dashboard">
@@ -246,7 +302,6 @@ export default function GuestsPage() {
       </header>
 
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
-        {/* Présentation */}
         <section className="relative overflow-hidden rounded-[28px] border border-pink-100 bg-gradient-to-br from-pink-50 via-white to-purple-50 px-5 py-8 shadow-sm sm:rounded-[36px] sm:px-8 sm:py-10 lg:px-10">
           <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-pink-200/40 blur-3xl" />
           <div className="absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-purple-200/40 blur-3xl" />
@@ -263,8 +318,8 @@ export default function GuestsPage() {
 
               <p className="mt-4 max-w-xl text-sm leading-6 text-gray-600 sm:text-base sm:leading-7">
                 Ajoutez vos invités, gérez leurs accompagnants
-                et partagez facilement leur lien personnel
-                d’invitation.
+                et envoyez facilement leur invitation
+                personnelle.
               </p>
             </div>
 
@@ -280,7 +335,6 @@ export default function GuestsPage() {
           </div>
         </section>
 
-        {/* Statistiques */}
         <section className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
           <StatCard
             label="Invités"
@@ -336,9 +390,23 @@ export default function GuestsPage() {
           </section>
         )}
 
-        {/* Contenu */}
+        {(error || success) && (
+          <section className="mt-6">
+            {error && (
+              <div className="rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700">
+                {error}
+              </div>
+            )}
+
+            {success && (
+              <div className="rounded-2xl border border-green-100 bg-green-50 px-4 py-3 text-sm leading-6 text-green-700">
+                {success}
+              </div>
+            )}
+          </section>
+        )}
+
         <div className="mt-8 grid items-start gap-6 lg:grid-cols-[380px_minmax(0,1fr)]">
-          {/* Formulaire */}
           <section className="rounded-[28px] border border-pink-100 bg-white p-5 shadow-sm sm:p-6 lg:sticky lg:top-28">
             <div className="h-1 w-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500" />
 
@@ -439,18 +507,6 @@ export default function GuestsPage() {
                 </p>
               </div>
 
-              {error && (
-                <div className="rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700">
-                  {error}
-                </div>
-              )}
-
-              {success && (
-                <div className="rounded-2xl border border-green-100 bg-green-50 px-4 py-3 text-sm leading-6 text-green-700">
-                  {success}
-                </div>
-              )}
-
               <button
                 type="submit"
                 disabled={loading}
@@ -463,7 +519,6 @@ export default function GuestsPage() {
             </form>
           </section>
 
-          {/* Liste */}
           <section className="min-w-0 rounded-[28px] border border-purple-100 bg-white p-4 shadow-sm sm:p-6">
             <div className="flex flex-col gap-3 border-b border-gray-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -472,8 +527,8 @@ export default function GuestsPage() {
                 </h2>
 
                 <p className="mt-1 text-sm text-gray-500">
-                  Consultez les réponses et partagez le lien
-                  personnel de chaque invitation.
+                  Consultez les réponses et envoyez
+                  l’invitation personnelle de chaque invité.
                 </p>
               </div>
 
@@ -524,6 +579,12 @@ export default function GuestsPage() {
 
                   const invitationPath = `/i/${guest.token}`;
 
+                  const isSending =
+                    sendingGuestId === guest.id;
+
+                  const wasSent =
+                    sentGuestId === guest.id;
+
                   return (
                     <article
                       key={guest.id}
@@ -559,9 +620,13 @@ export default function GuestsPage() {
                                 </span>
                               </div>
 
-                              {guest.email && (
+                              {guest.email ? (
                                 <p className="mt-1 break-all text-sm text-gray-500">
                                   {guest.email}
+                                </p>
+                              ) : (
+                                <p className="mt-1 text-sm text-gray-400">
+                                  Aucune adresse e-mail
                                 </p>
                               )}
 
@@ -589,7 +654,6 @@ export default function GuestsPage() {
                           </Link>
                         </div>
 
-                        {/* Lien individuel */}
                         <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50/50 p-3 sm:p-4">
                           <p className="text-xs font-bold uppercase tracking-wide text-blue-700">
                             Lien individuel
@@ -625,6 +689,44 @@ export default function GuestsPage() {
                             Ce lien est personnel. Envoyez-le
                             uniquement à cet invité.
                           </p>
+                        </div>
+
+                        <div className="mt-4 rounded-2xl border border-pink-100 bg-pink-50/50 p-4">
+                          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                              <p className="text-sm font-bold text-gray-900">
+                                Envoi par e-mail
+                              </p>
+
+                              <p className="mt-1 text-xs leading-5 text-gray-500">
+                                {guest.email
+                                  ? "Envoyez directement cette invitation personnelle par e-mail."
+                                  : "Ajoutez une adresse e-mail à cet invité pour pouvoir lui envoyer son invitation."}
+                              </p>
+                            </div>
+
+                            <button
+                              type="button"
+                              disabled={
+                                !guest.email ||
+                                sendingGuestId !== null
+                              }
+                              onClick={() =>
+                                sendInvitationEmail(guest)
+                              }
+                              className={`inline-flex w-full shrink-0 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition sm:w-auto ${
+                                wasSent
+                                  ? "bg-green-600 text-white"
+                                  : "bg-pink-600 text-white hover:bg-pink-700"
+                              } disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500`}
+                            >
+                              {isSending
+                                ? "Envoi en cours..."
+                                : wasSent
+                                  ? "Invitation envoyée"
+                                  : "Envoyer l’invitation"}
+                            </button>
+                          </div>
                         </div>
 
                         {guest.status === "accepted" && (
@@ -795,7 +897,9 @@ function StatCard({
         style.card
       } ${wideOnMobile ? "col-span-2 lg:col-span-1" : ""}`}
     >
-      <div className={`h-1 w-8 rounded-full ${style.line}`} />
+      <div
+        className={`h-1 w-8 rounded-full ${style.line}`}
+      />
 
       <p className="mt-4 break-words text-xs font-medium leading-5 text-gray-500 sm:text-sm">
         {label}
