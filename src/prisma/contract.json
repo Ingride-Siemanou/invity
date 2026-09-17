@@ -142,6 +142,13 @@
                   "kind": "scalar"
                 }
               },
+              "coverImageUrl": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -193,6 +200,20 @@
               },
               "importantInfo": {
                 "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "invitationColor": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "invitationTheme": {
+                "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -287,6 +308,9 @@
                 "childrenPolicy": {
                   "column": "childrenPolicy"
                 },
+                "coverImageUrl": {
+                  "column": "coverImageUrl"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
@@ -310,6 +334,12 @@
                 },
                 "importantInfo": {
                   "column": "importantInfo"
+                },
+                "invitationColor": {
+                  "column": "invitationColor"
+                },
+                "invitationTheme": {
+                  "column": "invitationTheme"
                 },
                 "location": {
                   "column": "location"
@@ -871,6 +901,11 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "coverImageUrl": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-string@1",
                   "default": {
@@ -922,6 +957,24 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
+                },
+                "invitationColor": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "rose"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "invitationTheme": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "elegant"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
                 },
                 "location": {
                   "codecId": "pg/text@1",
@@ -1292,7 +1345,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "6895b5c7dd2d366aa347cbbf54f6d639eee24ce80439a4e6abb2bb395c09fd82"
+    "storageHash": "58e5609457b36784d2bd1b243e2c0a4dadccb05c1ed9538a17f0aa420669ef44"
   },
   "execution": {
     "executionHash": "f04daf4d452569437cdd698110f4fedcbb7d53cc3def8da518d99f5150400902",

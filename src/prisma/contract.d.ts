@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'6895b5c7dd2d366aa347cbbf54f6d639eee24ce80439a4e6abb2bb395c09fd82'>;
+  StorageHashBase<'58e5609457b36784d2bd1b243e2c0a4dadccb05c1ed9538a17f0aa420669ef44'>;
 export type ExecutionHash =
   ExecutionHashBase<'f04daf4d452569437cdd698110f4fedcbb7d53cc3def8da518d99f5150400902'>;
 export type ProfileHash =
@@ -262,6 +262,9 @@ export type FieldOutputTypes = {
       readonly minimumChildAge: CodecTypes['pg/int4@1']['output'] | null;
       readonly dressCode: CodecTypes['pg/text@1']['output'] | null;
       readonly importantInfo: CodecTypes['pg/text@1']['output'] | null;
+      readonly invitationTheme: CodecTypes['pg/text@1']['output'];
+      readonly invitationColor: CodecTypes['pg/text@1']['output'];
+      readonly coverImageUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly userId: CodecTypes['pg/int4@1']['output'];
@@ -326,6 +329,9 @@ export type FieldInputTypes = {
       readonly minimumChildAge: CodecTypes['pg/int4@1']['input'] | null;
       readonly dressCode: CodecTypes['pg/text@1']['input'] | null;
       readonly importantInfo: CodecTypes['pg/text@1']['input'] | null;
+      readonly invitationTheme: CodecTypes['pg/text@1']['input'];
+      readonly invitationColor: CodecTypes['pg/text@1']['input'];
+      readonly coverImageUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly userId: CodecTypes['pg/int4@1']['input'];
@@ -380,6 +386,7 @@ export type StorageColumnTypes = {
     };
     readonly event: {
       readonly childrenPolicy: CodecTypes['pg/text@1']['output'];
+      readonly coverImageUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly description: CodecTypes['pg/text@1']['output'] | null;
       readonly dressCode: CodecTypes['pg/text@1']['output'] | null;
@@ -388,6 +395,8 @@ export type StorageColumnTypes = {
       readonly eventType: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/int4@1']['output'];
       readonly importantInfo: CodecTypes['pg/text@1']['output'] | null;
+      readonly invitationColor: CodecTypes['pg/text@1']['output'];
+      readonly invitationTheme: CodecTypes['pg/text@1']['output'];
       readonly location: CodecTypes['pg/text@1']['output'] | null;
       readonly minimumChildAge: CodecTypes['pg/int4@1']['output'] | null;
       readonly title: CodecTypes['pg/text@1']['output'];
@@ -444,6 +453,7 @@ export type StorageColumnInputTypes = {
     };
     readonly event: {
       readonly childrenPolicy: CodecTypes['pg/text@1']['input'];
+      readonly coverImageUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly description: CodecTypes['pg/text@1']['input'] | null;
       readonly dressCode: CodecTypes['pg/text@1']['input'] | null;
@@ -452,6 +462,8 @@ export type StorageColumnInputTypes = {
       readonly eventType: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/int4@1']['input'];
       readonly importantInfo: CodecTypes['pg/text@1']['input'] | null;
+      readonly invitationColor: CodecTypes['pg/text@1']['input'];
+      readonly invitationTheme: CodecTypes['pg/text@1']['input'];
       readonly location: CodecTypes['pg/text@1']['input'] | null;
       readonly minimumChildAge: CodecTypes['pg/int4@1']['input'] | null;
       readonly title: CodecTypes['pg/text@1']['input'];
@@ -521,6 +533,9 @@ export namespace Models {
     minimumChildAge: CodecTypes['pg/int4@1']['output'] | null;
     dressCode: CodecTypes['pg/text@1']['output'] | null;
     importantInfo: CodecTypes['pg/text@1']['output'] | null;
+    invitationTheme: CodecTypes['pg/text@1']['output'];
+    invitationColor: CodecTypes['pg/text@1']['output'];
+    coverImageUrl: CodecTypes['pg/text@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     userId: CodecTypes['pg/int4@1']['output'];
@@ -749,6 +764,29 @@ type ContractBase = Omit<
                   readonly nullable: true;
                 };
                 readonly importantInfo: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly invitationTheme: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'elegant'>;
+                  };
+                };
+                readonly invitationColor: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'rose'>;
+                  };
+                };
+                readonly coverImageUrl: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
@@ -1191,6 +1229,18 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly invitationTheme: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly invitationColor: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly coverImageUrl: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly createdAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -1258,6 +1308,9 @@ type ContractBase = Omit<
                 readonly minimumChildAge: { readonly column: 'minimumChildAge' };
                 readonly dressCode: { readonly column: 'dressCode' };
                 readonly importantInfo: { readonly column: 'importantInfo' };
+                readonly invitationTheme: { readonly column: 'invitationTheme' };
+                readonly invitationColor: { readonly column: 'invitationColor' };
+                readonly coverImageUrl: { readonly column: 'coverImageUrl' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
                 readonly userId: { readonly column: 'userId' };

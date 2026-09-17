@@ -26,6 +26,10 @@ model Event {
   dressCode       String?
   importantInfo   String?
 
+  invitationTheme String   @default("elegant")
+  invitationColor String   @default("rose")
+  coverImageUrl   String?
+
   createdAt       TimestamptzString @default(now())
   updatedAt       temporal.updatedAtString()
 
