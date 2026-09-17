@@ -26,6 +26,13 @@ type Guest = {
   answers: GuestAnswer[];
 };
 
+type EditGuestForm = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  maxCompanions: number;
+};
+
 function safeNumber(value: unknown) {
   const number = Number(value);
   return Number.isFinite(number) ? number : 0;
@@ -70,6 +77,7 @@ export default function GuestsPage() {
   const [guests, setGuests] = useState<Guest[]>([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [loadingGuests, setLoadingGuests] = useState(true);
 
@@ -82,22 +90,45 @@ export default function GuestsPage() {
   const [sentGuestId, setSentGuestId] =
     useState<number | null>(null);
 
+  const [editingGuestId, setEditingGuestId] =
+    useState<number | null>(null);
+
+  const [savingGuestId, setSavingGuestId] =
+    useState<number | null>(null);
+
+  const [deletingGuestId, setDeletingGuestId] =
+    useState<number | null>(null);
+
+  const [editForm, setEditForm] =
+    useState<EditGuestForm>({
+      firstName: "",
+      lastName: "",
+      email: "",
+      maxCompanions: 0,
+    });
+
   useEffect(() => {
     async function loadGuests() {
       try {
-        const response = await fetch(`/api/events/${id}/guests`);
+        const response = await fetch(
+          `/api/events/${id}/guests`
+        );
+
         const result = await response.json();
 
         if (!response.ok) {
           setError(
-            result.error || "Impossible de charger les invités."
+            result.error ||
+              "Impossible de charger les invités."
           );
           return;
         }
 
         setGuests(result.guests);
       } catch {
-        setError("Impossible de charger les invités.");
+        setError(
+          "Impossible de charger les invités."
+        );
       } finally {
         setLoadingGuests(false);
       }
@@ -144,7 +175,8 @@ export default function GuestsPage() {
 
       if (!response.ok) {
         setError(
-          result.error || "Une erreur est survenue."
+          result.error ||
+            "Une erreur est survenue."
         );
         return;
       }
@@ -154,7 +186,10 @@ export default function GuestsPage() {
         result.guest,
       ]);
 
-      setSuccess("Invité ajouté avec succès.");
+      setSuccess(
+        "Invité ajouté avec succès."
+      );
+
       form.reset();
     } catch {
       setError(
@@ -165,17 +200,24 @@ export default function GuestsPage() {
     }
   }
 
-  async function copyInvitationLink(guest: Guest) {
-    const invitationUrl = `${window.location.origin}/i/${guest.token}`;
+  async function copyInvitationLink(
+    guest: Guest
+  ) {
+    const invitationUrl =
+      `${window.location.origin}/i/${guest.token}`;
 
     try {
-      await navigator.clipboard.writeText(invitationUrl);
+      await navigator.clipboard.writeText(
+        invitationUrl
+      );
 
       setCopiedGuestId(guest.id);
 
       window.setTimeout(() => {
         setCopiedGuestId((currentId) =>
-          currentId === guest.id ? null : currentId
+          currentId === guest.id
+            ? null
+            : currentId
         );
       }, 2000);
     } catch {
@@ -185,7 +227,9 @@ export default function GuestsPage() {
     }
   }
 
-  async function sendInvitationEmail(guest: Guest) {
+  async function sendInvitationEmail(
+    guest: Guest
+  ) {
     if (!guest.email) {
       setError(
         "Cet invité ne possède pas d’adresse e-mail."
@@ -217,13 +261,16 @@ export default function GuestsPage() {
       }
 
       setSentGuestId(guest.id);
+
       setSuccess(
         `Invitation envoyée à ${guest.firstName}.`
       );
 
       window.setTimeout(() => {
         setSentGuestId((currentId) =>
-          currentId === guest.id ? null : currentId
+          currentId === guest.id
+            ? null
+            : currentId
         );
       }, 4000);
     } catch {
@@ -235,46 +282,218 @@ export default function GuestsPage() {
     }
   }
 
+  function startEditingGuest(
+    guest: Guest
+  ) {
+    setError("");
+    setSuccess("");
+
+    setEditingGuestId(guest.id);
+
+    setEditForm({
+      firstName: guest.firstName,
+      lastName: guest.lastName,
+      email: guest.email || "",
+      maxCompanions: safeNumber(
+        guest.maxCompanions
+      ),
+    });
+  }
+
+  function cancelEditingGuest() {
+    setEditingGuestId(null);
+
+    setEditForm({
+      firstName: "",
+      lastName: "",
+      email: "",
+      maxCompanions: 0,
+    });
+  }
+
+  async function handleEditGuest(
+    event: FormEvent<HTMLFormElement>,
+    guest: Guest
+  ) {
+    event.preventDefault();
+
+    setError("");
+    setSuccess("");
+    setSavingGuestId(guest.id);
+
+    try {
+      const response = await fetch(
+        `/api/events/${id}/guests/${guest.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify(editForm),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setError(
+          result.error ||
+            "Impossible de modifier cet invité."
+        );
+        return;
+      }
+
+      setGuests((currentGuests) =>
+        currentGuests.map((currentGuest) => {
+          if (
+            currentGuest.id !== guest.id
+          ) {
+            return currentGuest;
+          }
+
+          return {
+            ...currentGuest,
+            ...result.guest,
+            answers:
+              currentGuest.answers || [],
+          };
+        })
+      );
+
+      setEditingGuestId(null);
+
+      setSuccess(
+        `${result.guest.firstName} ${result.guest.lastName} a été modifié avec succès.`
+      );
+    } catch {
+      setError(
+        "Impossible de modifier cet invité pour le moment."
+      );
+    } finally {
+      setSavingGuestId(null);
+    }
+  }
+
+  async function deleteGuest(
+    guest: Guest
+  ) {
+    const confirmed = window.confirm(
+      `Voulez-vous vraiment supprimer ${guest.firstName} ${guest.lastName} ?\n\nCette action supprimera également ses réponses et ne pourra pas être annulée.`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setError("");
+    setSuccess("");
+    setDeletingGuestId(guest.id);
+
+    try {
+      const response = await fetch(
+        `/api/events/${id}/guests/${guest.id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setError(
+          result.error ||
+            "Impossible de supprimer cet invité."
+        );
+        return;
+      }
+
+      setGuests((currentGuests) =>
+        currentGuests.filter(
+          (currentGuest) =>
+            currentGuest.id !== guest.id
+        )
+      );
+
+      if (editingGuestId === guest.id) {
+        setEditingGuestId(null);
+      }
+
+      setSuccess(
+        `${guest.firstName} ${guest.lastName} a été supprimé de la liste.`
+      );
+    } catch {
+      setError(
+        "Impossible de supprimer cet invité pour le moment."
+      );
+    } finally {
+      setDeletingGuestId(null);
+    }
+  }
+
   const acceptedCount = guests.filter(
-    (guest) => guest.status === "accepted"
+    (guest) =>
+      guest.status === "accepted"
   ).length;
 
   const declinedCount = guests.filter(
-    (guest) => guest.status === "declined"
+    (guest) =>
+      guest.status === "declined"
   ).length;
 
   const maybeCount = guests.filter(
-    (guest) => guest.status === "maybe"
+    (guest) =>
+      guest.status === "maybe"
   ).length;
 
   const pendingCount = guests.filter(
-    (guest) => guest.status === "pending"
+    (guest) =>
+      guest.status === "pending"
   ).length;
 
   const totalExpectedPeople = guests
-    .filter((guest) => guest.status === "accepted")
+    .filter(
+      (guest) =>
+        guest.status === "accepted"
+    )
     .reduce(
       (total, guest) =>
         total +
         1 +
-        safeNumber(guest.companionCount) +
-        safeNumber(guest.childrenCount),
+        safeNumber(
+          guest.companionCount
+        ) +
+        safeNumber(
+          guest.childrenCount
+        ),
       0
     );
 
   const totalCompanions = guests
-    .filter((guest) => guest.status === "accepted")
+    .filter(
+      (guest) =>
+        guest.status === "accepted"
+    )
     .reduce(
       (total, guest) =>
-        total + safeNumber(guest.companionCount),
+        total +
+        safeNumber(
+          guest.companionCount
+        ),
       0
     );
 
   const totalChildren = guests
-    .filter((guest) => guest.status === "accepted")
+    .filter(
+      (guest) =>
+        guest.status === "accepted"
+    )
     .reduce(
       (total, guest) =>
-        total + safeNumber(guest.childrenCount),
+        total +
+        safeNumber(
+          guest.childrenCount
+        ),
       0
     );
 
@@ -317,8 +536,9 @@ export default function GuestsPage() {
               </h1>
 
               <p className="mt-4 max-w-xl text-sm leading-6 text-gray-600 sm:text-base sm:leading-7">
-                Ajoutez vos invités, gérez leurs accompagnants
-                et envoyez facilement leur invitation
+                Ajoutez vos invités, gérez
+                leurs informations et envoyez
+                facilement leur invitation
                 personnelle.
               </p>
             </div>
@@ -339,7 +559,6 @@ export default function GuestsPage() {
           <StatCard
             label="Invités"
             value={guests.length}
-            variant="default"
           />
 
           <StatCard
@@ -356,7 +575,10 @@ export default function GuestsPage() {
 
           <StatCard
             label="En attente"
-            value={pendingCount + maybeCount}
+            value={
+              pendingCount +
+              maybeCount
+            }
             variant="yellow"
           />
 
@@ -415,8 +637,8 @@ export default function GuestsPage() {
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-gray-500">
-              Chaque invité dispose de son propre lien
-              d’invitation.
+              Chaque invité dispose de son
+              propre lien d’invitation.
             </p>
 
             <form
@@ -502,8 +724,8 @@ export default function GuestsPage() {
                 />
 
                 <p className="mt-2 text-xs leading-5 text-gray-400">
-                  Indiquez 0 si cet invité ne peut pas venir
-                  accompagné.
+                  Indiquez 0 si cet invité ne
+                  peut pas venir accompagné.
                 </p>
               </div>
 
@@ -527,14 +749,17 @@ export default function GuestsPage() {
                 </h2>
 
                 <p className="mt-1 text-sm text-gray-500">
-                  Consultez les réponses et envoyez
-                  l’invitation personnelle de chaque invité.
+                  Consultez, modifiez ou
+                  supprimez vos invités et
+                  envoyez leurs invitations.
                 </p>
               </div>
 
               <span className="w-fit rounded-full bg-purple-50 px-3 py-1.5 text-xs font-semibold text-purple-700">
                 {guests.length} invité
-                {guests.length !== 1 ? "s" : ""}
+                {guests.length !== 1
+                  ? "s"
+                  : ""}
               </span>
             </div>
 
@@ -555,35 +780,55 @@ export default function GuestsPage() {
                 </h3>
 
                 <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-gray-500">
-                  Utilisez le formulaire pour ajouter votre
-                  premier invité.
+                  Utilisez le formulaire pour
+                  ajouter votre premier invité.
                 </p>
               </div>
             ) : (
               <div className="mt-5 space-y-4">
                 {guests.map((guest) => {
-                  const companionCount = safeNumber(
-                    guest.companionCount
-                  );
+                  const companionCount =
+                    safeNumber(
+                      guest.companionCount
+                    );
 
-                  const childrenCount = safeNumber(
-                    guest.childrenCount
-                  );
+                  const childrenCount =
+                    safeNumber(
+                      guest.childrenCount
+                    );
 
-                  const maxCompanions = safeNumber(
-                    guest.maxCompanions
-                  );
+                  const maxCompanions =
+                    safeNumber(
+                      guest.maxCompanions
+                    );
 
                   const totalForInvitation =
-                    1 + companionCount + childrenCount;
+                    1 +
+                    companionCount +
+                    childrenCount;
 
-                  const invitationPath = `/i/${guest.token}`;
+                  const invitationPath =
+                    `/i/${guest.token}`;
 
                   const isSending =
-                    sendingGuestId === guest.id;
+                    sendingGuestId ===
+                    guest.id;
 
                   const wasSent =
-                    sentGuestId === guest.id;
+                    sentGuestId ===
+                    guest.id;
+
+                  const isEditing =
+                    editingGuestId ===
+                    guest.id;
+
+                  const isSaving =
+                    savingGuestId ===
+                    guest.id;
+
+                  const isDeleting =
+                    deletingGuestId ===
+                    guest.id;
 
                   return (
                     <article
@@ -605,8 +850,12 @@ export default function GuestsPage() {
                             <div className="min-w-0">
                               <div className="flex flex-wrap items-center gap-2">
                                 <h3 className="break-words font-bold text-gray-950">
-                                  {guest.firstName}{" "}
-                                  {guest.lastName}
+                                  {
+                                    guest.firstName
+                                  }{" "}
+                                  {
+                                    guest.lastName
+                                  }
                                 </h3>
 
                                 <span
@@ -622,22 +871,30 @@ export default function GuestsPage() {
 
                               {guest.email ? (
                                 <p className="mt-1 break-all text-sm text-gray-500">
-                                  {guest.email}
+                                  {
+                                    guest.email
+                                  }
                                 </p>
                               ) : (
                                 <p className="mt-1 text-sm text-gray-400">
-                                  Aucune adresse e-mail
+                                  Aucune adresse
+                                  e-mail
                                 </p>
                               )}
 
                               <p className="mt-3 text-xs text-gray-400">
-                                Jusqu’à {maxCompanions}{" "}
+                                Jusqu’à{" "}
+                                {
+                                  maxCompanions
+                                }{" "}
                                 accompagnant
-                                {maxCompanions !== 1
+                                {maxCompanions !==
+                                1
                                   ? "s"
                                   : ""}{" "}
                                 autorisé
-                                {maxCompanions !== 1
+                                {maxCompanions !==
+                                1
                                   ? "s"
                                   : ""}
                               </p>
@@ -645,14 +902,259 @@ export default function GuestsPage() {
                           </div>
 
                           <Link
-                            href={invitationPath}
+                            href={
+                              invitationPath
+                            }
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex w-full shrink-0 items-center justify-center rounded-full border border-pink-200 bg-pink-50 px-4 py-2.5 text-sm font-semibold text-pink-700 transition hover:bg-pink-100 sm:w-auto"
                           >
-                            Ouvrir l’invitation
+                            Ouvrir
+                            l’invitation
                           </Link>
                         </div>
+
+                        <div className="mt-5 flex flex-col gap-2 border-t border-gray-100 pt-4 sm:flex-row">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              isEditing
+                                ? cancelEditingGuest()
+                                : startEditingGuest(
+                                    guest
+                                  )
+                            }
+                            disabled={
+                              isDeleting
+                            }
+                            className="inline-flex items-center justify-center rounded-xl border border-purple-200 bg-purple-50 px-4 py-2.5 text-sm font-semibold text-purple-700 transition hover:bg-purple-100 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            {isEditing
+                              ? "Annuler la modification"
+                              : "Modifier"}
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              deleteGuest(
+                                guest
+                              )
+                            }
+                            disabled={
+                              deletingGuestId !==
+                                null ||
+                              savingGuestId !==
+                                null
+                            }
+                            className="inline-flex items-center justify-center rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            {isDeleting
+                              ? "Suppression..."
+                              : "Supprimer"}
+                          </button>
+                        </div>
+
+                        {isEditing && (
+                          <form
+                            onSubmit={(
+                              event
+                            ) =>
+                              handleEditGuest(
+                                event,
+                                guest
+                              )
+                            }
+                            className="mt-4 rounded-2xl border border-purple-100 bg-purple-50/40 p-4"
+                          >
+                            <div className="flex items-center justify-between gap-3">
+                              <div>
+                                <p className="font-bold text-gray-900">
+                                  Modifier
+                                  l’invité
+                                </p>
+
+                                <p className="mt-1 text-xs leading-5 text-gray-500">
+                                  Le lien
+                                  personnel de
+                                  cet invité ne
+                                  changera pas.
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                              <div>
+                                <label
+                                  htmlFor={`edit-firstName-${guest.id}`}
+                                  className="text-xs font-semibold text-gray-700"
+                                >
+                                  Prénom
+                                </label>
+
+                                <input
+                                  id={`edit-firstName-${guest.id}`}
+                                  type="text"
+                                  required
+                                  value={
+                                    editForm.firstName
+                                  }
+                                  onChange={(
+                                    event
+                                  ) =>
+                                    setEditForm(
+                                      (
+                                        current
+                                      ) => ({
+                                        ...current,
+                                        firstName:
+                                          event
+                                            .target
+                                            .value,
+                                      })
+                                    )
+                                  }
+                                  className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-pink-400 focus:ring-4 focus:ring-pink-50"
+                                />
+                              </div>
+
+                              <div>
+                                <label
+                                  htmlFor={`edit-lastName-${guest.id}`}
+                                  className="text-xs font-semibold text-gray-700"
+                                >
+                                  Nom
+                                </label>
+
+                                <input
+                                  id={`edit-lastName-${guest.id}`}
+                                  type="text"
+                                  required
+                                  value={
+                                    editForm.lastName
+                                  }
+                                  onChange={(
+                                    event
+                                  ) =>
+                                    setEditForm(
+                                      (
+                                        current
+                                      ) => ({
+                                        ...current,
+                                        lastName:
+                                          event
+                                            .target
+                                            .value,
+                                      })
+                                    )
+                                  }
+                                  className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-purple-400 focus:ring-4 focus:ring-purple-50"
+                                />
+                              </div>
+
+                              <div>
+                                <label
+                                  htmlFor={`edit-email-${guest.id}`}
+                                  className="text-xs font-semibold text-gray-700"
+                                >
+                                  Adresse
+                                  e-mail
+                                </label>
+
+                                <input
+                                  id={`edit-email-${guest.id}`}
+                                  type="email"
+                                  value={
+                                    editForm.email
+                                  }
+                                  onChange={(
+                                    event
+                                  ) =>
+                                    setEditForm(
+                                      (
+                                        current
+                                      ) => ({
+                                        ...current,
+                                        email:
+                                          event
+                                            .target
+                                            .value,
+                                      })
+                                    )
+                                  }
+                                  placeholder="Facultatif"
+                                  className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-50"
+                                />
+                              </div>
+
+                              <div>
+                                <label
+                                  htmlFor={`edit-maxCompanions-${guest.id}`}
+                                  className="text-xs font-semibold text-gray-700"
+                                >
+                                  Accompagnants
+                                  autorisés
+                                </label>
+
+                                <input
+                                  id={`edit-maxCompanions-${guest.id}`}
+                                  type="number"
+                                  min="0"
+                                  max="20"
+                                  required
+                                  value={
+                                    editForm.maxCompanions
+                                  }
+                                  onChange={(
+                                    event
+                                  ) =>
+                                    setEditForm(
+                                      (
+                                        current
+                                      ) => ({
+                                        ...current,
+                                        maxCompanions:
+                                          Number(
+                                            event
+                                              .target
+                                              .value
+                                          ),
+                                      })
+                                    )
+                                  }
+                                  className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-purple-400 focus:ring-4 focus:ring-purple-50"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
+                              <button
+                                type="button"
+                                onClick={
+                                  cancelEditingGuest
+                                }
+                                disabled={
+                                  isSaving
+                                }
+                                className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-50"
+                              >
+                                Annuler
+                              </button>
+
+                              <button
+                                type="submit"
+                                disabled={
+                                  isSaving
+                                }
+                                className="rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+                              >
+                                {isSaving
+                                  ? "Enregistrement..."
+                                  : "Enregistrer les modifications"}
+                              </button>
+                            </div>
+                          </form>
+                        )}
 
                         <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50/50 p-3 sm:p-4">
                           <p className="text-xs font-bold uppercase tracking-wide text-blue-700">
@@ -662,7 +1164,8 @@ export default function GuestsPage() {
                           <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
                             <div className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2.5">
                               <p className="truncate text-sm text-gray-600">
-                                {typeof window !== "undefined"
+                                {typeof window !==
+                                "undefined"
                                   ? `${window.location.origin}${invitationPath}`
                                   : invitationPath}
                               </p>
@@ -671,23 +1174,29 @@ export default function GuestsPage() {
                             <button
                               type="button"
                               onClick={() =>
-                                copyInvitationLink(guest)
+                                copyInvitationLink(
+                                  guest
+                                )
                               }
                               className={`inline-flex shrink-0 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
-                                copiedGuestId === guest.id
+                                copiedGuestId ===
+                                guest.id
                                   ? "bg-green-600 text-white"
                                   : "bg-gray-950 text-white hover:bg-gray-800"
                               }`}
                             >
-                              {copiedGuestId === guest.id
+                              {copiedGuestId ===
+                              guest.id
                                 ? "Lien copié"
                                 : "Copier le lien"}
                             </button>
                           </div>
 
                           <p className="mt-2 text-xs leading-5 text-gray-500">
-                            Ce lien est personnel. Envoyez-le
-                            uniquement à cet invité.
+                            Ce lien est
+                            personnel. Envoyez-le
+                            uniquement à cet
+                            invité.
                           </p>
                         </div>
 
@@ -709,10 +1218,13 @@ export default function GuestsPage() {
                               type="button"
                               disabled={
                                 !guest.email ||
-                                sendingGuestId !== null
+                                sendingGuestId !==
+                                  null
                               }
                               onClick={() =>
-                                sendInvitationEmail(guest)
+                                sendInvitationEmail(
+                                  guest
+                                )
                               }
                               className={`inline-flex w-full shrink-0 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition sm:w-auto ${
                                 wasSent
@@ -729,7 +1241,8 @@ export default function GuestsPage() {
                           </div>
                         </div>
 
-                        {guest.status === "accepted" && (
+                        {guest.status ===
+                          "accepted" && (
                           <div className="mt-5 grid gap-3 sm:grid-cols-3">
                             <GuestInfo
                               label="Invité"
@@ -739,52 +1252,70 @@ export default function GuestsPage() {
 
                             <GuestInfo
                               label="Accompagnants"
-                              value={String(companionCount)}
+                              value={String(
+                                companionCount
+                              )}
                               variant="blue"
                             />
 
                             <GuestInfo
                               label="Enfants"
-                              value={String(childrenCount)}
+                              value={String(
+                                childrenCount
+                              )}
                               variant="purple"
                             />
                           </div>
                         )}
 
-                        {guest.status === "accepted" &&
-                          childrenCount > 0 && (
+                        {guest.status ===
+                          "accepted" &&
+                          childrenCount >
+                            0 && (
                             <div className="mt-3 rounded-2xl border border-purple-100 bg-purple-50/70 px-4 py-3">
                               <p className="text-sm font-semibold text-purple-700">
-                                {childrenCount === 1
+                                {childrenCount ===
+                                1
                                   ? "1 enfant"
                                   : `${childrenCount} enfants`}
                               </p>
 
                               {guest.childrenAges && (
                                 <p className="mt-1 break-words text-sm text-gray-600">
-                                  {childrenCount === 1
+                                  {childrenCount ===
+                                  1
                                     ? "Âge"
                                     : "Âges"}{" "}
-                                  : {guest.childrenAges}
+                                  :{" "}
+                                  {
+                                    guest.childrenAges
+                                  }
                                 </p>
                               )}
                             </div>
                           )}
 
-                        {guest.status === "accepted" && (
+                        {guest.status ===
+                          "accepted" && (
                           <div className="mt-4 flex flex-col gap-2 rounded-2xl border border-green-100 bg-green-50/60 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                             <p className="text-sm font-medium text-green-700">
-                              {companionCount === 0
+                              {companionCount ===
+                              0
                                 ? "Vient seul(e)"
-                                : companionCount === 1
+                                : companionCount ===
+                                    1
                                   ? "Vient avec 1 accompagnant"
                                   : `Vient avec ${companionCount} accompagnants`}
                             </p>
 
                             <p className="text-xs font-semibold text-gray-600">
-                              Total : {totalForInvitation}{" "}
+                              Total :{" "}
+                              {
+                                totalForInvitation
+                              }{" "}
                               personne
-                              {totalForInvitation !== 1
+                              {totalForInvitation !==
+                              1
                                 ? "s"
                                 : ""}
                             </p>
@@ -792,15 +1323,19 @@ export default function GuestsPage() {
                         )}
 
                         {guest.answers &&
-                          guest.answers.length > 0 && (
+                          guest.answers.length >
+                            0 && (
                             <div className="mt-5 border-t border-gray-100 pt-5">
                               <p className="text-sm font-bold text-gray-900">
-                                Réponses personnalisées
+                                Réponses
+                                personnalisées
                               </p>
 
                               <div className="mt-3 grid gap-3 md:grid-cols-2">
                                 {guest.answers.map(
-                                  (answer) => (
+                                  (
+                                    answer
+                                  ) => (
                                     <div
                                       key={
                                         answer.questionId
@@ -868,22 +1403,26 @@ function StatCard({
       value: "text-gray-950",
     },
     green: {
-      card: "bg-green-50/70 border-green-100",
+      card:
+        "bg-green-50/70 border-green-100",
       line: "bg-green-500",
       value: "text-green-700",
     },
     red: {
-      card: "bg-red-50/70 border-red-100",
+      card:
+        "bg-red-50/70 border-red-100",
       line: "bg-red-500",
       value: "text-red-700",
     },
     yellow: {
-      card: "bg-yellow-50/70 border-yellow-100",
+      card:
+        "bg-yellow-50/70 border-yellow-100",
       line: "bg-yellow-500",
       value: "text-yellow-700",
     },
     pink: {
-      card: "bg-pink-50/80 border-pink-100",
+      card:
+        "bg-pink-50/80 border-pink-100",
       line: "bg-pink-500",
       value: "text-pink-700",
     },
@@ -895,7 +1434,11 @@ function StatCard({
     <div
       className={`min-w-0 rounded-2xl border p-4 shadow-sm sm:p-5 ${
         style.card
-      } ${wideOnMobile ? "col-span-2 lg:col-span-1" : ""}`}
+      } ${
+        wideOnMobile
+          ? "col-span-2 lg:col-span-1"
+          : ""
+      }`}
     >
       <div
         className={`h-1 w-8 rounded-full ${style.line}`}
@@ -921,7 +1464,10 @@ function SmallSummary({
 }: {
   value: number;
   label: string;
-  variant: "green" | "blue" | "purple";
+  variant:
+    | "green"
+    | "blue"
+    | "purple";
 }) {
   const styles = {
     green:
@@ -954,7 +1500,10 @@ function GuestInfo({
 }: {
   label: string;
   value: string;
-  variant: "green" | "blue" | "purple";
+  variant:
+    | "green"
+    | "blue"
+    | "purple";
 }) {
   const styles = {
     green:
