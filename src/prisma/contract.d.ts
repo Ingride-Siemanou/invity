@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'8befcebc5a1e1a1b3c2f2f8f9795d153bb406af75568dc461b91608e70616de1'>;
+  StorageHashBase<'6895b5c7dd2d366aa347cbbf54f6d639eee24ce80439a4e6abb2bb395c09fd82'>;
 export type ExecutionHash =
   ExecutionHashBase<'f04daf4d452569437cdd698110f4fedcbb7d53cc3def8da518d99f5150400902'>;
 export type ProfileHash =
@@ -253,6 +253,7 @@ export type FieldOutputTypes = {
     readonly Event: {
       readonly id: CodecTypes['pg/int4@1']['output'];
       readonly title: CodecTypes['pg/text@1']['output'];
+      readonly eventType: CodecTypes['pg/text@1']['output'];
       readonly eventDate: CodecTypes['pg/text@1']['output'];
       readonly eventTime: CodecTypes['pg/text@1']['output'] | null;
       readonly location: CodecTypes['pg/text@1']['output'] | null;
@@ -316,6 +317,7 @@ export type FieldInputTypes = {
     readonly Event: {
       readonly id: CodecTypes['pg/int4@1']['input'];
       readonly title: CodecTypes['pg/text@1']['input'];
+      readonly eventType: CodecTypes['pg/text@1']['input'];
       readonly eventDate: CodecTypes['pg/text@1']['input'];
       readonly eventTime: CodecTypes['pg/text@1']['input'] | null;
       readonly location: CodecTypes['pg/text@1']['input'] | null;
@@ -383,6 +385,7 @@ export type StorageColumnTypes = {
       readonly dressCode: CodecTypes['pg/text@1']['output'] | null;
       readonly eventDate: CodecTypes['pg/text@1']['output'];
       readonly eventTime: CodecTypes['pg/text@1']['output'] | null;
+      readonly eventType: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/int4@1']['output'];
       readonly importantInfo: CodecTypes['pg/text@1']['output'] | null;
       readonly location: CodecTypes['pg/text@1']['output'] | null;
@@ -446,6 +449,7 @@ export type StorageColumnInputTypes = {
       readonly dressCode: CodecTypes['pg/text@1']['input'] | null;
       readonly eventDate: CodecTypes['pg/text@1']['input'];
       readonly eventTime: CodecTypes['pg/text@1']['input'] | null;
+      readonly eventType: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/int4@1']['input'];
       readonly importantInfo: CodecTypes['pg/text@1']['input'] | null;
       readonly location: CodecTypes['pg/text@1']['input'] | null;
@@ -508,6 +512,7 @@ export namespace Models {
   export type public_Event = {
     id: CodecTypes['pg/int4@1']['output'];
     title: CodecTypes['pg/text@1']['output'];
+    eventType: CodecTypes['pg/text@1']['output'];
     eventDate: CodecTypes['pg/text@1']['output'];
     eventTime: CodecTypes['pg/text@1']['output'] | null;
     location: CodecTypes['pg/text@1']['output'] | null;
@@ -694,6 +699,15 @@ type ContractBase = Omit<
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                };
+                readonly eventType: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'other'>;
+                  };
                 };
                 readonly eventDate: {
                   readonly nativeType: 'text';
@@ -1141,6 +1155,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly eventType: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly eventDate: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -1231,6 +1249,7 @@ type ContractBase = Omit<
               readonly fields: {
                 readonly id: { readonly column: 'id' };
                 readonly title: { readonly column: 'title' };
+                readonly eventType: { readonly column: 'eventType' };
                 readonly eventDate: { readonly column: 'eventDate' };
                 readonly eventTime: { readonly column: 'eventTime' };
                 readonly location: { readonly column: 'location' };

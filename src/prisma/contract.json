@@ -177,6 +177,13 @@
                   "kind": "scalar"
                 }
               },
+              "eventType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -294,6 +301,9 @@
                 },
                 "eventTime": {
                   "column": "eventTime"
+                },
+                "eventType": {
+                  "column": "eventType"
                 },
                 "id": {
                   "column": "id"
@@ -890,6 +900,15 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "eventType": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "other"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
                 "id": {
                   "codecId": "pg/int4@1",
                   "default": {
@@ -1273,7 +1292,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "8befcebc5a1e1a1b3c2f2f8f9795d153bb406af75568dc461b91608e70616de1"
+    "storageHash": "6895b5c7dd2d366aa347cbbf54f6d639eee24ce80439a4e6abb2bb395c09fd82"
   },
   "execution": {
     "executionHash": "f04daf4d452569437cdd698110f4fedcbb7d53cc3def8da518d99f5150400902",

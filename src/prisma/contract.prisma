@@ -15,6 +15,7 @@ model User {
 model Event {
   id              Int      @id @default(autoincrement())
   title           String
+  eventType       String   @default("other")
   eventDate       String
   eventTime       String?
   location        String?
