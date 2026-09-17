@@ -8,6 +8,46 @@ type InvitationPageProps = {
   }>;
 };
 
+function formatEventDate(date: string) {
+  // On découpe manuellement YYYY-MM-DD pour éviter
+  // les problèmes de fuseau horaire avec new Date().
+  const match = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+  if (!match) {
+    return date;
+  }
+
+  const [, year, month, day] = match;
+
+  const months = [
+    "janvier",
+    "février",
+    "mars",
+    "avril",
+    "mai",
+    "juin",
+    "juillet",
+    "août",
+    "septembre",
+    "octobre",
+    "novembre",
+    "décembre",
+  ];
+
+  const monthIndex = Number(month) - 1;
+
+  if (
+    monthIndex < 0 ||
+    monthIndex > 11 ||
+    Number(day) < 1 ||
+    Number(day) > 31
+  ) {
+    return date;
+  }
+
+  return `${Number(day)} ${months[monthIndex]} ${year}`;
+}
+
 export default async function InvitationPage({
   params,
 }: InvitationPageProps) {
@@ -150,14 +190,16 @@ export default async function InvitationPage({
 
             {/* DATE / HEURE / LIEU */}
             <div
-              className={`mt-8 p-6 ${isModern ? "rounded-none" : "rounded-2xl"}`}
+              className={`mt-8 p-6 ${
+                isModern ? "rounded-none" : "rounded-2xl"
+              }`}
               style={{
                 backgroundColor: softColor,
                 border: `1px solid ${borderColor}`,
               }}
             >
               <p className="font-semibold text-gray-900">
-                {event.eventDate}
+                {formatEventDate(event.eventDate)}
               </p>
 
               {event.eventTime && (
@@ -324,7 +366,7 @@ export default async function InvitationPage({
               )}
             </div>
 
-            {/* RSVP EXISTANT — ON NE LE CASSE PAS */}
+            {/* RÉPONSE À L'INVITATION */}
             <ResponseButtons
               token={guest.token}
               initialStatus={guest.status}
