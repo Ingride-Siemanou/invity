@@ -73,6 +73,9 @@ export default function GuestsPage() {
   const [loading, setLoading] = useState(false);
   const [loadingGuests, setLoadingGuests] = useState(true);
 
+  const [copiedGuestId, setCopiedGuestId] =
+    useState<number | null>(null);
+
   useEffect(() => {
     async function loadGuests() {
       try {
@@ -153,6 +156,26 @@ export default function GuestsPage() {
       );
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function copyInvitationLink(guest: Guest) {
+    const invitationUrl = `${window.location.origin}/i/${guest.token}`;
+
+    try {
+      await navigator.clipboard.writeText(invitationUrl);
+
+      setCopiedGuestId(guest.id);
+
+      window.setTimeout(() => {
+        setCopiedGuestId((currentId) =>
+          currentId === guest.id ? null : currentId
+        );
+      }, 2000);
+    } catch {
+      setError(
+        "Impossible de copier le lien automatiquement."
+      );
     }
   }
 
@@ -242,7 +265,8 @@ export default function GuestsPage() {
 
               <p className="mt-4 max-w-xl text-sm leading-6 text-gray-300 sm:text-base sm:leading-7">
                 Ajoutez vos invités, gérez leurs accompagnants
-                et suivez leurs réponses en un coup d’œil.
+                et partagez facilement leur lien personnel
+                d’invitation.
               </p>
             </div>
 
@@ -456,8 +480,8 @@ export default function GuestsPage() {
                 </h2>
 
                 <p className="mt-1 text-sm text-gray-500">
-                  Consultez les réponses et les informations de
-                  chaque invitation.
+                  Consultez les réponses et partagez le lien
+                  personnel de chaque invitation.
                 </p>
               </div>
 
@@ -507,6 +531,8 @@ export default function GuestsPage() {
 
                   const totalForInvitation =
                     1 + companionCount + childrenCount;
+
+                  const invitationPath = `/i/${guest.token}`;
 
                   return (
                     <article
@@ -564,12 +590,51 @@ export default function GuestsPage() {
                           </div>
 
                           <Link
-                            href={`/i/${guest.token}`}
+                            href={invitationPath}
                             target="_blank"
+                            rel="noopener noreferrer"
                             className="inline-flex w-full shrink-0 items-center justify-center rounded-full border border-pink-200 bg-pink-50 px-4 py-2.5 text-sm font-semibold text-pink-700 transition hover:bg-pink-100 sm:w-auto"
                           >
                             Ouvrir l’invitation ↗
                           </Link>
+                        </div>
+
+                        {/* Lien individuel */}
+                        <div className="mt-5 rounded-2xl border border-pink-100 bg-pink-50/50 p-3 sm:p-4">
+                          <p className="text-xs font-bold uppercase tracking-wide text-pink-700">
+                            🔗 Lien individuel
+                          </p>
+
+                          <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+                            <div className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2.5">
+                              <p className="truncate text-sm text-gray-600">
+                                {typeof window !== "undefined"
+                                  ? `${window.location.origin}${invitationPath}`
+                                  : invitationPath}
+                              </p>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                copyInvitationLink(guest)
+                              }
+                              className={`inline-flex shrink-0 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
+                                copiedGuestId === guest.id
+                                  ? "bg-green-600 text-white"
+                                  : "bg-gray-950 text-white hover:bg-gray-800"
+                              }`}
+                            >
+                              {copiedGuestId === guest.id
+                                ? "✓ Lien copié"
+                                : "📋 Copier le lien"}
+                            </button>
+                          </div>
+
+                          <p className="mt-2 text-xs leading-5 text-gray-500">
+                            Ce lien est personnel. Envoyez-le
+                            uniquement à cet invité.
+                          </p>
                         </div>
 
                         {guest.status === "accepted" && (
