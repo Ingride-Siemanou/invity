@@ -550,7 +550,7 @@ export default async function DashboardPage() {
                     </div>
 
                     {/* Actions */}
-                    <div className="grid border-t border-gray-100 sm:grid-cols-3">
+                    <div className="grid border-t border-gray-100 sm:grid-cols-2 lg:grid-cols-4">
                       <Link
                         href={`/dashboard/events/${event.id}`}
                         className="flex items-center justify-center gap-2 px-4 py-4 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
@@ -569,10 +569,18 @@ export default async function DashboardPage() {
 
                       <Link
                         href={`/dashboard/events/${event.id}/questions`}
-                        className="flex items-center justify-center gap-2 border-t border-gray-100 px-4 py-4 text-sm font-semibold text-pink-600 transition hover:bg-pink-50 sm:border-l sm:border-t-0"
+                        className="flex items-center justify-center gap-2 border-t border-gray-100 px-4 py-4 text-sm font-semibold text-pink-600 transition hover:bg-pink-50 lg:border-l lg:border-t-0"
                       >
                         <span>❓</span>
                         <span>Questions</span>
+                      </Link>
+
+                      <Link
+                        href={`/dashboard/events/${event.id}/customize`}
+                        className="flex items-center justify-center gap-2 border-t border-gray-100 px-4 py-4 text-sm font-semibold text-pink-600 transition hover:bg-pink-50 sm:border-l lg:border-t-0"
+                      >
+                        <span>🎨</span>
+                        <span>Personnaliser</span>
                       </Link>
                     </div>
                   </article>
