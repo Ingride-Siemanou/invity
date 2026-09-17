@@ -19,7 +19,6 @@
     "dotenv": "^17.4.2",
     "jose": "^6.2.12",
     "next": "16.3.5",
-    "next-cloudinary": "^6.19.2",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
