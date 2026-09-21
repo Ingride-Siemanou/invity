@@ -1,4 +1,6 @@
+
 import { NextResponse } from "next/server";
+import { Resend } from "resend";
 import { db } from "@/prisma/db";
 
 type ResponseRouteProps = {
@@ -12,6 +14,27 @@ type SubmittedAnswer = {
   value: string;
 };
 
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function getStatusLabel(status: string) {
+  if (status === "accepted") {
+    return "Présent(e)";
+  }
+
+  if (status === "declined") {
+    return "Absent(e)";
+  }
+
+  return "Je ne sais pas encore";
+}
+
 export async function POST(
   request: Request,
   { params }: ResponseRouteProps
@@ -19,7 +42,6 @@ export async function POST(
   try {
     const { token } = await params;
 
-    // 1. Rechercher l'invité grâce à son lien unique
     const guest = await db.orm.public.Guest
       .where({ token })
       .first();
@@ -31,7 +53,6 @@ export async function POST(
       );
     }
 
-    // 2. Charger l'événement pour connaître ses règles
     const event = await db.orm.public.Event
       .where({ id: guest.eventId })
       .first();
@@ -46,7 +67,6 @@ export async function POST(
     const body = await request.json();
     const status = body.status;
 
-    // 3. Vérifier la réponse de présence
     if (
       status !== "accepted" &&
       status !== "declined" &&
@@ -58,7 +78,6 @@ export async function POST(
       );
     }
 
-    // 4. Vérifier le nombre d'accompagnants
     let companionCount = 0;
 
     if (status === "accepted") {
@@ -78,7 +97,6 @@ export async function POST(
       }
     }
 
-    // 5. Vérifier les informations concernant les enfants
     let childrenCount = 0;
     let childrenAges: string | null = null;
 
@@ -104,6 +122,7 @@ export async function POST(
 
       if (hasChildren === true) {
         childrenCount = Number(body.childrenCount);
+
         childrenAges =
           typeof body.childrenAges === "string"
             ? body.childrenAges.trim()
@@ -134,10 +153,6 @@ export async function POST(
       }
     }
 
-    // Si les enfants sont interdits, si l'invité est absent,
-    // s'il ne sait pas encore ou s'il répond "Non",
-    // les anciennes informations concernant les enfants
-    // sont automatiquement effacées.
     if (
       status !== "accepted" ||
       !childrenAreAllowed ||
@@ -147,7 +162,6 @@ export async function POST(
       childrenAges = null;
     }
 
-    // 6. Charger les questions personnalisées de l'événement
     const questions = await db.orm.public.Question
       .where({ eventId: guest.eventId })
       .all();
@@ -183,8 +197,6 @@ export async function POST(
           }))
       : [];
 
-    // 7. Vérifier que les réponses appartiennent bien
-    // à cet événement
     for (const submittedAnswer of submittedAnswers) {
       const questionExists = questions.some(
         (question) =>
@@ -212,7 +224,7 @@ export async function POST(
 
     function isQuestionVisible(
       question: (typeof questions)[number]
-    ) {
+    ): boolean {
       if (
         question.conditionQuestionId === null ||
         !question.conditionValue
@@ -240,8 +252,6 @@ export async function POST(
       return parentValue === question.conditionValue;
     }
 
-    // 8. Vérifier uniquement les questions personnalisées
-    // obligatoires qui sont réellement visibles
     for (const question of questions) {
       if (!isQuestionVisible(question)) {
         continue;
@@ -263,8 +273,6 @@ export async function POST(
       }
     }
 
-    // 9. Enregistrer la présence, les accompagnants
-    // et les informations concernant les enfants
     await db.orm.public.Guest
       .where({ id: guest.id })
       .update({
@@ -274,9 +282,6 @@ export async function POST(
         childrenAges,
       });
 
-    // 10. Enregistrer les réponses personnalisées visibles.
-    // Si une question devient cachée, son ancienne réponse
-    // est vidée.
     for (const question of questions) {
       const visible = isQuestionVisible(question);
 
@@ -310,6 +315,115 @@ export async function POST(
         guestId: guest.id,
         questionId: question.id,
       });
+    }
+
+    try {
+      const resendApiKey = process.env.RESEND_API_KEY;
+
+      if (!resendApiKey) {
+        console.warn(
+          "Notification organisateur non envoyée : RESEND_API_KEY manquante."
+        );
+      } else {
+        const organizer = await db.orm.public.User
+          .where({ id: event.userId })
+          .first();
+
+        if (!organizer?.email) {
+          console.warn(
+            "Notification organisateur non envoyée : adresse e-mail introuvable."
+          );
+        } else {
+          const resend = new Resend(resendApiKey);
+
+          const guestName =
+            `${guest.firstName} ${guest.lastName}`.trim();
+
+          const responseLabel = getStatusLabel(status);
+
+          const peopleCount =
+            status === "accepted"
+              ? 1 + companionCount + childrenCount
+              : 0;
+
+          const details = [
+            `<p><strong>Invité :</strong> ${escapeHtml(guestName)}</p>`,
+            `<p><strong>Réponse :</strong> ${escapeHtml(responseLabel)}</p>`,
+          ];
+
+          if (status === "accepted") {
+            details.push(
+              `<p><strong>Accompagnants :</strong> ${companionCount}</p>`,
+              `<p><strong>Enfants :</strong> ${childrenCount}</p>`,
+              `<p><strong>Nombre total de personnes :</strong> ${peopleCount}</p>`
+            );
+
+            if (childrenAges) {
+              details.push(
+                `<p><strong>Âge des enfants :</strong> ${escapeHtml(childrenAges)}</p>`
+              );
+            }
+          }
+
+          const visibleAnswers = questions
+            .filter((question) => isQuestionVisible(question))
+            .map((question) => ({
+              label: question.label,
+              value: getSubmittedValue(question.id),
+            }))
+            .filter((answer) => answer.value.length > 0);
+
+          if (visibleAnswers.length > 0) {
+            details.push(
+              "<h2>Réponses personnalisées</h2>"
+            );
+
+            for (const answer of visibleAnswers) {
+              details.push(
+                `<p><strong>${escapeHtml(answer.label)} :</strong> ${escapeHtml(answer.value)}</p>`
+              );
+            }
+          }
+
+          const { error: emailError } = await resend.emails.send({
+            from: "Invity <onboarding@resend.dev>",
+            to: organizer.email,
+            subject: `Nouvelle réponse à ${event.title}`,
+            html: `
+              <div style="max-width:600px;margin:0 auto;padding:32px;font-family:Arial,sans-serif;color:#1f2937;">
+                <p style="font-size:22px;font-weight:bold;color:#db2777;margin:0 0 24px;">
+                  Invity
+                </p>
+                <h1 style="font-size:24px;margin:0 0 16px;">
+                  Nouvelle réponse à votre invitation
+                </h1>
+                <p>
+                  Un invité a répondu à votre événement
+                  <strong>${escapeHtml(event.title)}</strong>.
+                </p>
+                <div style="margin-top:24px;padding:20px;border:1px solid #fbcfe8;border-radius:12px;background:#fdf2f8;">
+                  ${details.join("\n")}
+                </div>
+                <p style="margin-top:24px;font-size:13px;color:#6b7280;">
+                  Retrouvez toutes les réponses dans votre espace organisateur Invity.
+                </p>
+              </div>
+            `,
+          });
+
+          if (emailError) {
+            console.error(
+              "Erreur notification organisateur :",
+              emailError
+            );
+          }
+        }
+      }
+    } catch (notificationError) {
+      console.error(
+        "Impossible d'envoyer la notification à l'organisateur :",
+        notificationError
+      );
     }
 
     return NextResponse.json(
