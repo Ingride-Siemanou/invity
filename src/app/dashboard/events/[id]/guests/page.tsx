@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { downloadGuestsPdf, type PdfEvent } from "@/lib/guests-pdf";
 
 type GuestAnswer = {
   questionId: number;
@@ -75,6 +76,7 @@ export default function GuestsPage() {
   const id = params.id as string;
 
   const [guests, setGuests] = useState<Guest[]>([]);
+  const [pdfEvent, setPdfEvent] = useState<PdfEvent | null>(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -125,6 +127,7 @@ export default function GuestsPage() {
         }
 
         setGuests(result.guests);
+        setPdfEvent(result.event ?? null);
       } catch {
         setError(
           "Impossible de charger les invités."
@@ -742,6 +745,18 @@ export default function GuestsPage() {
           </section>
 
           <section className="min-w-0 rounded-[28px] border border-purple-100 bg-white p-4 shadow-sm sm:p-6">
+            <div className="mb-5 flex justify-end">
+              <button
+                type="button"
+                onClick={() =>
+                  pdfEvent && downloadGuestsPdf(pdfEvent, guests)
+                }
+                disabled={loadingGuests || !pdfEvent || guests.length === 0}
+                className="rounded-full bg-pink-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-pink-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Télécharger le PDF
+              </button>
+            </div>
             <div className="flex flex-col gap-3 border-b border-gray-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-xl font-bold text-gray-950">

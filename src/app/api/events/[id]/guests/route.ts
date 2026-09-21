@@ -130,6 +130,12 @@ export async function GET(
 
     return NextResponse.json(
       {
+        event: {
+          title: authorization.event!.title,
+          eventDate: authorization.event!.eventDate,
+          eventTime: authorization.event!.eventTime,
+          location: authorization.event!.location,
+        },
         guests: guestsWithAnswers,
       },
       { status: 200 }
