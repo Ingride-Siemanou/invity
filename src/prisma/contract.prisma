@@ -1,15 +1,15 @@
-// use prisma-8
-
 model User {
-  id           Int      @id @default(autoincrement())
-  firstName    String
-  lastName     String
-  email        String   @unique
-  passwordHash String
-  createdAt    TimestamptzString @default(now())
-  updatedAt    temporal.updatedAtString()
+  id                       Int      @id @default(autoincrement())
+  firstName                String
+  lastName                 String
+  email                    String   @unique
+  passwordHash             String
+  passwordResetTokenHash   String?
+  passwordResetExpiresAt   TimestamptzString?
+  createdAt                TimestamptzString @default(now())
+  updatedAt                temporal.updatedAtString()
 
-  events       Event[]
+  events                   Event[]
 }
 
 model Event {

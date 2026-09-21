@@ -721,6 +721,20 @@
                   "kind": "scalar"
                 }
               },
+              "passwordResetExpiresAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "passwordResetTokenHash": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
@@ -765,6 +779,12 @@
                 },
                 "passwordHash": {
                   "column": "passwordHash"
+                },
+                "passwordResetExpiresAt": {
+                  "column": "passwordResetExpiresAt"
+                },
+                "passwordResetTokenHash": {
+                  "column": "passwordResetTokenHash"
                 },
                 "updatedAt": {
                   "column": "updatedAt"
@@ -1318,6 +1338,16 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "passwordResetExpiresAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "passwordResetTokenHash": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "updatedAt": {
                   "codecId": "pg/timestamptz-string@1",
                   "nativeType": "timestamptz",
@@ -1345,7 +1375,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "58e5609457b36784d2bd1b243e2c0a4dadccb05c1ed9538a17f0aa420669ef44"
+    "storageHash": "01fc76dfd69f39ca34fc6e808b0a631afe62714c059375da1027b53a0d174d5b"
   },
   "execution": {
     "executionHash": "f04daf4d452569437cdd698110f4fedcbb7d53cc3def8da518d99f5150400902",
